@@ -1,0 +1,36 @@
+/* Purchase visual pass. Supplier, GST, stock destination and totals logic are unchanged. */
+body[data-view="purchases"] #content .summaryitem{border:1px solid #ffffff40;border-radius:6px;box-shadow:0 3px 10px #0f172a16!important}
+body[data-view="purchases"] #content .kpiIcon{border-radius:5px;background:#ffffff24}
+body[data-view="purchases"] #content>.toolbar{padding:10px;margin:0 0 12px;gap:8px;border:1px solid #dbe4ef;border-radius:8px;background:#fff;box-shadow:0 2px 8px #0f172a08}
+body[data-view="purchases"] #content>.toolbar .search{min-height:36px;height:36px;border-radius:5px}
+body[data-view="purchases"] #content>.toolbar>.btn{min-height:36px;padding:8px 12px;border-radius:5px;font-size:11px;font-weight:650}
+body[data-view="purchases"] #content .tablewrap{border:1px solid #dbe4ef;border-radius:8px;box-shadow:0 3px 12px #0f172a0a}
+body[data-view="purchases"] #content .tablewrap th{background:#111a2d;color:#f8fafc;padding:9px 11px;font-size:10px}
+body[data-view="purchases"] #content .tablewrap td{padding:10px 11px;font-size:11px}
+body[data-view="purchases"] #content .tablewrap tbody tr:hover td{background:#f1f6ff}
+body[data-view="purchases"] #content .tablewrap td .badge{border-radius:4px}
+body[data-view="purchases"] #content .rowactions .btn{border-radius:5px}
+body[data-view="purchases"] #modal .dialog:has(#billForm){border-radius:10px;box-shadow:0 24px 60px #0b112050}
+body[data-view="purchases"] #modal .dialog:has(#billForm) .dialoghead{background:#111a2d}
+body[data-view="purchases"] #modal #billForm>.formbody{padding:12px 14px;background:#f8fafc}
+body[data-view="purchases"] #modal #billForm>.formbody>.notice{border:1px solid #bfdbfe;border-left:3px solid #2563eb;border-radius:5px;background:#eff6ff;padding:8px 10px}
+body[data-view="purchases"] #modal #billForm .purchaseItemHeading{margin:12px 0 0;padding:9px 12px;border-radius:5px 5px 0 0;background:#111a2d;border-left:3px solid #2563eb;font-size:11px}
+body[data-view="purchases"] #modal #billForm .purchaseItemHeading b{border-radius:3px;background:#dbeafe;color:#1d4ed8;padding:3px 6px}
+body[data-view="purchases"] #modal #billForm .purchaseItemHeading button{min-height:30px;padding:6px 10px;border-radius:4px;background:#2563eb;color:#fff}
+body[data-view="purchases"] #modal #billForm .purchaseItemScroll{border:1px solid #dbe4ef;border-radius:0 0 6px 6px;box-shadow:0 2px 8px #0f172a08}
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable th{background:#182338;padding:9px 7px}
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable td{padding:7px;border-bottom:1px solid #edf1f6}
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable tbody tr:nth-child(even){background:#f8fafc}
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable input,
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable select{border-radius:4px}
+body[data-view="purchases"] #modal #billForm .purchaseItemsTable output{color:#334155;font-variant-numeric:tabular-nums}
+body[data-view="purchases"] #modal #billForm [data-purchase-stock$="|total"]{color:#166534;font-weight:750}
+body[data-view="purchases"] #modal #billForm .purchaseItemsFooter{padding:8px 10px;border:1px solid #dbe4ef;border-top:0;border-radius:0 0 6px 6px;background:#fff}
+body[data-view="purchases"] #modal #billForm .purchaseSupplierControls select,
+body[data-view="purchases"] #modal #billForm .purchaseSupplierControls button{border-radius:5px}
+body[data-view="purchases"] #modal #billForm .totals{border:1px solid #dbe4ef;border-radius:6px;background:#fff;padding:12px}
+@media(max-width:700px){
+  body[data-view="purchases"] #content>.toolbar{padding:8px;border-radius:6px}
+  body[data-view="purchases"] #modal #billForm>.formbody{padding:8px}
+  body[data-view="purchases"] #modal #billForm .purchaseItemsFooter>span:last-child{margin-left:0}
+}

@@ -1,0 +1,20 @@
+/* Paper-aware invoice spacing. Long documents flow to additional print pages; they are never clipped. */
+.invoice:not(.referenceInvoice){--adaptive-pad:9px;--adaptive-font:10px;--adaptive-heading:10px;--adaptive-gap:16px;padding:var(--adaptive-pad)}
+.invoice:not(.referenceInvoice) .invoicebrand,.invoice:not(.referenceInvoice) .invoiceinfo,.invoice:not(.referenceInvoice) .invoiceBottom,.invoice:not(.referenceInvoice) .invoiceFoot{gap:var(--adaptive-gap)}
+.invoice:not(.referenceInvoice) .tablewrap{overflow:visible}
+.invoice:not(.referenceInvoice) table{table-layout:fixed;white-space:normal}
+.invoice:not(.referenceInvoice) th,.invoice:not(.referenceInvoice) td{height:auto!important;white-space:normal!important;overflow-wrap:anywhere;word-break:break-word;font-size:var(--adaptive-font)!important;padding:calc(var(--adaptive-pad) * .7) calc(var(--adaptive-pad) * .6)!important;vertical-align:top}
+.invoice:not(.referenceInvoice) th{font-size:var(--adaptive-heading)!important}
+.invoice:not(.referenceInvoice) tbody tr,.invoice:not(.referenceInvoice) h4,.invoice:not(.referenceInvoice) .invoiceBottom,.invoice:not(.referenceInvoice) .invoiceFoot{break-inside:avoid;page-break-inside:avoid}
+.invoice:not(.referenceInvoice)[data-adaptive-paper="A5"]{--adaptive-pad:6px;--adaptive-font:8.5px;--adaptive-heading:8px;--adaptive-gap:9px}
+.invoice:not(.referenceInvoice)[data-adaptive-paper="A5"][data-adaptive-density="1"]{--adaptive-pad:5px;--adaptive-font:8px;--adaptive-heading:7.5px;--adaptive-gap:7px}
+.invoice:not(.referenceInvoice)[data-adaptive-paper="A5"][data-adaptive-density="2"]{--adaptive-pad:4px;--adaptive-font:7.5px;--adaptive-heading:7px;--adaptive-gap:6px}
+.invoice:not(.referenceInvoice)[data-adaptive-density="1"]{--adaptive-pad:7px;--adaptive-font:9px;--adaptive-heading:9px;--adaptive-gap:12px}
+.invoice:not(.referenceInvoice)[data-adaptive-density="2"]{--adaptive-pad:5px;--adaptive-font:8px;--adaptive-heading:8px;--adaptive-gap:8px}
+.thermalInvoice{--thermal-pad:3mm;--thermal-font:11px;padding:var(--thermal-pad)!important;font-size:var(--thermal-font)!important;min-height:0!important;height:auto!important}
+.thermalInvoice[data-adaptive-density="1"]{--thermal-pad:2.4mm;--thermal-font:10px}
+.thermalInvoice[data-adaptive-density="2"]{--thermal-pad:2mm;--thermal-font:9px}
+.thermalInvoice[data-adaptive-density="1"] .thermalItems th,.thermalInvoice[data-adaptive-density="1"] .thermalItems td{font-size:10px!important;padding:2px 0!important}
+.thermalInvoice[data-adaptive-density="2"] .thermalItems th,.thermalInvoice[data-adaptive-density="2"] .thermalItems td{font-size:9px!important;padding:1px 0!important}
+.thermalInvoice .thermalItems tr,.thermalInvoice .paymentStampFooter{break-inside:avoid;page-break-inside:avoid}
+@media print{.invoice:not(.referenceInvoice){padding:0!important}.invoice:not(.referenceInvoice) .tablewrap{overflow:visible!important}.thermalInvoice{height:auto!important;max-height:none!important}}

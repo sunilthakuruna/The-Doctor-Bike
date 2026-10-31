@@ -1,0 +1,347 @@
+.extraAction{min-width:30px;height:30px;padding:5px!important;border-radius:5px!important;display:inline-flex;align-items:center;justify-content:center}.extraAction.green{background:#22c55e;color:white}.extraAction.blue{background:#3b82f6;color:white}.extraAction.red{background:#ef4444;color:white}.extraAction.gray{background:#e2e8f0;color:#64748b;cursor:not-allowed}.waChat{color:#16a34a;font-size:11px;white-space:nowrap}.rowactions{flex-wrap:nowrap}.thermalReceipt{max-width:80mm;margin:auto}.thermalReceipt .invoice{min-width:0!important;width:100%!important;font-size:10px}.thermalReceipt table{font-size:9px}@media print{body:has(.thermalReceipt) .dialog{width:80mm!important;max-width:80mm!important}body:has(.thermalReceipt) #modalBody{width:76mm!important}body:has(.thermalReceipt) .invoice{padding:2mm!important}}
+/* Wide tables have a second scrollbar above the rows, reachable without scrolling to the bottom. */
+@media screen{
+#workspace,#content,.panel,.panelbody,.formbody,.jobMain,.jobSide,#modalBody,.dialog{min-width:0;max-width:100%}
+.tablewrap{display:block;max-width:100%;min-width:0;overflow-x:auto!important;overscroll-behavior-x:contain;scrollbar-width:auto!important;scrollbar-color:#64748b #e2e8f0;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+.tablewrap>table{min-width:100%;width:max-content;max-width:none}
+.tablewrap th,.tablewrap td{white-space:nowrap}
+.tableScrollTop{height:19px;overflow-x:scroll;overflow-y:hidden;width:100%;max-width:100%;background:#e2e8f0;border:1px solid #cbd5e1;scrollbar-width:auto;scrollbar-color:#64748b #e2e8f0;touch-action:pan-x;box-sizing:border-box}
+.tableScrollTop[hidden]{display:none}.tableScrollTop>div{height:1px}.tableScrollHint{font-size:11px;color:#64748b;padding:5px 2px}.tableScrollHint[hidden]{display:none}
+.tablewrap::-webkit-scrollbar,.tableScrollTop::-webkit-scrollbar{height:14px}.tablewrap::-webkit-scrollbar-track,.tableScrollTop::-webkit-scrollbar-track{background:#e2e8f0}.tablewrap::-webkit-scrollbar-thumb,.tableScrollTop::-webkit-scrollbar-thumb{background:#64748b;border:3px solid #e2e8f0;border-radius:8px}
+.tabs,.pipeline{max-width:100%;overflow-x:auto!important;flex-wrap:nowrap!important;scrollbar-width:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.tabs>button,.pipeline>button{flex-shrink:0!important;white-space:nowrap}.formactions{flex-wrap:wrap}.linetable input{max-width:150px}
+}
+@media screen and (max-width:700px){.tablewrap th:last-child,.tablewrap td:last-child:has(.rowactions){position:static;box-shadow:none}.dialog{width:100%;max-width:100%}.calendar{min-width:630px}.calendarScroll{overflow-x:auto;max-width:100%}}
+@media print{.tableScrollTop,.tableScrollHint{display:none!important}}
+/* The edit dialog owns both axes; nested grid overflow must not hide its scrollbar. */
+@media screen{
+#modalBody>form{min-width:0;max-width:100%;flex:1 1 auto}
+#modalBody>form>.formbody{flex:1 1 auto;min-height:0;overflow:auto!important;scrollbar-width:auto;scrollbar-color:#64748b #e2e8f0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.jobDialog #billForm>.formbody{overflow:auto!important}
+.jobDialog .jobSplit{display:grid;grid-template-columns:440px minmax(540px,1fr);width:100%;min-width:980px;overflow:visible!important;min-height:0}
+.jobDialog .jobLeft,.jobDialog .jobRight{min-width:0;max-width:none;box-sizing:border-box}
+#modalBody>form>.tableScrollTop{flex:0 0 19px;min-height:19px;margin:0;border-left:0;border-right:0}
+#modalBody>form>.tableScrollHint{flex:0 0 auto;margin:0;padding:5px 16px;background:#f1f5f9}
+#serviceLines,#partLines{min-width:0;max-width:100%}
+#modalBody .tablewrap th:last-child,#modalBody .tablewrap td:last-child{position:static;box-shadow:none}
+}
+.attachmentPanel{margin:16px;padding:16px;border:1px solid #cbd5e1;background:#f8fafc}.attachmentPanel h3{margin:0 0 8px;font-size:14px}.attachmentPanel p{font-size:11px;color:#64748b}.attachmentPanel input[type=file]{max-width:100%;margin:10px 0}.attachmentFile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #e2e8f0}.attachmentFile img{width:64px;height:64px;object-fit:contain}.attachmentFile>span:nth-child(2){flex:1;min-width:100px;overflow-wrap:anywhere}.attachmentFile small{display:block;color:#64748b;margin-top:5px}.attachmentPdf{background:#fee2e2;color:#b91c1c;padding:12px;font-weight:700}.attachmentViewer{position:fixed;inset:15px;background:white;z-index:500;display:flex;flex-direction:column;gap:10px;padding:15px;box-shadow:0 0 0 30px #0008}.attachmentViewer>button{align-self:flex-end}.attachmentViewer iframe{width:100%;flex:1;border:0}.attachmentViewer img{min-height:0;width:100%;flex:1;object-fit:contain}@media print{.attachmentViewer,.attachmentPanel{display:none!important}}
+.attachmentUploadActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}.attachmentUploadActions label{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer}.attachmentUploadActions label:hover{background:#eff6ff;border-color:#93c5fd}.attachmentUploadActions input[type=file]{position:absolute!important;inset:0;width:100%;height:100%;max-width:none!important;margin:0!important;padding:0!important;opacity:0;cursor:pointer}
+.invoiceSharePanel{border:1px solid #bfdbfe;background:#eff6ff;margin-top:16px;padding:14px}.invoiceSharePanel h3{margin:0 0 8px;font-size:14px}.invoiceSharePanel p{font-size:12px;line-height:1.7}.invoiceSharePanel input{max-width:100%;margin:8px 0}.invoiceSharePanel hr{border:0;border-top:1px solid #cbd5e1;margin:16px 0}
+.receiptSendInstructions{background:#eff6ff;border:1px solid #bfdbfe;margin:16px;padding:12px;line-height:1.8;font-size:13px}.receiptSendActions{display:flex;flex-wrap:wrap;gap:10px;padding:0 16px}#receiptImagePreview{padding:16px;background:#e2e8f0;overflow:auto;min-height:100px}#receiptImagePreview canvas{display:block;width:100%;height:auto;max-width:800px;margin:auto;box-shadow:0 2px 10px #0002}.receiptSendActions .btn{flex:1;white-space:nowrap}
+.invoiceAssetGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}.invoiceAssetGrid section{padding:16px;border:1px solid #cbd5e1}.assetSettingsPreview{display:block;max-width:180px;height:160px;object-fit:contain;margin:10px 0}.paymentStampFooter{display:flex;justify-content:space-between;align-items:flex-end;gap:25px;border-top:1px solid #cbd5e1;margin-top:22px;padding:18px 0;font-size:12px;break-inside:avoid}.paymentStampFooter>div{max-width:48%;overflow-wrap:anywhere}.paymentStampFooter>div:last-child{text-align:center}.invoiceQr{display:block;width:140px;height:140px;object-fit:contain;margin-bottom:8px}.invoiceStamp{display:block;width:180px;height:120px;object-fit:contain;margin:12px auto}@media(max-width:600px){.invoiceAssetGrid{grid-template-columns:1fr}.invoiceQr{width:110px;height:110px}.invoiceStamp{width:130px;height:100px}}
+.thermalControls{padding:16px;background:#eff6ff;font-size:12px}.thermalControls select{width:110px;margin-left:10px}.thermalControls p{line-height:1.6}.thermalPreview{padding:20px;background:#e2e8f0;overflow:auto}.thermalInvoice{box-sizing:border-box;width:var(--receipt-width);padding:3mm;background:white;color:#000;font:11px/1.35 Arial,sans-serif;margin:auto;overflow-wrap:anywhere}.thermalInvoice *{box-sizing:border-box}.thermalInvoice h2{font-size:16px;margin:0 0 4px}.thermalInvoice p{margin:5px 0}.thermalCenter{text-align:center}.thermalInvoice hr{border:0;border-top:1px dashed #000;margin:8px 0}.thermalInvoice .thermalItems{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:11px}.thermalInvoice .thermalItems th,.thermalInvoice .thermalItems td{position:static!important;background:white!important;color:black!important;box-shadow:none!important;border:0;height:auto;white-space:normal;padding:3px 0!important;font-size:11px!important;letter-spacing:0;text-transform:none;vertical-align:top}.thermalInvoice .thermalItems th:last-child,.thermalInvoice .thermalItems td:last-child{width:30%;text-align:right}.thermalItems small{display:block;font-size:10px}.thermalInvoice dl{margin:5px 0}.thermalInvoice dl>div{display:flex;justify-content:space-between;gap:8px}.thermalInvoice dd{margin:0;text-align:right}.thermalBold{font-weight:bold}.thermalQr{display:block;width:30mm;height:30mm;object-fit:contain;margin:8px auto}.thermalStamp{width:32mm;height:20mm;object-fit:contain;margin:5px auto}
+@media print{body.printingThermal{height:auto!important;overflow:visible!important;background:white!important}body.printingThermal .dialog,body.printingThermal #modalBody{width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;overflow:visible!important;display:block!important}body.printingThermal .thermalControls{display:none!important}body.printingThermal .thermalPreview{padding:0!important;background:white;overflow:visible!important}body.printingThermal .thermalInvoice{margin:0!important;break-inside:auto}body.printingThermal .thermalItems tr{break-inside:avoid}body.printingThermal .thermalItems thead{display:table-header-group}body.printingThermal .thermalItems th,body.printingThermal .thermalItems td{padding:3px 0!important;font-size:11px!important}}
+.invoiceFormatControls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f1f5f9;padding:12px 16px;border-bottom:1px solid #cbd5e1;flex-shrink:0}.invoiceFormatControls strong{font-size:12px}@media print{.invoiceFormatControls{display:none!important}body.printingA4 .dialog,body.printingA4 #modalBody{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;overflow:visible!important;display:block!important}body.printingA4 .invoice{width:100%!important;max-width:190mm!important;margin:auto!important;font-size:12px}body.printingA4 .invoice th,body.printingA4 .invoice td{white-space:normal!important;position:static!important}body.printingA4 .invoice table{width:100%!important;min-width:0!important;table-layout:auto}body.printingA4 .invoice .tablewrap{overflow:visible!important}}
+.userHiddenColumn,.userHiddenField{display:none!important}.columnVisibilityButton{margin:0 0 8px}.visibilityChoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:8px 0 14px}.visibilityChoices label{display:flex;align-items:center;gap:8px;font-size:12px}.visibilityChoices input[type=checkbox]{width:16px;min-height:16px;height:16px;flex:0 0 16px}.fieldVisibilityPanel{padding:10px 16px;background:#eff6ff;border-bottom:1px solid #bfdbfe;flex:0 0 auto;max-height:30vh;overflow:auto}.fieldVisibilityPanel summary{cursor:pointer;color:#1d4ed8;font-size:12px;font-weight:700}.fieldVisibilityPanel p{font-size:11px}@media print{.columnVisibilityButton,.fieldVisibilityPanel{display:none!important}}
+.invoiceMediaPanel{margin:16px;padding:16px;background:#f0fdf4;border:1px solid #86efac}.invoiceMediaPanel h3{font-size:14px;margin:0 0 8px}.invoiceMediaPanel p{font-size:12px;line-height:1.6}.invoiceMediaPanel input[type=file]{max-width:100%;margin:8px 0}.invoiceMediaPanel label{display:flex;align-items:center;gap:8px;font-size:12px;margin:10px 0}.invoiceMediaPanel input[type=checkbox]{width:16px;min-height:16px}#invoiceMediaList{font-size:12px;overflow-wrap:anywhere;line-height:1.7}@media print{.invoiceMediaPanel{display:none!important}}
+.splitDiscountRow{align-items:center;gap:10px}.splitDiscountRow>label{max-width:46%}.splitDiscountRow>span{display:flex;gap:5px;align-items:center}.splitDiscountRow select{width:92px;min-width:0;font-size:11px;min-height:30px;padding:3px}.splitDiscountRow input{width:85px}.discountHint{font-size:10px;color:#64748b;line-height:1.5}
+.itemDiscountCell{min-width:140px}.itemDiscountCell select{display:inline-block;min-width:45px!important;width:45px!important}.itemDiscountCell input{display:inline-block;width:75px;min-width:65px!important}.itemDiscountCell small{display:block;color:#64748b;font-size:10px;margin-top:4px}
+.nonGstTax{display:none!important}
+.inlineListEdit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex:1}.inlineListEdit input{flex:1;min-width:140px}.listoption>[hidden]{display:none!important}
+.whatsappIcon{width:20px!important;height:20px!important;flex:0 0 auto;vertical-align:middle;stroke:none!important}.waChat{display:inline-flex;align-items:center;gap:4px}.waChat .whatsappIcon{width:17px!important;height:17px!important}.rowactions .extraAction.green:has(.whatsappIcon){background:#25d366!important;color:#fff!important;border-color:#25d366!important}.rowactions .whatsappIcon{width:18px!important;height:18px!important}
+.rowactions .btn svg,.listoption .btn svg{width:18px!important;height:18px!important;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.rowactions .btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:30px;min-height:30px}.rowactions .btn:hover{filter:brightness(.95);box-shadow:0 2px 5px #0f172a20}.rowactions .btn:focus-visible,.listoption .btn:focus-visible{outline:2px solid #2563eb;outline-offset:2px}.rowactions .btn .whatsappIcon{stroke:none!important}
+.invoiceBankDetails{border-top:1px solid #cbd5e1;padding:12px 0;margin-top:12px;font-size:11px;line-height:1.5;break-inside:avoid}.invoiceBankDetails p{margin:3px 0;overflow-wrap:anywhere}.thermalInvoice .invoiceBankDetails{font-size:10px}
+.invoiceStyleCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:16px 0}.invoiceStyleCard{display:flex;flex-direction:column;gap:10px;padding:16px;border:2px solid #cbd5e1;cursor:pointer}.invoiceStyleCard:has(input:checked){border-color:#2563eb;background:#eff6ff}.invoiceStyleCard input{width:16px;height:16px;min-height:16px}.invoiceStyleCard span{font-size:12px;line-height:1.6;color:#64748b}.invoiceMini{height:140px;padding:15px;border:1px solid #94a3b8;background:white;color:#111827;font-size:11px}.invoiceMini div{height:14px;border-bottom:1px solid #94a3b8;margin:7px 0}.invoiceMini-modern{border-top:14px solid #1d4ed8}.invoiceMini-modern b{color:#1d4ed8}.invoiceMini-compact{font-size:9px;padding:10px}.invoiceMini-compact div{height:8px;margin:5px 0}.invoiceStyleChoice{display:flex;align-items:center;gap:8px;font-size:12px}.invoiceStyleChoice select{width:130px}.invoiceStyle-classic .invoicebrand{border-bottom:2px solid #111827}.invoiceStyle-classic .tablewrap{border:1px solid #64748b}.invoiceStyle-classic td{border-bottom:1px solid #cbd5e1}.invoiceStyle-modern .invoicebrand{border-top:8px solid var(--invoice-accent);border-bottom:1px solid #cbd5e1;padding-top:18px}.invoiceStyle-modern .invoicebrand h2,.invoiceStyle-modern .taxCaption{color:var(--invoice-accent)}.invoiceStyle-modern th{background:var(--invoice-accent)!important;color:white!important}.invoiceStyle-modern .invoicetotal .grand{color:var(--invoice-accent);border-color:var(--invoice-accent)}.invoiceStyle-compact{font-size:11px}.invoiceStyle-compact .invoicebrand{padding-bottom:12px}.invoiceStyle-compact .invoicebrand h2{font-size:21px}.invoiceStyle-compact .invoiceinfo{padding:10px 0}.invoiceStyle-compact h4{margin:12px 0 5px}.invoiceStyle-compact th,.invoiceStyle-compact td{padding:5px 6px!important;height:auto!important;font-size:10px!important}.invoiceStyle-compact .invoiceBottom{gap:14px;margin-top:8px}.invoiceStyle-compact .invoicetotal p{margin:6px 0}.invoiceStyle-compact .invoiceQr{width:100px;height:100px}.invoiceStyle-compact .invoiceStamp{width:140px;height:80px}.invoiceStyle-compact .paymentStampFooter{margin-top:10px;padding:10px 0}@media(max-width:650px){.invoiceStyleCards{grid-template-columns:1fr}}@media print{.invoiceStyle-modern th{-webkit-print-color-adjust:exact;print-color-adjust:exact}body.printingA4 .invoiceStyle-compact th,body.printingA4 .invoiceStyle-compact td{font-size:9px!important;padding:4px 5px!important}.invoiceStyle-modern .invoicebrand{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.paperSampleGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:20px 0}.paperSampleCard{display:flex;align-items:center;flex-direction:column;gap:10px;border:1px solid #cbd5e1;padding:16px;background:#f8fafc}.paperSampleCard>span{font-size:12px;color:#64748b}.paperSampleMini{background:white;border:1px solid #94a3b8;width:90px;height:127px;padding:10px;font-size:8px;box-shadow:2px 3px 4px #0001}.paperSampleMini i{display:block;height:12px;border-bottom:1px solid #cbd5e1}.paperSampleMini small{display:block;margin-top:14px}.paperSampleMini.paper-A5{width:75px;height:106px}.paperSampleMini.paper-Letter{width:94px;height:122px}.paperSampleMini.paper-58{width:48px;height:127px;padding:5px;font-size:6px}.paperSampleMini.paper-80{width:64px;height:127px;padding:7px;font-size:7px}@media screen{.invoice[data-paper]{box-sizing:border-box;width:var(--invoice-paper-width);max-width:100%;margin:0 auto}.invoice[data-paper=A5] .invoicebrand h2{font-size:20px}.invoice[data-paper=A5] .invoiceBottom{grid-template-columns:1fr 1fr;gap:12px}.invoice[data-paper=A5] .invoiceinfo{font-size:10px;gap:12px}.invoice[data-paper=A5] td,.invoice[data-paper=A5] th{padding:5px!important;font-size:9px!important;white-space:normal!important}.invoice[data-paper=A5] .invoiceQr{width:95px;height:95px}.invoice[data-paper=A5] .invoiceStamp{width:120px;height:85px}}@media print{.invoice[data-paper=A5] .invoicebrand h2{font-size:20px}.invoice[data-paper=A5] .invoiceBottom{grid-template-columns:1fr 1fr;gap:12px}.invoice[data-paper=A5] .invoiceQr{width:25mm;height:25mm}.invoice[data-paper=A5] .invoiceStamp{width:30mm;height:20mm}.invoice[data-paper=A5] td,.invoice[data-paper=A5] th{font-size:8px!important;padding:4px!important}}
+.thermalStyle-classic{font-family:'Courier New',monospace}.thermalStyle-classic .thermalItems th,.thermalStyle-classic .thermalItems td{font-family:'Courier New',monospace}.thermalStyle-modern>.thermalCenter:first-child{border-top:3px solid black;border-bottom:2px solid black;padding:8px 0}.thermalStyle-modern .thermalItems th{border-bottom:1px solid black!important;font-weight:700!important}.thermalStyle-modern .thermalBold{border-top:1px solid black;padding-top:4px;margin-top:4px}.thermalStyle-compact{font-size:9px;line-height:1.2;padding:2mm}.thermalStyle-compact h2{font-size:13px}.thermalStyle-compact p{margin:3px 0}.thermalStyle-compact hr{margin:5px 0}.thermalStyle-compact .thermalItems th,.thermalStyle-compact .thermalItems td{font-size:9px!important;padding:2px 0!important}.thermalStyle-compact .thermalItems small{font-size:8px}.thermalStyle-compact .thermalQr{width:24mm;height:24mm}.thermalStyle-compact .thermalStamp{width:26mm;height:16mm}@media print{body.printingThermal .thermalStyle-compact .thermalItems th,body.printingThermal .thermalStyle-compact .thermalItems td{font-size:9px!important;padding:2px 0!important}}
+.customLayoutDesigner{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:0;overflow:auto}.customLayoutOptions{padding:16px;border-right:1px solid #cbd5e1;font-size:12px}.customLayoutOptions .formgrid{padding:10px 0}.customLayoutOptions p{line-height:1.6}.customLayoutPreview{padding:16px;background:#e2e8f0;overflow:auto}.customLayoutPreview>.invoice{background:white;min-width:360px}.customLayoutPreview .invoiceFormatControls{display:none}.customToggle{display:flex;align-items:center;gap:8px;font-weight:700}.customToggle input{width:16px;min-height:16px}.customHidden{display:none!important}.customizedInvoice{font-size:var(--custom-font)!important;max-width:var(--custom-width)!important}.customizedInvoice .invoicebrand>div:first-child,.customizedInvoice .invoiceIdentity{text-align:var(--custom-align);justify-content:var(--custom-align)}.customizedInvoice .thermalCenter:first-child{text-align:var(--custom-align)}.customizedInvoice td,.customizedInvoice th{font-size:var(--custom-font)!important;padding:var(--custom-space)!important;height:auto!important}.thermalInvoice.customizedInvoice{width:var(--receipt-width)!important;max-width:none!important;padding:var(--custom-margin)!important}.customInvoiceNote{white-space:pre-wrap;overflow-wrap:anywhere;font-size:var(--custom-font);margin-top:14px}.customLayoutPreview .customizedInvoice{width:var(--custom-width)!important}@media(max-width:850px){.customLayoutDesigner{grid-template-columns:1fr}.customLayoutOptions{border-right:0;border-bottom:1px solid #cbd5e1}}@media print{body.printingA4 .customizedInvoice td,body.printingA4 .customizedInvoice th,body.printingThermal .customizedInvoice .thermalItems td,body.printingThermal .customizedInvoice .thermalItems th{font-size:var(--custom-font)!important;padding:var(--custom-space)!important}.customizedInvoice .customHidden{display:none!important}}
+.templateDesigner{grid-template-columns:340px minmax(0,1fr)}.templateOrderRow{display:flex;align-items:center;gap:6px;margin:5px 0;padding:6px;border:1px solid #cbd5e1;background:white}.templateOrderRow label{display:flex;align-items:center;gap:6px;flex:1;font-size:12px}.templateOrderRow input{width:16px;min-height:16px}.templateOrderRow button{width:28px;height:28px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer}.templateSection[hidden]{display:none!important}.designedInvoice>.templateSection{min-width:0}.designedInvoice .templateSection-header{border-top:4px solid var(--template-accent);padding-top:8px}.designedInvoice .templateCustomHeading{color:var(--template-accent);font-weight:700;text-align:center}.templateFooterNote{white-space:pre-wrap;overflow-wrap:anywhere}.designedInvoice .templateSection-items th{background:var(--template-accent)!important;color:white!important}.thermalInvoice.designedInvoice .templateSection-items th{background:white!important;color:black!important;border-bottom:1px solid black!important}.thermalInvoice.designedInvoice .templateSection-header{border-color:black}.thermalInvoice.designedInvoice .templateCustomHeading{color:black}.templateSection-bank,.templateSection-payment,.templateSection-footer{break-inside:avoid}@media(max-width:850px){.templateDesigner{grid-template-columns:1fr}}@media print{.designedInvoice .templateSection-items th{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+@media screen{.invoice.smallInvoicePaper .invoicebrand h2{font-size:20px}.invoice.smallInvoicePaper .invoiceBottom{grid-template-columns:1fr 1fr;gap:10px}.invoice.smallInvoicePaper td,.invoice.smallInvoicePaper th{font-size:9px!important;padding:4px!important;white-space:normal!important}.invoice.smallInvoicePaper .invoiceQr{width:90px;height:90px}.invoice.smallInvoicePaper .invoiceStamp{width:110px;height:75px}.invoice.smallInvoicePaper .invoiceinfo{gap:10px;font-size:10px}}@media print{body.printingA4 .invoice.smallInvoicePaper .invoiceBottom{grid-template-columns:1fr 1fr;gap:10px}body.printingA4 .invoice.smallInvoicePaper td,body.printingA4 .invoice.smallInvoicePaper th{font-size:8px!important;padding:3px!important}.invoice.smallInvoicePaper .invoiceQr{width:22mm;height:22mm}.invoice.smallInvoicePaper .invoiceStamp{width:27mm;height:18mm}.invoice.smallInvoicePaper .invoicebrand h2{font-size:18px}}
+@media screen{
+.dialog.designerDialog{width:min(1480px,98vw)!important;max-width:98vw!important;height:min(92dvh,1000px);max-height:92dvh!important;display:flex;flex-direction:column}
+.designerDialog .dialoghead{flex:0 0 auto}.designerDialog #modalBody{flex:1;min-height:0;display:flex;flex-direction:column;overflow-x:auto;overflow-y:hidden}
+.designerDialog .customLayoutDesigner,.designerDialog .customLayoutDesigner.templateDesigner{display:grid!important;grid-template-columns:clamp(250px,29vw,350px) minmax(340px,1fr)!important;grid-template-rows:minmax(0,1fr);flex:1 1 auto;min-width:610px;min-height:0;width:100%;overflow:hidden!important;align-items:stretch}
+.designerDialog .customLayoutOptions{min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid #cbd5e1;border-bottom:0;padding:14px;scrollbar-width:auto;overscroll-behavior:contain}
+.designerDialog .customLayoutPreview{min-width:0;min-height:0;overflow:auto!important;align-self:stretch;position:relative;padding:12px 16px 24px;scrollbar-width:auto;scrollbar-color:#64748b #e2e8f0;overscroll-behavior:contain}
+.designerDialog .customLayoutPreview:before{content:'LIVE PREVIEW — scroll to see the full invoice';display:block;position:sticky;top:-12px;left:0;z-index:5;padding:10px;margin:-12px -16px 14px;background:#cbd5e1;color:#334155;font-size:11px;font-weight:700;letter-spacing:.4px}
+.designerDialog .customLayoutPreview>.invoice{width:var(--custom-width,var(--invoice-paper-width,190mm))!important;min-width:0!important;max-width:none!important;background:#fff;margin:0 auto;box-shadow:0 2px 8px #0f172a25}
+.designerDialog .customLayoutPreview>.thermalInvoice{max-width:none!important;margin:0 auto;background:#fff;box-shadow:0 2px 8px #0f172a25}
+.designerDialog .formactions{flex:0 0 auto;min-width:610px;position:relative;bottom:auto}.designerDialog .customLayoutOptions .formgrid{grid-template-columns:1fr 1fr!important;padding:8px 0}.designerDialog .customLayoutOptions .visibilityChoices{grid-template-columns:1fr}.designerDialog .customLayoutOptions input,.designerDialog .customLayoutOptions select{max-width:100%}
+}
+.thermalInvoice .thermalBusinessLogo{display:block;width:18mm;height:18mm;max-width:100%;object-fit:contain;margin:0 auto 6px;background:transparent;border:0;border-radius:0}.thermalInvoice .templateSection-header .thermalBusinessLogo{margin-left:auto;margin-right:auto}@media print{.thermalInvoice .thermalBusinessLogo{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.designerDialog #templateDesignPreview>.invoice{box-sizing:border-box;transition:width .1s ease,min-height .1s ease}.designerDialog #templateDesignPreview .designedInvoice .invoicebrand h2{font-size:var(--template-header-font,24px)!important}.designerDialog #templateDesignPreview .designedInvoice .templateCustomHeading,.designerDialog #templateDesignPreview .designedInvoice .templateFooterNote{font-size:var(--custom-font)!important}.designerDialog #templateDesignerStatus{position:sticky;bottom:0;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:8px;line-height:1.5;z-index:2}.designerDialog #templateDesignPreview .templateSection-header{border-color:var(--template-accent)!important}
+.designerPaperField{padding:10px;border:1px solid #93c5fd;background:#eff6ff;margin-bottom:12px}.designerPaperField select{width:100%;font-weight:600}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoicebrand{display:block}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoicebrand>div:last-child{text-align:left!important;margin-top:10px}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceIdentity{gap:8px}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceIdentity .garageLogo{max-width:22%;height:auto!important}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceBottom{grid-template-columns:1fr!important;gap:8px}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceFoot{flex-wrap:wrap}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceinfo>div{min-width:0;overflow-wrap:anywhere}.designerDialog .customLayoutPreview>.invoice.smallInvoicePaper .invoiceinfo{gap:8px}
+.amcInternalField,.amcInheritedField{display:none!important}.inlineAmcPlan{grid-column:1/-1;padding:10px;border:1px solid #bfdbfe;background:#eff6ff}.inlineAmcPlan [data-amc-create-fields]{padding:10px 0}.inlineAmcPlan [hidden]{display:none!important}.inlineAmcPlan .field{margin:8px 0}.inlineAmcPlan p{font-size:11px;line-height:1.5}.amcInvoiceCoverage{font-size:11px;padding:8px;border:1px solid #cbd5e1}
+.reminderActionToolbar{background:white;border:1px solid #cbd5e1;padding:12px;margin-bottom:14px}.reminderActionToolbar>span{font-size:12px;color:#64748b}@media screen{body[data-view=service-reminders] .remindersActionTable .reminderActionCell{display:table-cell!important;position:sticky!important;right:0;z-index:4;min-width:190px;max-width:220px;box-shadow:-4px 0 8px #0f172a18;background:white}body[data-view=service-reminders] .remindersActionTable th.reminderActionCell{background:#111827;color:white;z-index:5}body[data-view=service-reminders] .reminderActionCell .rowactions{display:flex;flex-direction:column;align-items:stretch;gap:5px;white-space:normal}body[data-view=service-reminders] .reminderActionCell .btn{width:100%;justify-content:flex-start;gap:7px;padding:6px 10px!important;font-size:11px;min-height:30px}body[data-view=service-reminders] .reminderActionCell .btn:disabled{opacity:.5;cursor:not-allowed}}
+body[data-view=service-reminders] .reminderTabs{display:grid!important;grid-template-columns:1fr 1fr!important;overflow:visible!important;gap:8px;padding:10px;background:white;border:1px solid #cbd5e1;margin-bottom:16px}body[data-view=service-reminders] .reminderTabs>.tab{min-width:0!important;white-space:normal!important;min-height:44px;border:1px solid #cbd5e1;text-align:center;font-weight:700;padding:10px}body[data-view=service-reminders] .reminderTabs>.tab.active{background:#1d4ed8;color:white}.amcEmptyNotice{font-size:13px;line-height:1.7}
+.amcActionPanel{padding:16px;border:2px solid #93c5fd;background:#eff6ff;margin:0 0 18px}.amcActionPanel h3{margin:0 0 12px;font-size:16px;color:#1e3a8a}.amcActionPanel select{max-width:100%;width:100%}.amcActionButtons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.amcActionButtons .btn{display:inline-flex;align-items:center;gap:6px}.amcActionButtons .btn:disabled{opacity:.45;cursor:not-allowed}@media screen{.amcVisibleActionCell{position:sticky!important;right:0;z-index:4;background:white;min-width:185px}.amcVisibleActionCell .rowactions{flex-direction:column!important;align-items:stretch;gap:5px}.amcVisibleActionCell .rowactions .btn{white-space:nowrap;justify-content:flex-start}}
+.legacyAmcAssignment{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #bfdbfe}.legacyAmcAssignment strong{flex:1;min-width:200px;font-size:12px}.legacyAmcAssignment select{min-width:180px;max-width:100%}
+.amcAutofillDetails{background:#fff;border:1px solid #bfdbfe;padding:12px;margin-top:12px;font-size:12px;line-height:1.7}.amcAutofillDetails p{margin:5px 0}
+.savedRecordLoader{padding:10px 16px;background:#f0fdf4;border-bottom:1px solid #bbf7d0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:0 0 auto}.savedRecordLoader .field{flex:1;min-width:180px}.savedRecordLoader small{flex-basis:100%;font-size:10px;color:#64748b}.savedBillingDetails,.appointmentAutofill{padding:12px;border:1px solid #bfdbfe;background:#eff6ff;margin:12px 0;font-size:12px}.savedBillingDetails dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.savedBillingDetails dl>div{min-width:0}.savedBillingDetails dt{font-size:10px;color:#64748b}.savedBillingDetails dd{margin:3px 0;overflow-wrap:anywhere}.appointmentAutofill .field{margin-top:10px}.savedPartInfo{display:block;white-space:normal;max-width:280px;font-size:10px;color:#64748b;margin-top:4px;line-height:1.5}
+
+/* Compact demo-like Users permission grid */
+.userSecuritySettings{min-width:0}.userSecuritySettings>p{margin:8px 0 12px;color:#64748b;font-size:12px}.userSecuritySettings .permissionTable{min-width:650px}.userSecuritySettings .permissionTable th,.userSecuritySettings .permissionTable td{padding:7px 10px;text-align:center}.userSecuritySettings .permissionTable th:first-child,.userSecuritySettings .permissionTable td:first-child{text-align:left;min-width:190px}.userSecuritySettings .permissionTable input[type=checkbox]{width:16px;min-height:16px;height:16px;padding:0;accent-color:#2563eb}.userSecuritySettings .notice{font-size:12px}
+/* Service Master: match the reference screen's compact KPI cards and two-row controls. */
+.service-master-page{min-width:0}
+.service-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:16px 0 30px}
+.service-kpi{display:flex;align-items:center;gap:16px;min-width:0;min-height:88px;padding:16px 20px;color:#fff;box-shadow:0 6px 14px #0f172a18}
+.service-kpi-dark{background:linear-gradient(120deg,#0b2731,#103746)}
+.service-kpi-green{background:linear-gradient(120deg,#10b981,#059669)}
+.service-kpi-blue{background:linear-gradient(120deg,#3b82f6,#1d4ed8)}
+.service-kpi-orange{background:linear-gradient(120deg,#f59e0b,#d97706)}
+.service-kpi-icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;background:#ffffff30;color:#fff}
+.service-kpi-icon svg{width:24px;height:24px;stroke-width:1.8}
+.service-kpi-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.service-kpi-copy small{font-size:11px;font-weight:700;letter-spacing:.35px;line-height:1.45;color:#fff}
+.service-kpi-copy strong{font-size:24px;line-height:1.1;font-weight:800;color:#fff;white-space:nowrap}
+.service-filters{display:flex;align-items:center;gap:12px;margin:0 0 10px;max-width:100%}
+.service-filters .search{box-sizing:border-box;width:min(320px,100%);height:38px;min-height:38px;max-width:320px;flex:1 1 320px;padding:9px 14px 9px 42px;border:1px solid #cbd5e1;border-radius:0;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2394a3b8' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='6'/%3E%3Cpath d='m15 15 5 5'/%3E%3C/svg%3E") no-repeat 14px center;background-size:17px;font:13.5px Arial,sans-serif}
+.service-filters select{box-sizing:border-box;width:190px;max-width:100%;height:38px;min-height:38px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:0;background:#fff;font:700 13px Arial,sans-serif;color:#1f2937}
+.service-actions{justify-content:flex-start;gap:10px;margin:0 0 28px;min-height:40px}
+.service-actions .spacer{display:none}
+.service-actions>[data-importcsv]{order:0;background:#10b981!important;color:#fff}
+.service-actions>[data-action="export"]{order:1;background:#3b82f6!important;color:#fff}
+.service-actions>[data-action="add"]{order:2;background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;color:#fff}
+.service-master-page .tablewrap{border-color:#dbe2ea;box-shadow:0 1px 4px #00000008}
+.service-master-page th{background:#111827;color:#fff;font-size:12px;font-weight:700;letter-spacing:.45px;padding:12px 14px}
+.service-master-page td{height:51px;font-size:13px;color:#1e293b;padding:11px 14px}
+@media(max-width:900px){.service-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.service-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 22px}.service-kpi{min-height:78px;padding:12px;gap:10px}.service-kpi-icon{flex-basis:36px;width:36px;height:36px}.service-kpi-icon svg{width:20px;height:20px}.service-kpi-copy small{font-size:9px}.service-kpi-copy strong{font-size:20px}.service-filters{flex-wrap:wrap;gap:8px}.service-filters .search{flex-basis:100%;width:100%;max-width:none}.service-filters select{width:100%}.service-actions{flex-wrap:nowrap;gap:7px;margin-bottom:20px}.service-actions>.btn{flex:1;min-width:0;padding:9px 8px;font-size:11px}.service-master-page th{font-size:10px;padding:10px 9px}.service-master-page td{font-size:12px;padding:9px}}
+/* Compact Service Master KPI tiles to give the table more working space. */
+.service-kpis{gap:12px;margin:12px 0 18px}
+.service-kpi{min-height:66px;padding:10px 16px;gap:12px}
+.service-kpi-icon{flex-basis:38px;width:38px;height:38px}
+.service-kpi-icon svg{width:21px;height:21px}
+.service-kpi-copy{gap:2px}
+.service-kpi-copy small{font-size:10px;line-height:1.3}
+.service-kpi-copy strong{font-size:20px;line-height:1.05;margin:0}
+@media(max-width:600px){.service-kpis{gap:9px;margin:10px 0 14px}.service-kpi{min-height:58px;padding:8px 10px;gap:8px}.service-kpi-icon{flex-basis:32px;width:32px;height:32px}.service-kpi-icon svg{width:18px;height:18px}.service-kpi-copy small{font-size:8.5px}.service-kpi-copy strong{font-size:18px}}
+/* Keep all four Service Master summary tiles in one compact row. */
+.service-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 16px}
+.service-kpi{min-height:54px;padding:7px 10px;gap:8px}
+.service-kpi-icon{flex:0 0 30px;width:30px;height:30px}
+.service-kpi-icon svg{width:17px;height:17px}
+.service-kpi-copy{gap:2px}
+.service-kpi-copy small{font-size:clamp(7px,.8vw,10px);line-height:1.15;letter-spacing:.15px}
+.service-kpi-copy strong{font-size:clamp(10px,1.5vw,18px);line-height:1;white-space:nowrap}
+@media(max-width:900px){.service-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.service-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:8px 0 12px}.service-kpi{min-height:48px;padding:6px 5px;gap:4px}.service-kpi-icon{flex-basis:23px;width:23px;height:23px}.service-kpi-icon svg{width:14px;height:14px}.service-kpi-copy small{font-size:7px;line-height:1.1;letter-spacing:0}.service-kpi-copy strong{font-size:clamp(9px,2.8vw,12px)}}
+@media(max-width:380px){.service-kpi{padding:5px 3px}.service-kpi-icon{flex-basis:19px;width:19px;height:19px}.service-kpi-icon svg{width:12px;height:12px}.service-kpi-copy small{font-size:6px}.service-kpi-copy strong{font-size:9px}}
+/* Compact summary tiles across every module while preserving each module's color theme. */
+#content .summary{display:flex;flex-wrap:nowrap;align-items:stretch;gap:10px;margin:8px 0 16px;max-width:100%;overflow-x:auto;scrollbar-width:thin}
+#content .summaryitem{box-sizing:border-box;display:flex;align-items:center;flex:1 1 0;gap:10px;min-width:0;min-height:64px;padding:9px 12px;border:0;color:#fff}
+#content .summaryitem small{display:block;color:#fff;font-size:9px;font-weight:700;letter-spacing:.25px;line-height:1.2;white-space:normal}
+#content .summaryitem strong{display:block;margin-top:3px;color:#fff;font-size:18px;font-weight:800;line-height:1.05;white-space:nowrap}
+#content .summaryitem .kpiIcon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;background:#ffffff30}
+#content .summaryitem .kpiIcon svg{width:17px;height:17px}
+#content .summaryitem .kpiContent{min-width:0;overflow:hidden}
+#content .jobSummary{display:flex;grid-template-columns:none}
+#content .cards{gap:12px;margin-bottom:24px}
+#content .stat{height:124px;min-height:124px;padding:13px}
+#content .statmain{padding:0}
+#content .statlabel{font-size:10px;gap:7px}
+#content .statlabel svg{width:30px;height:30px}
+#content .statvalue{font-size:24px}
+@media(max-width:600px){#content .summary{gap:6px;margin:7px 0 12px}#content .summaryitem{gap:5px;min-height:52px;padding:6px 5px}#content .summaryitem .kpiIcon{flex-basis:22px;width:22px;height:22px}#content .summaryitem .kpiIcon svg{width:13px;height:13px}#content .summaryitem small{font-size:7px;letter-spacing:0;line-height:1.1}#content .summaryitem strong{font-size:clamp(9px,2.8vw,12px);line-height:1;white-space:normal;overflow-wrap:anywhere}#content .cards{gap:9px;margin-bottom:18px}#content .stat{height:112px;min-height:112px;padding:10px}#content .statlabel{font-size:8px;gap:5px}#content .statlabel svg{width:25px;height:25px}#content .statvalue{font-size:21px}}
+@media(max-width:420px){#content .summaryitem .kpiIcon{display:none}#content .summaryitem{justify-content:center;text-align:center}#content .summaryitem strong{font-size:9px}}
+/* Compact toolbar import/export/add actions across all modules. */
+#content .toolbar{flex-wrap:nowrap;gap:7px;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#94a3b8 #e2e8f0}
+#content .toolbar .search{flex:1 1 220px;min-width:135px;max-width:320px;height:34px;min-height:34px;padding-top:7px;padding-bottom:7px;font-size:12px}
+#content .toolbar select{flex:0 0 auto;height:34px;min-height:34px;padding:6px 9px;font-size:11px}
+#content .toolbar>.btn{flex:0 0 auto;min-height:32px;padding:6px 10px;gap:6px;font-size:11px;line-height:1.1}
+#content .toolbar>.btn svg{width:16px;height:16px}
+#content .toolbar>[data-importcsv]{background:#10b981;color:#fff}
+#content .toolbar>[data-action="export"]{background:#2563eb;color:#fff}
+#content .toolbar>[data-action="add"]{background:#2563eb;color:#fff}
+@media(max-width:600px){#content .toolbar{gap:5px;margin-bottom:16px}#content .toolbar .search{flex:1 0 118px;min-width:118px;max-width:170px;font-size:10px;padding-left:34px;background-position:10px center}#content .toolbar select{max-width:135px;font-size:9px;padding:5px 6px}#content .toolbar>.btn{min-height:29px;padding:5px 7px;gap:4px;font-size:9px}#content .toolbar>.btn svg{width:14px;height:14px}}
+/* Staff Attendance KPI tiles: compact four-across row matching the other modules. */
+.attendanceView .attendanceStats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:9px!important;margin:0 0 12px!important}
+.attendanceView .attendanceStat{box-sizing:border-box;min-width:0;min-height:54px!important;padding:7px 10px!important;gap:8px!important}
+.attendanceView .attendanceStatIcon{box-sizing:border-box;flex:0 0 30px!important;width:30px!important;height:30px!important}
+.attendanceView .attendanceStatIcon svg{width:17px!important;height:17px!important}
+.attendanceView .attendanceStat>div{min-width:0}
+.attendanceView .attendanceStat small{font-size:9px!important;line-height:1.15;letter-spacing:.2px}
+.attendanceView .attendanceStat strong{font-size:18px!important;line-height:1;margin-top:3px!important;white-space:nowrap}
+@media(max-width:600px){.attendanceView .attendanceStats{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;margin-bottom:9px!important}.attendanceView .attendanceStat{min-height:48px!important;padding:6px 5px!important;gap:4px!important}.attendanceView .attendanceStatIcon{flex-basis:22px!important;width:22px!important;height:22px!important}.attendanceView .attendanceStatIcon svg{width:13px!important;height:13px!important}.attendanceView .attendanceStat small{font-size:7px!important;letter-spacing:0}.attendanceView .attendanceStat strong{font-size:clamp(10px,2.8vw,13px)!important}}
+@media(max-width:420px){.attendanceView .attendanceStatIcon{display:none!important}.attendanceView .attendanceStat{text-align:center;justify-content:center}.attendanceView .attendanceStat strong{font-size:11px!important}}
+/* Extra compact sizing for Staff Attendance summary tiles. */
+.attendanceView .attendanceStats{gap:7px!important;margin-bottom:10px!important}
+.attendanceView .attendanceStat{min-height:42px!important;padding:5px 7px!important;gap:6px!important}
+.attendanceView .attendanceStatIcon{flex-basis:24px!important;width:24px!important;height:24px!important}
+.attendanceView .attendanceStatIcon svg{width:16px!important;height:16px!important}
+.attendanceView .attendanceStat small{font-size:8px!important;line-height:1.05}
+.attendanceView .attendanceStat strong{font-size:15px!important;line-height:1;margin-top:2px!important}
+@media(max-width:600px){.attendanceView .attendanceStats{gap:4px!important;margin-bottom:8px!important}.attendanceView .attendanceStat{min-height:38px!important;padding:4px 4px!important;gap:3px!important}.attendanceView .attendanceStatIcon{flex-basis:19px!important;width:19px!important;height:19px!important}.attendanceView .attendanceStatIcon svg{width:11px!important;height:11px!important}.attendanceView .attendanceStat small{font-size:6.5px!important}.attendanceView .attendanceStat strong{font-size:10px!important}}
+/* Shrink all KPI tiles above module work areas to increase usable vertical space. */
+#content .summary{gap:8px;margin-top:6px;margin-bottom:11px}
+#content .summaryitem{min-height:52px;padding:7px 9px;gap:8px}
+#content .summaryitem .kpiIcon{flex-basis:25px;width:25px;height:25px}
+#content .summaryitem .kpiIcon svg{width:14px;height:14px}
+#content .summaryitem small{font-size:8px;line-height:1.1}
+#content .summaryitem strong{font-size:15px;line-height:1;margin-top:2px}
+#content .service-kpis{gap:8px;margin:6px 0 11px}
+#content .service-kpi{min-height:48px;padding:6px 8px;gap:6px}
+#content .service-kpi-icon{flex-basis:25px;width:25px;height:25px}
+#content .service-kpi-icon svg{width:14px;height:14px}
+#content .service-kpi-copy small{font-size:8px;line-height:1.1}
+#content .service-kpi-copy strong{font-size:15px}
+#content .attendanceView .attendanceStats{gap:6px!important;margin-bottom:8px!important}
+#content .attendanceView .attendanceStat{min-height:40px!important;padding:4px 6px!important;gap:5px!important}
+#content .attendanceView .attendanceStatIcon{flex-basis:22px!important;width:22px!important;height:22px!important}
+#content .attendanceView .attendanceStatIcon svg{width:13px!important;height:13px!important}
+#content .attendanceView .attendanceStat small{font-size:7px!important}
+#content .attendanceView .attendanceStat strong{font-size:14px!important}
+#content .cards{gap:10px;margin-bottom:18px}
+#content .stat{height:108px;min-height:108px;padding:10px}
+#content .statlabel{font-size:9px;gap:6px}
+#content .statlabel svg{width:27px;height:27px}
+#content .statvalue{font-size:21px}
+@media(max-width:600px){#content .summary{gap:4px;margin:5px 0 8px}#content .summaryitem{min-height:44px;padding:5px 4px;gap:3px}#content .summaryitem .kpiIcon{flex-basis:18px;width:18px;height:18px}#content .summaryitem .kpiIcon svg{width:11px;height:11px}#content .summaryitem small{font-size:6px;line-height:1}#content .summaryitem strong{font-size:10px;line-height:1}#content .service-kpis{gap:4px;margin:5px 0 8px}#content .service-kpi{min-height:43px;padding:4px 4px;gap:3px}#content .service-kpi-icon{flex-basis:18px;width:18px;height:18px}#content .service-kpi-icon svg{width:11px;height:11px}#content .service-kpi-copy small{font-size:6px;line-height:1}#content .service-kpi-copy strong{font-size:10px}#content .attendanceView .attendanceStats{gap:3px!important;margin-bottom:7px!important}#content .attendanceView .attendanceStat{min-height:36px!important;padding:3px 3px!important;gap:2px!important}#content .attendanceView .attendanceStatIcon{flex-basis:17px!important;width:17px!important;height:17px!important}#content .attendanceView .attendanceStatIcon svg{width:10px!important;height:10px!important}#content .attendanceView .attendanceStat small{font-size:6px!important}#content .attendanceView .attendanceStat strong{font-size:9px!important}#content .cards{gap:7px;margin-bottom:14px}#content .stat{height:98px;min-height:98px;padding:8px}#content .statlabel{font-size:7px;gap:4px}#content .statlabel svg{width:22px;height:22px}#content .statvalue{font-size:18px}}
+@media(max-width:420px){#content .summaryitem .kpiIcon,#content .service-kpi-icon,#content .attendanceView .attendanceStatIcon{display:none!important}#content .summaryitem,#content .service-kpi,#content .attendanceView .attendanceStat{justify-content:center;text-align:center}}
+/* Account Master tile layout and colors matched to the demo. */
+body[data-view="accounts"] #content .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0 24px;overflow:visible}
+body[data-view="accounts"] #content .summaryitem{min-height:78px;padding:12px 16px;gap:14px}
+body[data-view="accounts"] #content .summaryitem .kpiIcon{flex:0 0 48px;width:48px;height:48px}
+body[data-view="accounts"] #content .summaryitem .kpiIcon svg{width:22px;height:22px}
+body[data-view="accounts"] #content .summaryitem small{font-size:10px;line-height:1.2;letter-spacing:.35px}
+body[data-view="accounts"] #content .summaryitem strong{font-size:22px;line-height:1.1;margin-top:3px;white-space:nowrap}
+body[data-view="accounts"] #content .toolbar{gap:10px;margin:0 0 24px;overflow-x:auto}
+body[data-view="accounts"] #content .toolbar .search{flex:1 1 150px;min-width:120px;max-width:320px;height:36px;min-height:36px;font-size:12px}
+body[data-view="accounts"] #content .toolbar select{height:36px;min-height:36px;max-width:195px;font-size:11px}
+body[data-view="accounts"] #content .toolbar>[data-action="export"],body[data-view="accounts"] #content .toolbar>[data-action="add"]{min-height:36px;padding:8px 12px;font-size:12px}
+body[data-view="accounts"] #content .tablewrap{border-color:#dbe2ea;box-shadow:0 1px 4px #00000008}
+body[data-view="accounts"] #content th{background:#111827;color:#fff;font-size:11px}
+body[data-view="accounts"] #content td{height:51px;font-size:12px}
+@media(max-width:600px){body[data-view="accounts"] #content .summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}body[data-view="accounts"] #content .summaryitem{min-height:65px;padding:8px 9px;gap:8px}body[data-view="accounts"] #content .summaryitem .kpiIcon{flex-basis:34px;width:34px;height:34px}body[data-view="accounts"] #content .summaryitem .kpiIcon svg{width:18px;height:18px}body[data-view="accounts"] #content .summaryitem small{font-size:8px}body[data-view="accounts"] #content .summaryitem strong{font-size:18px}body[data-view="accounts"] #content .toolbar{gap:6px;margin-bottom:16px}body[data-view="accounts"] #content .toolbar>.btn{font-size:10px;padding:6px 8px}}
+
+/* One shared horizontal slider keeps Job Card service and parts columns aligned. */
+.jobLinesScroll{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:auto;scrollbar-color:#64748b #e2e8f0;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+.jobLinesScroll>.lineheading{width:max-content;min-width:100%;white-space:nowrap}
+.jobLinesScroll>.notice{width:max-content;min-width:100%;box-sizing:border-box}
+.jobLinesScroll>#serviceLines,.jobLinesScroll>#partLines{width:max-content;min-width:100%;max-width:none}
+.jobLinesScroll .tablewrap{width:max-content;min-width:100%;max-width:none;overflow:visible!important}
+.jobLinesScroll .tablewrap>table{width:max-content;min-width:100%;max-width:none}
+.jobLinesScroll::-webkit-scrollbar{height:14px}.jobLinesScroll::-webkit-scrollbar-track{background:#e2e8f0}.jobLinesScroll::-webkit-scrollbar-thumb{background:#64748b;border:3px solid #e2e8f0;border-radius:8px}
+/* Compact Job Card service and parts section bars to free vertical work space. */
+.jobRight .jobLinesScroll>.lineheading{margin:0;padding:5px 9px;min-height:34px;font-size:10px;letter-spacing:.25px}
+.jobRight .jobLinesScroll>.lineheading:not(:first-child){margin-top:8px}
+.jobRight .jobLinesScroll>.lineheading .btn{min-width:0;width:auto;height:22px;min-height:22px;padding:3px 7px;font-size:9px;gap:4px}
+.jobRight .jobLinesScroll>.lineheading .btn svg{width:15px;height:15px}
+.jobRight .jobLinesScroll>.notice{padding:6px 10px;margin:7px 0 10px;font-size:10px;line-height:1.4}
+/* Compact the Job Card related-record shortcuts and billing summary. */
+.jobDialog .jobLeft .jobRelatedButtons{gap:4px;margin:5px 0 8px;padding:5px 7px;align-items:center}
+.jobDialog .jobLeft .jobRelatedButtons strong{font-size:10px;margin-right:0}
+.jobDialog .jobLeft .jobRelatedButtons .btn{min-height:26px;height:26px;padding:3px 6px;font-size:10px;gap:4px}
+.jobDialog .jobLeft .jobRelatedButtons .btn svg{width:15px;height:15px}
+.jobDialog .jobRight .totals{margin:8px 0 0;padding:8px 10px}
+.jobDialog .jobRight .totals>div{padding:3px 0;font-size:10px;line-height:1.3}
+.jobDialog .jobRight .totals>div.grand{padding:6px 0;font-size:16px}
+.jobDialog .jobRight .totals input{min-width:85px;max-width:110px;width:110px;height:26px;min-height:26px;padding:3px 6px;font-size:10px}
+/* Responsive Add Job Card layout: demo-style side-by-side on wide screens, readable stacked panels on narrow screens. */
+.jobDialog{width:min(1440px,calc(100vw - 32px))!important;max-width:1440px!important}
+.jobDialog #billForm,.jobDialog #billForm>.formbody{min-width:0;width:100%;max-width:100%}
+.jobDialog #billForm>.formbody{overflow:auto!important;overscroll-behavior:contain}
+.jobDialog .jobSplit{display:grid;grid-template-columns:minmax(300px,38%) minmax(0,1fr);gap:0;width:100%;min-width:0;max-width:100%;overflow:visible!important;min-height:0}
+.jobDialog .jobLeft,.jobDialog .jobRight{min-width:0;width:100%;max-width:100%;padding:12px;box-sizing:border-box}
+.jobDialog .jobLeft{gap:10px;border-right:1px solid #dbe2ea}
+.jobDialog .jobLeft .formgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;padding:10px}
+.jobDialog .jobLeft .formgrid>*{min-width:0}
+.jobDialog .jobRight{overflow:hidden}
+.jobDialog .jobRight .jobLinesScroll{width:100%;min-width:0;max-width:100%;margin-left:0;margin-right:0}
+.jobDialog .jobRight .totals{max-width:100%;width:100%;margin:8px 0 0}
+.jobDialog .jobRight .formgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 0}
+.jobDialog .jobRight .formsection{margin-top:12px}
+.jobDialog .jobLinesScroll>.lineheading{display:flex;align-items:center;gap:8px}
+.jobDialog .jobLinesScroll>.lineheading .btn{flex:0 0 auto}
+.jobDialog .jobLeft .jobRelatedButtons{flex-wrap:wrap}
+@media(max-width:900px){
+  .jobDialog{width:calc(100vw - 24px)!important;max-height:94dvh!important}
+  .jobDialog .jobSplit{grid-template-columns:minmax(0,1fr);gap:0}
+  .jobDialog .jobLeft{border-right:0;border-bottom:1px solid #dbe2ea}
+  .jobDialog .jobLeft .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .jobDialog .jobRight{padding:10px 12px}
+}
+@media(max-width:480px){
+  .jobDialog{width:calc(100vw - 12px)!important;max-height:96dvh!important}
+  .jobDialog .jobLeft,.jobDialog .jobRight{padding:8px}
+  .jobDialog .jobLeft .formgrid{gap:7px 8px;padding:8px}
+  .jobDialog .jobLeft .field>span{font-size:9px}
+  .jobDialog .jobRight .formgrid{grid-template-columns:minmax(0,1fr);padding:8px 0}
+  .jobDialog .jobRight .totals>div{font-size:10px}
+}
+
+/* Job Card billing panel arranged like the demo while retaining the configured tax mode and per-line discounts. */
+.jobBillingPanel{margin-top:12px;padding:10px 12px;background:#f8fafc;border:1px solid #dbe2ea;min-width:0}
+.jobBillingPanel>.formsection{margin:0 0 8px!important;padding:5px 9px;background:#f1f5f9;border-left:3px solid #2563eb;font-size:11px;line-height:1.2}
+.jobBillingPanel>.jobPaymentFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-bottom:8px}
+.jobBillingPanel>.jobPaymentFields .field{min-width:0}
+.jobBillingPanel>.jobPaymentFields .field>span{font-size:9px;line-height:1.1}
+.jobBillingPanel>.jobPaymentFields .field select{height:30px;min-height:30px;padding:4px 7px;font-size:11px}
+.jobBillingPanel>.jobBillingTotals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;width:100%;max-width:none;margin:0;padding:8px 10px;background:#fff;border:1px solid #dbe2ea}
+.jobBillingPanel>.jobBillingTotals>div{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:3px 0;font-size:10px;line-height:1.25;color:#475569}
+.jobBillingPanel>.jobBillingTotals>div:nth-child(4),.jobBillingPanel>.jobBillingTotals>div:nth-child(7){grid-column:1/-1}
+.jobBillingPanel>.jobBillingTotals>div.grand{margin:2px 0 0;padding:6px 0;border-top:1px solid #dbe2ea;font-size:15px;font-weight:750;color:#0f172a}
+.jobBillingPanel>.jobBillingTotals>div>span,.jobBillingPanel>.jobBillingTotals>div>label{min-width:0}
+.jobBillingPanel>.jobBillingTotals input{width:100%;max-width:180px;min-width:90px;height:30px;min-height:30px;padding:4px 8px;font-size:12px;text-align:right}
+.jobBillingPanel>.jobBillingTotals #advance{border-color:#cbd5e1;background:#fff}
+@media(max-width:480px){.jobBillingPanel{padding:8px}.jobBillingPanel>.jobPaymentFields{gap:6px}.jobBillingPanel>.jobPaymentFields .field>span{font-size:8px}.jobBillingPanel>.jobBillingTotals{gap:3px 8px;padding:6px}.jobBillingPanel>.jobBillingTotals>div{font-size:9px}.jobBillingPanel>.jobBillingTotals>div.grand{font-size:13px}.jobBillingPanel>.jobBillingTotals input{min-width:72px;max-width:130px;height:27px;min-height:27px;font-size:11px}}
+
+/* Compact Job Card row actions so more service, vehicle and status details fit in the table. */
+body[data-view="jobs"] #content .tablewrap th:last-child,
+body[data-view="jobs"] #content .tablewrap td:last-child:has(.rowactions){width:132px;min-width:132px;max-width:132px;padding-left:8px!important;padding-right:8px!important}
+body[data-view="jobs"] #content .tablewrap td:last-child .rowactions{gap:4px;justify-content:center}
+body[data-view="jobs"] #content .tablewrap td:last-child .rowactions .btn{box-sizing:border-box;width:28px;min-width:28px;max-width:28px;height:28px;min-height:28px;padding:4px!important;gap:0;font-size:0;line-height:0}
+body[data-view="jobs"] #content .tablewrap td:last-child .rowactions .btn svg{width:16px!important;height:16px!important}
+body[data-view="jobs"] #content .tablewrap td:last-child .rowactions .btn .whatsappIcon{width:17px!important;height:17px!important}
+@media(max-width:600px){body[data-view="jobs"] #content .tablewrap th:last-child,body[data-view="jobs"] #content .tablewrap td:last-child:has(.rowactions){width:120px;min-width:120px;max-width:120px}}
+
+/* Compact the Job Card header controls and status pipeline to expose more rows. */
+body[data-view="jobs"] #content .summary{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:4px 0 8px}
+body[data-view="jobs"] #content .summaryitem{min-width:0;min-height:50px;padding:6px 8px;gap:6px}
+body[data-view="jobs"] #content .summaryitem .kpiIcon{flex-basis:23px;width:23px;height:23px}
+body[data-view="jobs"] #content .summaryitem .kpiIcon svg{width:13px;height:13px}
+body[data-view="jobs"] #content .summaryitem small{font-size:8px;line-height:1.05}
+body[data-view="jobs"] #content .summaryitem strong{font-size:14px;line-height:1;margin-top:2px;white-space:nowrap}
+body[data-view="jobs"] #content .jobToolbarCard{padding:8px 10px;margin-bottom:12px}
+body[data-view="jobs"] #content .jobToolbarCard .toolbar{gap:6px;min-height:36px;margin-bottom:8px}
+body[data-view="jobs"] #content .jobToolbarCard .toolbar>.btn{min-height:33px;padding:7px 10px;font-size:12px}
+body[data-view="jobs"] #content .jobToolbarCard .toolbar .search{height:34px;min-height:34px;padding-top:7px;padding-bottom:7px}
+body[data-view="jobs"] #content .jobFilters{flex-wrap:nowrap;gap:6px}
+body[data-view="jobs"] #content .jobFilters .filterLabel{flex:0 0 auto;font-size:10px}
+body[data-view="jobs"] #content .jobFilters>.selectWrap,body[data-view="jobs"] #content .jobFilters>select{flex:1 1 0;min-width:0;height:32px;min-height:32px;font-size:11px}
+body[data-view="jobs"] #content .jobFilters .selectWrap select{height:32px;min-height:32px;padding:5px 8px;font-size:11px}
+body[data-view="jobs"] #content .jobFilters #resetJobFilters{flex:0 0 auto;min-height:30px;padding:5px 8px;font-size:11px}
+body[data-view="jobs"] #content .pipeline{gap:2px;padding:4px;margin-bottom:12px;min-height:42px}
+body[data-view="jobs"] #content .pipeline button{min-width:112px;height:31px;min-height:31px;padding:6px 17px 6px 13px;font-size:10.5px;letter-spacing:.25px}
+body[data-view="jobs"] #content .pipeline button strong{font-size:13px}
+@media(max-width:700px){body[data-view="jobs"] #content .summary{grid-template-columns:repeat(3,minmax(0,1fr))}body[data-view="jobs"] #content .jobFilters{flex-wrap:wrap}body[data-view="jobs"] #content .jobFilters>.selectWrap,body[data-view="jobs"] #content .jobFilters>select{flex:1 1 140px}}
+@media(max-width:420px){body[data-view="jobs"] #content .summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+body[data-view="jobs"] #content .jobDateField{display:flex;align-items:center;gap:4px;flex:0 0 auto;margin:0;color:#64748b;font-size:10px;font-weight:600}
+body[data-view="jobs"] #content .jobDateField input{box-sizing:border-box;width:126px;height:32px;min-height:32px;padding:4px 6px;font-size:11px}
+@media(max-width:700px){body[data-view="jobs"] #content .jobDateField{flex:1 1 145px}body[data-view="jobs"] #content .jobDateField input{width:100%;min-width:0}}
+/* Compact, sticky invoice controls keep the paper preview visible while scrolling. */
+@media screen{
+#modalBody .invoiceFormatControls{position:sticky;top:0;z-index:20;gap:6px 8px;padding:7px 10px;align-content:flex-start;box-shadow:0 2px 5px #0f172a12}
+#modalBody .invoiceFormatControls>strong{font-size:11px;white-space:nowrap;margin-right:2px}
+#modalBody .invoiceFormatControls>.btn{min-height:34px;padding:6px 10px;font-size:12px;line-height:1.2;white-space:nowrap}
+#modalBody .invoiceFormatControls>select[aria-label="Saved invoice template"]{width:auto!important;min-width:180px;max-width:250px;min-height:34px;flex:1 1 190px;padding:6px 28px 6px 9px;font-size:12px}
+#modalBody .invoiceFormatControls .invoiceStyleChoice{min-height:34px;gap:6px;padding:4px 8px;border:1px solid #cbd5e1;background:#fff;border-radius:3px;font-size:11px;white-space:nowrap}
+#modalBody .invoiceFormatControls .invoiceStyleChoice select{width:120px;min-height:28px;padding:4px 24px 4px 7px;font-size:12px}
+#modalBody .invoiceFormatControls .invoiceStyleChoice:has(#useReferenceInvoiceLayout){white-space:normal;max-width:205px;line-height:1.25}
+#modalBody .invoiceFormatControls .invoiceStyleChoice:has(#useReferenceInvoiceLayout) input{width:17px;min-width:17px;height:17px;min-height:17px;margin:0}
+#modalBody .invoiceFormatControls .invoiceGstDetails{flex:1 1 220px;min-width:190px;padding:7px 10px;border:1px solid #cbd5e1;background:#f8fafc;font-size:12px}
+#modalBody .invoiceFormatControls .invoiceGstDetails .formgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 0 4px}
+#modalBody .invoiceFormatControls .invoiceGstDetails .field{min-width:0}
+#modalBody .invoiceFormatControls .invoiceGstDetails .field>span{font-size:10px}
+}
+@media screen and (max-width:650px){
+#modalBody .invoiceFormatControls{gap:6px;padding:7px}
+#modalBody .invoiceFormatControls>select[aria-label="Saved invoice template"]{max-width:none;flex-basis:100%}
+#modalBody .invoiceFormatControls .invoiceGstDetails{flex-basis:100%}
+#modalBody .invoiceFormatControls .invoiceGstDetails .formgrid{grid-template-columns:1fr}
+}
+/* Final compact presentation: keep the controls together and free more room for the invoice preview. */
+@media screen{
+#modalBody .invoiceFormatControls{gap:4px 6px;padding:5px 8px;border-left:3px solid #2563eb;background:#f8fafc}
+#modalBody .invoiceFormatControls>.btn{min-height:30px;padding:5px 8px;font-size:11px}
+#modalBody .invoiceFormatControls>select[aria-label="Saved invoice template"]{min-width:150px;max-width:220px;min-height:30px;flex-basis:160px;padding:4px 24px 4px 7px;font-size:11px}
+#modalBody .invoiceFormatControls .invoiceStyleChoice{min-height:30px;gap:5px;padding:3px 6px;font-size:10px}
+#modalBody .invoiceFormatControls .invoiceStyleChoice select{width:105px;min-height:25px;padding:3px 20px 3px 6px;font-size:11px}
+}
+
+#serviceLines table th[data-service-amount],#serviceLines table td[data-service-amount]{min-width:105px;white-space:nowrap}
+
+
+#serviceLines table th[data-service-gst-header],#serviceLines table td[data-service-gst-cell]{min-width:82px;white-space:nowrap}#serviceLines table td[data-service-gst-cell] select{min-width:70px;width:70px;padding:8px}
+

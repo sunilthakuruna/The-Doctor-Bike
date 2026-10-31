@@ -1,0 +1,33 @@
+/* Demo-inspired visual polish for Customer and Vehicle Masters. Presentation only. */
+body[data-view="customers"] #content,
+body[data-view="bikes"] #content{--master-ink:#111a2d;--master-blue:#2563eb;--master-line:#dbe4ef}
+
+body[data-view="customers"] #content>.toolbar,
+body[data-view="bikes"] #content>.toolbar{padding:10px;background:#fff;border:1px solid var(--master-line);border-radius:7px;box-shadow:0 2px 9px #0f172a08;margin-bottom:13px}
+body[data-view="customers"] #content .tablewrap,
+body[data-view="bikes"] #content .tablewrap{border:1px solid var(--master-line);border-radius:7px;box-shadow:0 3px 12px #0f172a0a;scrollbar-color:#94a3b8 #e9eef5}
+body[data-view="customers"] #content .tablewrap th,
+body[data-view="bikes"] #content .tablewrap th{background:var(--master-ink);color:#f8fafc;border-bottom-color:var(--master-ink)}
+body[data-view="customers"] #content .tablewrap td,
+body[data-view="bikes"] #content .tablewrap td{border-bottom-color:#edf1f6}
+body[data-view="customers"] #content .tablewrap tbody tr:nth-child(even) td,
+body[data-view="bikes"] #content .tablewrap tbody tr:nth-child(even) td{background:#fbfcfe}
+body[data-view="customers"] #content .tablewrap tbody tr:hover td,
+body[data-view="bikes"] #content .tablewrap tbody tr:hover td{background:#eff6ff}
+body[data-view="customers"] #content .tablewrap tbody tr:last-child td,
+body[data-view="bikes"] #content .tablewrap tbody tr:last-child td{border-bottom:0}
+body[data-view="customers"] #content .tablewrap td strong,
+body[data-view="bikes"] #content .tablewrap td strong{color:#17233a;font-weight:700}
+body[data-view="customers"] #content .tablewrap td small,
+body[data-view="bikes"] #content .tablewrap td small{color:#71829b;line-height:1.4}
+body[data-view="customers"] #content .badge,
+body[data-view="bikes"] #content .badge{border-radius:4px}
+body[data-view="customers"] #content .rowactions,
+body[data-view="bikes"] #content .rowactions{gap:5px}
+
+@media(max-width:700px){
+  body[data-view="customers"] #content>.toolbar,
+  body[data-view="bikes"] #content>.toolbar{padding:8px;gap:7px}
+  body[data-view="customers"] #content .tablewrap,
+  body[data-view="bikes"] #content .tablewrap{border-radius:5px}
+}

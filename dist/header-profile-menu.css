@@ -1,0 +1,5 @@
+#profile{cursor:pointer;display:flex;align-items:center;gap:9px;border-radius:4px;padding:2px 5px;min-height:42px}
+#profile:hover,#profile:focus-visible{background:#eef4fb;outline:0}
+#profile .profileChevron{font-size:17px;line-height:1;color:#8193ac;padding-left:4px}
+#signOutButton{display:none!important}
+@media(max-width:600px){#profile{gap:5px}#profile .profileChevron{padding-left:0}}

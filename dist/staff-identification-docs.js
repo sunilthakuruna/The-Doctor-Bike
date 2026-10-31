@@ -1,0 +1,17 @@
+'use strict';
+(function(){
+  const parseIdentityDocument=value=>{try{const file=typeof value==='string'?JSON.parse(value):value;return safeAttachment(file)?file:null}catch{return null}};
+  const editBeforeIdentityDocs=editRecord;
+  editRecord=function(key,id,initial={}){
+    editBeforeIdentityDocs(key,id,initial);if(key!=='staff')return;
+    const form=$('#recordForm'),grid=form?.querySelector('.formgrid'),record=id?find('staff',id):initial;if(!grid)return;
+    const aadhaar=parseIdentityDocument(record?.aadhaarDocument),license=parseIdentityDocument(record?.drivingLicenseDocument);
+    const control=(key,label,file)=>`<div class="staffIdentityFile"><strong>${label}</strong><input type="hidden" name="${key}" id="${key}Value" value="${esc(file?JSON.stringify(file):'')}"><div id="${key}Current" class="staffIdentityCurrent">${file?`<span>${esc(file.name)} · ${Math.ceil(Number(file.size||0)/1024)} KB</span> <a class="btn secondary small" href="${esc(file.data)}" target="_blank" rel="noopener">View</a> <a class="btn secondary small" href="${esc(file.data)}" download="${esc(file.name)}">Download</a> <button type="button" class="btn danger small" data-remove-identity="${key}">Remove</button>`:'<span>No document attached</span>'}</div><label class="field"><span>Attach PDF or image</span><input type="file" data-identity-upload="${key}" accept="application/pdf,image/jpeg,image/png,image/webp"><small>PDF, JPG, PNG or WebP · up to 1 MB</small></label></div>`;
+    const panel=document.createElement('section');panel.className='field full';panel.innerHTML=`<span>Identification Documents</span><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px">${control('aadhaarDocument','Aadhaar / National ID',aadhaar)}${control('drivingLicenseDocument','Driving Licence',license)}</div><small>Attach each staff member’s identification file to their staff record.</small>`;grid.appendChild(panel);
+    for(const input of panel.querySelectorAll('[data-identity-upload]'))input.onchange=async()=>{const file=input.files?.[0];if(!file)return;input.disabled=true;try{const saved=await readAttachment(file),name=input.dataset.identityUpload,hidden=$('#'+name+'Value'),current=$('#'+name+'Current');hidden.value=JSON.stringify(saved);current.innerHTML=`<span>${esc(saved.name)} · ${Math.ceil(saved.size/1024)} KB</span> <a class="btn secondary small" href="${esc(saved.data)}" target="_blank" rel="noopener">View</a> <a class="btn secondary small" href="${esc(saved.data)}" download="${esc(saved.name)}">Download</a> <button type="button" class="btn danger small" data-remove-identity="${name}">Remove</button>`}catch(error){toast(error.message)}finally{input.disabled=false;input.value=''}};
+    panel.addEventListener('click',event=>{const button=event.target.closest('[data-remove-identity]');if(!button)return;$('#'+button.dataset.removeIdentity+'Value').value='';$('#'+button.dataset.removeIdentity+'Current').innerHTML='<span>No document attached</span>'});
+  };
+  const staffDocStyle=document.createElement('style');staffDocStyle.textContent='.staffIdentityFile{border:1px solid #dbe3ef;border-radius:8px;padding:12px;background:#f8fafc}.staffIdentityFile>strong{display:block;margin-bottom:8px}.staffIdentityCurrent{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;font-size:12px;color:#475569}.staffIdentityFile .field{margin:8px 0 0}.staffIdentityFile .field small{display:block;margin-top:5px;color:#64748b}';document.head.appendChild(staffDocStyle);
+})();
+
+

@@ -1,0 +1,13 @@
+/* Select supporting files from the device temporarily. Nothing is written into the record or browser storage. */
+function ensureRecordDocuments(key,id,form){if(!attachmentModules.includes(key)||!form||form.querySelector('.attachmentPanel'))return;let body=form.querySelector('.formbody');if(!body)return;if(id&&find(key,id)){body.insertAdjacentHTML('beforeend',attachmentPanel(key,id));return}body.insertAdjacentHTML('beforeend','<div class="notice">Save this record first, then select device files from its Documents &amp; Images action. Selected files stay temporary and are not saved with the record.</div>')}
+const editBeforeTemporaryDocumentCoverage=editRecord;
+editRecord=function(key,id,initial){editBeforeTemporaryDocumentCoverage(key,id,initial);if(!['jobs','sales','purchases'].includes(key))ensureRecordDocuments(key,id,$('#recordForm'))};
+const billBeforeTemporaryDocumentCoverage=billForm;
+billForm=function(key,id,initial){billBeforeTemporaryDocumentCoverage(key,id,initial);ensureRecordDocuments(key,id,$('#billForm'))};
+const godownFormBeforeTemporaryDocuments=openGodownOpeningForm;
+openGodownOpeningForm=function(partId){godownFormBeforeTemporaryDocuments(partId);ensureRecordDocuments('parts',partId,$('#godownOpeningForm'))};
+const godownActionsBeforeTemporaryDocuments=openGodownActions;
+openGodownActions=function(id){godownActionsBeforeTemporaryDocuments(id);let footer=$('#modalBody .formactions');if(footer&&find('parts',id))footer.insertAdjacentHTML('afterbegin','<button type="button" class="btn secondary" data-manage-attachments="parts|'+esc(id)+'">'+icon('paperclip')+' Temporary Documents &amp; Images</button>')};
+const renderBeforeTemporaryDocumentCoverage=render;
+render=function(){renderBeforeTemporaryDocumentCoverage();if(!attachmentModules.includes(page))return;for(let button of $$('#content [data-edit]')){let [key,id]=button.dataset.edit.split('|');if(!attachmentModules.includes(key)||button.parentNode.querySelector('[data-manage-attachments]'))continue;button.insertAdjacentHTML('beforebegin','<button type="button" class="btn small extraAction blue" data-manage-attachments="'+key+'|'+esc(id)+'" title="Select temporary documents, images or videos" aria-label="Select temporary files">'+icon('paperclip')+'</button>')}};
+render();

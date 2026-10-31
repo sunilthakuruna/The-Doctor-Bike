@@ -1,0 +1,11 @@
+body[data-view="payments"] #content .paymentIntro h2{font-size:18px}
+body[data-view="payments"] #content .paymentIntro p{font-size:11px}
+body[data-view="payments"] #content .paymentSectionHead h2{font-size:13px}
+body[data-view="payments"] #content .paymentSectionHead p{font-size:10.5px}
+body[data-view="payments"] #content .paymentTab{font-size:10.5px;padding:7px 11px}
+body[data-view="payments"] #content .paymentRecords{font-size:11px;padding:10px}
+body[data-view="payments"] #content .paymentRecords th{font-size:9px;padding:7px 8px}
+body[data-view="payments"] #content .paymentRecords td{font-size:11px;padding:7px 8px}
+body[data-view="payments"] #content .paymentSearch{height:34px;font-size:11px}
+body[data-view="payments"] #content .paymentSearch .search{height:32px;font-size:11px}
+body[data-view="payments"] #content .paymentBillSummary{font-size:11px}

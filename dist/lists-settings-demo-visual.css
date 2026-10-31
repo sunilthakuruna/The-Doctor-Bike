@@ -1,0 +1,48 @@
+/* Demo-inspired visual polish for List Management and Business Settings. */
+body[data-view="lists"] #content,
+body[data-view="settings"] #content{--settings-ink:#111a2d;--settings-line:#dbe4ef}
+
+body[data-view="lists"] #content .intro,
+body[data-view="settings"] #content .intro{padding:2px 2px 0}
+body[data-view="lists"] #content .intro h2,
+body[data-view="settings"] #content .intro h2{font-size:20px;letter-spacing:-.3px;color:#142139}
+body[data-view="lists"] #content .intro p,
+body[data-view="settings"] #content .intro p{font-size:12px;line-height:1.5;margin-bottom:12px}
+body[data-view="lists"] #content .listlayout{grid-template-columns:minmax(190px,230px) minmax(0,1fr);gap:12px;align-items:start}
+body[data-view="lists"] #content .listselector{padding:7px;border:1px solid var(--settings-line);border-radius:7px;box-shadow:0 2px 8px #0f172a08}
+body[data-view="lists"] #content .listselector button{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:5px;color:#52627a;transition:background .15s ease,color .15s ease}
+body[data-view="lists"] #content .listselector button:hover{background:#f1f6ff;color:#1d4ed8}
+body[data-view="lists"] #content .listselector button.active{background:#eaf2ff;color:#1d4ed8;font-weight:700}
+body[data-view="lists"] #content .listselector button span{font-size:10px;color:#71829b;background:#f1f5f9;padding:2px 6px;border-radius:10px}
+body[data-view="lists"] #content .panel,
+body[data-view="settings"] #content .panel{border:1px solid var(--settings-line);border-radius:7px;box-shadow:0 3px 12px #0f172a08}
+body[data-view="lists"] #content .panelhead,
+body[data-view="settings"] #content .panelhead{padding:11px 14px;border-bottom:1px solid #edf1f6}
+body[data-view="lists"] #content .panelhead h2,
+body[data-view="settings"] #content .panelhead h2{font-size:14px;color:#142139}
+body[data-view="lists"] #content .panelbody,
+body[data-view="settings"] #content .panelbody{padding:12px 14px}
+body[data-view="lists"] #content #listForm{padding:8px;background:#f8fafc;border:1px solid #e6edf5;border-radius:6px;margin:0 0 9px;gap:8px}
+body[data-view="lists"] #content #listForm input{border-radius:5px}
+body[data-view="lists"] #content .listoption{align-items:center;gap:10px;padding:8px 9px;border:1px solid #edf1f6;border-radius:5px;margin-top:6px;background:#fff;color:#334155}
+body[data-view="lists"] #content .listoption .btn{min-width:29px;min-height:28px;padding:4px;border-radius:4px}
+body[data-view="settings"] #content .settingsgrid{gap:12px}
+body[data-view="settings"] #content .settingsgrid>.panel{overflow:hidden}
+body[data-view="settings"] #content .settingsgrid .field>span{font-size:9px;letter-spacing:.35px}
+body[data-view="settings"] #content .settingsgrid input,
+body[data-view="settings"] #content .settingsgrid select,
+body[data-view="settings"] #content .settingsgrid textarea{border-radius:5px}
+body[data-view="settings"] #content .settingsgrid .notice,
+body[data-view="settings"] #content>.notice{border-radius:6px}
+body[data-view="settings"] #content #settingsForm>.toolbar{padding:9px;background:#fff;border:1px solid var(--settings-line);border-radius:7px;margin:12px 0;gap:8px}
+body[data-view="settings"] #content .settingsgrid .garageLogo,
+body[data-view="settings"] #content .settingsgrid .brandingPreview{border-radius:6px}
+
+@media(max-width:700px){
+  body[data-view="lists"] #content .listlayout{grid-template-columns:1fr;gap:9px}
+  body[data-view="lists"] #content .listselector{max-height:145px}
+  body[data-view="lists"] #content .panelhead,
+  body[data-view="settings"] #content .panelhead{padding:9px 11px}
+  body[data-view="lists"] #content .panelbody,
+  body[data-view="settings"] #content .panelbody{padding:10px}
+}

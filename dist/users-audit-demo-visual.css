@@ -1,0 +1,42 @@
+/* Demo-inspired visual polish for Users and Audit Logs. Presentation only. */
+body[data-view="users"] #content,
+body[data-view="audit"] #content{--access-ink:#111a2d;--access-line:#dbe4ef}
+
+body[data-view="users"] #content>.notice,
+body[data-view="audit"] #content .notice{border-radius:6px}
+body[data-view="users"] #content>.toolbar,
+body[data-view="audit"] #content>.toolbar{padding:9px;background:#fff;border:1px solid var(--access-line);border-radius:7px;box-shadow:0 2px 8px #0f172a08;margin:0 0 11px;gap:8px}
+body[data-view="users"] #content .tablewrap,
+body[data-view="audit"] #content .tablewrap{border:1px solid var(--access-line);border-radius:7px;box-shadow:0 3px 12px #0f172a0a}
+body[data-view="users"] #content .tablewrap th,
+body[data-view="audit"] #content .tablewrap th{background:var(--access-ink);color:#f8fafc;border-bottom-color:var(--access-ink)}
+body[data-view="users"] #content .tablewrap td,
+body[data-view="audit"] #content .tablewrap td{border-bottom-color:#edf1f6}
+body[data-view="users"] #content .tablewrap tbody tr:nth-child(even) td,
+body[data-view="audit"] #content .tablewrap tbody tr:nth-child(even) td{background:#fbfcfe}
+body[data-view="users"] #content .tablewrap tbody tr:hover td,
+body[data-view="audit"] #content .tablewrap tbody tr:hover td{background:#eff6ff}
+body[data-view="users"] #content .tablewrap td strong,
+body[data-view="audit"] #content .tablewrap td strong{color:#17233a}
+body[data-view="users"] #content .tablewrap td small{color:#71829b;line-height:1.4}
+body[data-view="users"] #content .avatar{border-radius:5px;box-shadow:0 2px 6px #0f172a12}
+body[data-view="users"] #content .badge,
+body[data-view="audit"] #content .badge{border-radius:4px}
+body[data-view="users"] #content .rowactions,
+body[data-view="audit"] #content .rowactions{gap:5px}
+body[data-view="audit"] #content .summary{gap:9px;margin:7px 0 12px}
+body[data-view="audit"] #content .summaryitem{min-height:60px;padding:9px 12px;border-radius:6px;box-shadow:0 3px 10px #0f172a0a}
+body[data-view="audit"] #content .summaryitem strong{font-size:18px;margin-top:3px}
+body[data-view="audit"] #content .intro{padding:2px 2px 0}
+body[data-view="audit"] #content .intro h2{font-size:20px;letter-spacing:-.3px;color:#142139}
+body[data-view="audit"] #content .intro p{margin-bottom:11px}
+#modal .permission{border-collapse:separate;border-spacing:0}
+#modal .permission th{background:#111a2d;color:#f8fafc}
+#modal .permission td{border-bottom:1px solid #edf1f6}
+#modal .permission tr:hover td{background:#f1f6ff}
+
+@media(max-width:700px){
+  body[data-view="audit"] #content .summary{gap:6px}
+  body[data-view="audit"] #content .summaryitem{min-height:52px;padding:7px}
+  body[data-view="audit"] #content .summaryitem strong{font-size:15px}
+}

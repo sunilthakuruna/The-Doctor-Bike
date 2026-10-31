@@ -1,0 +1,33 @@
+/* Spare Parts Sale visual pass. Leaves sale, tax, discount and stock behavior intact. */
+body[data-view="sales"] #content .summaryitem{border:1px solid #ffffff40;border-radius:6px;box-shadow:0 3px 10px #0f172a16!important}
+body[data-view="sales"] #content .kpiIcon{border-radius:5px;background:#ffffff24}
+body[data-view="sales"] #content>.toolbar{padding:10px;margin:0 0 12px;gap:8px;border:1px solid #dbe4ef;border-radius:8px;background:#fff;box-shadow:0 2px 8px #0f172a08}
+body[data-view="sales"] #content>.toolbar .search{min-height:36px;height:36px;border-radius:5px}
+body[data-view="sales"] #content>.toolbar>.btn{min-height:36px;padding:8px 12px;border-radius:5px;font-size:11px;font-weight:650}
+body[data-view="sales"] #content .tablewrap{border:1px solid #dbe4ef;border-radius:8px;box-shadow:0 3px 12px #0f172a0a}
+body[data-view="sales"] #content .tablewrap th{background:#111a2d;color:#f8fafc;padding:9px 11px;font-size:10px}
+body[data-view="sales"] #content .tablewrap td{padding:10px 11px;font-size:11px}
+body[data-view="sales"] #content .tablewrap tbody tr:hover td{background:#f1f6ff}
+body[data-view="sales"] #content .tablewrap td .badge{border-radius:4px}
+body[data-view="sales"] #content .rowactions .btn{border-radius:5px}
+body[data-view="sales"] #modal .dialog:has(#billForm){border-radius:10px;box-shadow:0 24px 60px #0b112050}
+body[data-view="sales"] #modal .dialog:has(#billForm) .dialoghead{background:#111a2d}
+body[data-view="sales"] #modal #billForm>.formbody{padding:12px 14px;background:#f8fafc}
+body[data-view="sales"] #modal #billForm>.formbody>.notice{border:1px solid #bfdbfe;border-left:3px solid #2563eb;border-radius:5px;background:#eff6ff;padding:8px 10px}
+body[data-view="sales"] #modal #billForm>.formbody>.lineheading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 0;padding:9px 12px;border-radius:5px 5px 0 0;background:#111a2d;color:#fff;font-size:11px;font-weight:750;letter-spacing:.035em}
+body[data-view="sales"] #modal #billForm>.formbody>#partLines .tablewrap{border:1px solid #dbe4ef;border-radius:0 0 6px 6px;background:#fff}
+body[data-view="sales"] #modal #billForm #partLines table{min-width:940px}
+body[data-view="sales"] #modal #billForm #partLines th{background:#182338;padding:9px 8px;font-size:10px}
+body[data-view="sales"] #modal #billForm #partLines td{padding:8px}
+body[data-view="sales"] #modal #billForm #partLines input,
+body[data-view="sales"] #modal #billForm #partLines select{border-radius:4px}
+body[data-view="sales"] #modal #billForm #partLines td:nth-last-child(2){font-weight:700;color:#0f172a;font-variant-numeric:tabular-nums;white-space:nowrap}
+body[data-view="sales"] #modal #billForm .itemDiscountCell{background:#fbfdff}
+body[data-view="sales"] #modal #billForm .salesSaleBreakdown{margin-top:6px;padding:10px 0;border-color:#dbe4ef}
+body[data-view="sales"] #modal #billForm .salesSaleBreakdown p:last-child{grid-column:1/-1;padding-top:7px;border-top:1px solid #dbe4ef;color:#0f172a;font-weight:750}
+body[data-view="sales"] #modal #billForm .totals{border:1px solid #dbe4ef;border-radius:6px;background:#fff;padding:12px}
+@media(max-width:700px){
+  body[data-view="sales"] #content>.toolbar{padding:8px;border-radius:6px}
+  body[data-view="sales"] #modal #billForm>.formbody{padding:8px}
+  body[data-view="sales"] #modal #billForm .salesSaleBreakdown{grid-template-columns:1fr}
+}

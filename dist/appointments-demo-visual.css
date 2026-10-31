@@ -1,0 +1,27 @@
+/* Appointment Booking visual pass: keep existing controls and behavior intact. */
+#content:has(.tabs button[data-tab="matrix"]) .tabs{display:flex;flex-wrap:wrap;gap:8px;padding:6px;margin:0 0 14px;width:fit-content;max-width:100%;border:1px solid #d9e2ef;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0f172a0a}
+#content:has(.tabs button[data-tab="matrix"]) .tab{min-height:36px;padding:8px 14px;border:1px solid transparent;border-radius:7px;background:transparent;color:#52627a;font-size:12px;font-weight:650;transition:background .16s ease,color .16s ease,box-shadow .16s ease}
+#content:has(.tabs button[data-tab="matrix"]) .tab:hover{background:#f1f5f9;color:#17233a}
+#content:has(.tabs button[data-tab="matrix"]) .tab.active{color:#fff;background:linear-gradient(135deg,#1d4ed8,#2563eb);box-shadow:0 3px 8px #2563eb30}
+#content:has(.tabs button[data-tab="matrix"]) .summary{gap:10px;margin:0 0 14px}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem{position:relative;min-width:0;min-height:70px;padding:12px 14px 11px 17px;overflow:hidden;border:1px solid #dbe4ef;border-radius:8px;background:linear-gradient(120deg,#fff,#f8fbff);box-shadow:0 3px 10px #0f172a08}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem::before{position:absolute;inset:0 auto 0 0;width:4px;background:#2563eb;content:""}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem:nth-child(2)::before{background:#0d9488}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem:nth-child(3)::before{background:#7c3aed}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem:nth-child(4)::before{background:#d97706}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem small{color:#62728a;font-size:9px;font-weight:750;letter-spacing:.055em}
+#content:has(.tabs button[data-tab="matrix"]) .summaryitem strong{display:block;margin-top:5px;color:#111c31;font-size:22px;line-height:1}
+#content:has(.tabs button[data-tab="matrix"]) .toolbar{padding:10px;margin-bottom:12px;gap:8px;border:1px solid #dce5f0;border-radius:8px;background:#fff;box-shadow:0 2px 8px #0f172a08}
+#content:has(.tabs button[data-tab="matrix"]) .toolbar .search{flex:1 1 250px;max-width:390px;min-height:36px;height:36px;border-radius:6px;background:#fbfdff}
+#content:has(.tabs button[data-tab="matrix"]) .toolbar .btn{min-height:36px;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:650}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap,#content:has(.tabs button[data-tab="matrix"]) .calendar{overflow:auto;border:1px solid #dbe4ef;border-radius:8px;background:#fff;box-shadow:0 4px 14px #0f172a0a}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap table{min-width:760px}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap th{height:38px;padding:10px 12px;background:#111a2d;color:#f8fafc;font-size:10px;letter-spacing:.035em}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap td{padding:11px 12px;border-bottom:1px solid #edf1f6;color:#26354d;font-size:12px}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap tbody tr:nth-child(even){background:#f8fafc}
+#content:has(.tabs button[data-tab="matrix"]) .tablewrap tbody tr:hover{background:#eff6ff}
+#content:has(.tabs button[data-tab="matrix"]) .calendar{display:grid;grid-template-columns:repeat(7,minmax(92px,1fr))}
+#content:has(.tabs button[data-tab="matrix"]) .calendar>div{min-height:94px;padding:10px}
+#content:has(.tabs button[data-tab="matrix"]) .calendar>.dayname{position:sticky;top:0;z-index:1;padding:9px 6px;background:#111a2d;color:#fff;font-weight:700}
+#content:has(.tabs button[data-tab="matrix"]) .calendar .event{border-left:3px solid #2563eb;border-radius:4px;background:#eff6ff;color:#1e40af;line-height:1.4}
+@media(max-width:700px){#content:has(.tabs button[data-tab="matrix"]) .summary{grid-template-columns:repeat(2,minmax(0,1fr))}#content:has(.tabs button[data-tab="matrix"]) .summaryitem{min-height:62px;padding:10px 11px 9px 14px}#content:has(.tabs button[data-tab="matrix"]) .summaryitem strong{font-size:19px}#content:has(.tabs button[data-tab="matrix"]) .toolbar .search{max-width:none;flex-basis:100%}}

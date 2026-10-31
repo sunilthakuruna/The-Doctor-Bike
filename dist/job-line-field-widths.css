@@ -1,0 +1,35 @@
+/* Keep Job Card line-entry controls proportional to the data they contain. */
+.jobDialog #serviceLines table,
+.jobDialog #partLines table { width: max-content; min-width: 100%; table-layout: fixed; }
+.jobDialog #serviceLines table th:nth-child(1),
+.jobDialog #serviceLines table td:nth-child(1) { width: 210px; min-width: 210px; }
+.jobDialog #serviceLines table th:nth-child(2),
+.jobDialog #serviceLines table td:nth-child(2) { width: 125px; min-width: 125px; }
+.jobDialog #serviceLines table th:nth-child(3),
+.jobDialog #serviceLines table td:nth-child(3) { width: 82px; min-width: 82px; }
+.jobDialog #serviceLines select,
+.jobDialog #serviceLines input { max-width: 100%; box-sizing: border-box; }
+.jobDialog #partLines table th:nth-child(1),
+.jobDialog #partLines table td:nth-child(1) { width: 190px; min-width: 190px; }
+.jobDialog #partLines table th:nth-child(2),
+.jobDialog #partLines table td:nth-child(2),
+.jobDialog #partLines table th:nth-child(3),
+.jobDialog #partLines table td:nth-child(3) { width: 92px; min-width: 92px; }
+.jobDialog #partLines table th:nth-child(4),
+.jobDialog #partLines table td:nth-child(4) { width: 62px; min-width: 62px; }
+.jobDialog #partLines table th:nth-child(5),
+.jobDialog #partLines table td:nth-child(5) { width: 62px; min-width: 62px; }
+.jobDialog #partLines table th:nth-child(6),
+.jobDialog #partLines table td:nth-child(6) { width: 105px; min-width: 105px; }
+.jobDialog #partLines table th:nth-child(7),
+.jobDialog #partLines table td:nth-child(7) { width: 72px; min-width: 72px; }
+.jobDialog #partLines table th:nth-child(8),
+.jobDialog #partLines table td:nth-child(8) { width: 92px; min-width: 92px; }
+.jobDialog #partLines table th:nth-child(9),
+.jobDialog #partLines table td:nth-child(9) { width: 82px; min-width: 82px; }
+.jobDialog #partLines select,
+.jobDialog #partLines input { max-width: 100%; box-sizing: border-box; }
+@media (max-width: 600px) {
+  .jobDialog #serviceLines table th:nth-child(1), .jobDialog #serviceLines table td:nth-child(1) { width: 170px; min-width: 170px; }
+  .jobDialog #partLines table th:nth-child(1), .jobDialog #partLines table td:nth-child(1) { width: 160px; min-width: 160px; }
+}

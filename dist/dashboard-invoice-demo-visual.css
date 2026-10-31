@@ -1,0 +1,31 @@
+/* Final shared screens: dashboard and invoice preview. No data or print rules changed. */
+body[data-view="dashboard"] #content:has(.cards){background:#f4f5f6}
+body[data-view="dashboard"] #content:has(.cards)>.cards .stat{transition:transform .16s ease,box-shadow .16s ease}
+body[data-view="dashboard"] #content:has(.cards)>.cards .stat:hover{transform:translateY(-2px);box-shadow:0 11px 24px #11182718}
+body[data-view="dashboard"] #content:has(.cards) .chartgrid>.panel{transition:box-shadow .16s ease,transform .16s ease}
+body[data-view="dashboard"] #content:has(.cards) .chartgrid>.panel:hover{box-shadow:0 8px 22px #11182710}
+body[data-view="dashboard"] #content:has(.cards) .legend{gap:8px 12px;color:#566174}
+body[data-view="dashboard"] #content:has(.cards) .legend b{color:#161b25}
+body[data-view="dashboard"] #content:has(.cards) .quick{border-radius:7px;box-shadow:0 2px 7px #11182708}
+
+#modal .dialog:has(.invoiceFormatControls){border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 24px 70px #0b11204a}
+#modal .dialog:has(.invoiceFormatControls)>.dialoghead{background:#111a2d;color:#fff;border-bottom:0}
+#modal .dialog:has(.invoiceFormatControls)>.dialoghead h2{color:#fff}
+#modalBody .invoiceFormatControls{background:#f1f5f9;border-bottom:1px solid #dbe4ef}
+#modalBody .invoiceFormatControls .invoiceStyleChoice{border-radius:5px}
+#modalBody .invoiceFormatControls .btn{border-radius:5px}
+#modalBody .invoice{border:1px solid #e2e8f0;box-shadow:0 3px 14px #0f172a0d}
+#modalBody .invoice .invoicebrand{border-bottom-color:#111a2d}
+#modalBody .invoice .invoicetotal .grand{border-top-color:#cbd5e1}
+#modalBody .invoice table th{background:#111a2d;color:#fff}
+#modalBody .invoice table td{border-color:#dbe4ef}
+
+@media(max-width:700px){
+  body[data-view="dashboard"] #content:has(.cards)>.cards .stat{border-radius:8px}
+  #modal .dialog:has(.invoiceFormatControls){border-radius:6px}
+  #modalBody .invoiceFormatControls{gap:6px;padding:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-view="dashboard"] #content:has(.cards)>.cards .stat,
+  body[data-view="dashboard"] #content:has(.cards) .chartgrid>.panel{transition:none}
+}

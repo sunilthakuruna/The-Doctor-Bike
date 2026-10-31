@@ -1,0 +1,13 @@
+.userActionPermissionPanel{margin-top:14px;border:1px solid #cbddec;background:#f8fbff}.userActionPermissionPanel summary{padding:10px 12px;cursor:pointer;color:#123d5a;font-size:12px;font-weight:800}.userActionPermissionPanel>p{margin:0;padding:0 12px 10px;color:#64748b;font-size:10px;line-height:1.45}.userActionPermissionPanel .tablewrap{max-height:360px;overflow:auto}.userActionPermissionPanel th,.userActionPermissionPanel td{padding:7px 9px;font-size:10px}.userActionPermissionPanel td:last-child{text-align:center}.userActionPermissionPanel input[type=checkbox]{width:16px;min-height:16px}
+.userActionPermissionPanel .tablewrap>table{width:100%;min-width:560px;table-layout:fixed}
+.userActionPermissionPanel th:nth-child(1),.userActionPermissionPanel td:nth-child(1){width:30%;min-width:150px;text-align:left}
+.userActionPermissionPanel th:nth-child(2),.userActionPermissionPanel td:nth-child(2){width:55%;min-width:280px;text-align:left}
+.userActionPermissionPanel th:nth-child(3),.userActionPermissionPanel td:nth-child(3){width:15%;min-width:90px;text-align:center;vertical-align:middle}
+.userActionPermissionPanel th:nth-child(3){white-space:nowrap}
+.userActionPermissionPanel td:nth-child(2){white-space:normal;overflow-wrap:anywhere}
+.userSecuritySettings .permissionTable{width:100%;min-width:0;table-layout:fixed}
+.userSecuritySettings .permissionTable th,.userSecuritySettings .permissionTable td{padding:6px 4px;font-size:10px}
+.userSecuritySettings .permissionTable th:first-child,.userSecuritySettings .permissionTable td:first-child{width:50%;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.userSecuritySettings .permissionTable th:not(:first-child),.userSecuritySettings .permissionTable td:not(:first-child){width:12.5%;min-width:0;text-align:center;vertical-align:middle}
+.userSecuritySettings .permissionTable th{white-space:nowrap}
+.userSecuritySettings .permissionTable input[type=checkbox]{margin:0 auto}

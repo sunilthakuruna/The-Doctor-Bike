@@ -1,0 +1,6 @@
+/* Summary tiles receive their colored gradient inline. Keep their text readable
+   even when a later module stylesheet adds a dark value color. */
+#content .summaryitem[style*="background:linear-gradient"] small,
+#content .summaryitem[style*="background:linear-gradient"] strong {
+  color: #fff !important;
+}

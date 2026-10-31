@@ -1,0 +1,44 @@
+/* Compact purchase item entry, matching the demo's field order. */
+#billForm .purchaseItemHeading{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#101a2e;color:white;border-left:3px solid #22bdeb;padding:7px 10px;margin:12px 0 5px;font-size:12px;min-height:36px}
+#billForm .purchaseItemHeading span{display:flex;align-items:center;gap:8px}
+#billForm [data-purchase-count]{font-size:10px;font-weight:600;white-space:nowrap}
+#billForm .purchaseItemHeading b{background:#28bdf2;color:#102036;padding:2px 5px}
+#billForm .purchaseItemHeading button{padding:4px 9px;min-height:25px;font-size:11px;white-space:nowrap}
+#billForm .purchaseItemScroll{overflow:auto;max-width:100%;max-height:45vh;border:1px solid #dce3ed;background:#fff}
+#billForm .purchaseItemsTable{width:1321px;min-width:1321px;border-collapse:collapse;table-layout:fixed}
+#billForm .purchaseItemsTable col:first-child{width:28px}
+#billForm .purchaseItemsTable th:first-child,#billForm .purchaseItemsTable td:first-child{width:28px;min-width:28px;max-width:28px;box-sizing:border-box;padding-left:4px;padding-right:4px;text-align:center}
+#billForm .purchaseItemsTable th{position:sticky;top:0;background:#101a2e;color:#fff;padding:7px 5px;font-size:10px;white-space:nowrap}
+#billForm .purchaseItemsTable td{padding:5px;vertical-align:middle;border-bottom:1px solid #e1e7ef;font-size:11px}
+#billForm .purchaseItemsTable th:nth-child(1){width:28px}
+#billForm .purchaseItemsTable th:nth-child(2){width:110px}
+#billForm .purchaseItemsTable th:nth-child(3){width:115px}
+#billForm .purchaseItemsTable th:nth-child(4){width:230px}
+#billForm .purchaseItemsTable th:nth-child(5){width:115px}
+#billForm .purchaseItemsTable th:nth-child(6){width:85px}
+#billForm .purchaseItemsTable th:nth-child(7),#billForm .purchaseItemsTable th:nth-child(8){width:90px}
+#billForm .purchaseItemsTable th:nth-child(9){width:70px}
+#billForm .purchaseItemsTable th:nth-child(10){width:95px}
+#billForm .purchaseItemsTable th:nth-child(11){width:70px}
+#billForm .purchaseItemsTable th:nth-child(12){width:90px}
+#billForm .purchaseItemsTable th:nth-child(13){width:95px}
+#billForm .purchaseItemsTable th:nth-child(14){width:38px}
+#billForm .purchaseItemsTable input,#billForm .purchaseItemsTable select{width:100%;min-width:0;box-sizing:border-box;height:31px;min-height:31px;padding:4px 6px;font-size:11px;border:1px solid #cbd5e1;background:white;color:#172033}
+#billForm .purchaseItemsTable output{font-size:11px;font-weight:700;white-space:nowrap}
+#billForm .purchaseMasterPriceInfo{display:block;margin-top:3px;color:#64748b;font-size:9px;line-height:1.3;white-space:normal}
+.partMasterGstCalc{display:block;margin-top:5px;padding:6px 8px;border:1px solid #bfdbfe;background:#eff6ff;color:#365b8c;font-size:10px;line-height:1.45;white-space:normal}
+#billForm .purchaseItemsTable td:last-child button{min-width:26px;min-height:28px;width:26px;height:28px;padding:5px}
+#billForm .purchaseItemsTable .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+#billForm .purchaseItemsFooter{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:7px 0;font-size:11px;color:#53647b}
+#billForm .purchaseItemsFooter>span:last-child{margin-left:auto}
+#billForm .purchaseItemsFooter button{padding:4px 8px;font-size:11px;min-height:27px}
+#billForm .purchaseCustomSupplier[hidden]{display:none!important}
+#billForm .purchaseSupplierControls select{flex:1;min-width:160px}
+#billForm .purchaseSupplierControls button{font-size:11px;padding:5px 8px;white-space:nowrap}
+#billForm .purchaseCustomSupplier input{min-width:0;flex:1}
+
+#billForm [data-purchase-stock]{font-weight:500;font-size:11px;color:#4b607a}
+#billForm .purchasePricePolicyNote{font-size:10px!important;padding:7px 10px!important;margin:0 0 8px!important;line-height:1.4}
+.purchaseAfterGstField .purchaseAfterGstValue{background:#eff6ff!important;color:#1e3a8a!important;font-weight:700}
+.purchaseAfterGstField .purchaseAfterGstNote{display:block;margin-top:4px;color:#64748b;font-size:9px;line-height:1.35}
+.purchaseReceiptSourceNote{display:block;margin-top:4px;color:#365b8c;font-size:9px;line-height:1.35}

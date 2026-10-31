@@ -1,0 +1,6 @@
+.thermalGstBreakdown { font-size: .9em; }
+.thermalGstBreakdown strong { display: block; margin-bottom: 4px; }
+.thermalGstBreakdown dl { margin: 0; }
+.thermalGstBreakdown dl div { display: flex; justify-content: space-between; gap: 6px; }
+.thermalGstBreakdown dt { max-width: 70%; overflow-wrap: anywhere; }
+.thermalGstBreakdown dd { margin: 0; white-space: nowrap; }

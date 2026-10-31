@@ -1,0 +1,47 @@
+/* Demo-inspired visual polish for AMC and Vehicle Service Reminder screens. */
+body[data-view="amc-plans"] #content,
+body[data-view="service-reminders"] #content{--reminder-ink:#111a2d;--reminder-line:#dbe4ef}
+
+body[data-view="amc-plans"] #content .amcManagementPage,
+body[data-view="service-reminders"] #content{display:grid;gap:12px}
+body[data-view="amc-plans"] #content .panel{border:1px solid var(--reminder-line);border-radius:7px;box-shadow:0 3px 12px #0f172a08}
+body[data-view="amc-plans"] #content .panelhead{padding:13px 16px 6px}
+body[data-view="amc-plans"] #content .panelhead h2{font-size:15px;color:#142139}
+body[data-view="amc-plans"] #content .panelbody{padding:8px 16px 14px}
+body[data-view="amc-plans"] #content .panelbody>p{font-size:12px;line-height:1.5;color:#64748b;margin:0 0 10px}
+body[data-view="amc-plans"] #content .summary,
+body[data-view="service-reminders"] #content .summary{gap:9px;margin-bottom:0}
+body[data-view="amc-plans"] #content .summaryitem,
+body[data-view="service-reminders"] #content .summaryitem{min-height:64px;padding:10px 13px;border-radius:6px;box-shadow:0 3px 10px #0f172a0a}
+body[data-view="amc-plans"] #content .summaryitem strong,
+body[data-view="service-reminders"] #content .summaryitem strong{font-size:19px;margin-top:3px}
+body[data-view="amc-plans"] #content .toolbar,
+body[data-view="service-reminders"] #content .toolbar{padding:9px;background:#fff;border:1px solid var(--reminder-line);border-radius:7px;box-shadow:0 2px 8px #0f172a08;margin:0 0 10px;gap:8px}
+body[data-view="amc-plans"] #content .tablewrap,
+body[data-view="service-reminders"] #content .tablewrap{border:1px solid var(--reminder-line);border-radius:7px;box-shadow:0 3px 12px #0f172a0a;scrollbar-color:#94a3b8 #e9eef5}
+body[data-view="amc-plans"] #content .tablewrap th,
+body[data-view="service-reminders"] #content .tablewrap th{background:var(--reminder-ink);color:#f8fafc;border-bottom-color:var(--reminder-ink)}
+body[data-view="amc-plans"] #content .tablewrap td,
+body[data-view="service-reminders"] #content .tablewrap td{border-bottom-color:#edf1f6}
+body[data-view="amc-plans"] #content .tablewrap tbody tr:nth-child(even) td,
+body[data-view="service-reminders"] #content .tablewrap tbody tr:nth-child(even) td{background:#fbfcfe}
+body[data-view="amc-plans"] #content .tablewrap tbody tr:hover td,
+body[data-view="service-reminders"] #content .tablewrap tbody tr:hover td{background:#eff6ff}
+body[data-view="amc-plans"] #content .tablewrap td small,
+body[data-view="service-reminders"] #content .tablewrap td small{color:#71829b;line-height:1.4}
+body[data-view="amc-plans"] #content .badge,
+body[data-view="service-reminders"] #content .badge{border-radius:4px}
+body[data-view="amc-plans"] #content .rowactions,
+body[data-view="service-reminders"] #content .rowactions{gap:5px}
+body[data-view="amc-plans"] #content .notice,
+body[data-view="service-reminders"] #content .notice{border-radius:6px;margin:0}
+
+@media(max-width:700px){
+  body[data-view="amc-plans"] #content .summary,
+  body[data-view="service-reminders"] #content .summary{gap:6px}
+  body[data-view="amc-plans"] #content .summaryitem,
+  body[data-view="service-reminders"] #content .summaryitem{min-height:56px;padding:8px}
+  body[data-view="amc-plans"] #content .summaryitem strong,
+  body[data-view="service-reminders"] #content .summaryitem strong{font-size:16px}
+  body[data-view="amc-plans"] #content .panelbody{padding:8px 10px 10px}
+}

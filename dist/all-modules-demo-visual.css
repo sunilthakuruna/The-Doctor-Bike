@@ -1,0 +1,40 @@
+/* Shared demo-inspired skin for every screen. CSS only: no flow, data, or calculations touched. */
+:root{--ui-ink:#111a2d;--ui-blue:#2563eb;--ui-line:#dbe4ef;--ui-muted:#64748b;--ui-surface:#fff;--ui-soft:#f8fafc}
+main#content{color:#17233a}
+#content .panel,#content .paymentRecords,#content .expensesDemoPage,#content .jobToolbarCard,#content .partsStockGuide{border-radius:8px}
+#content .panel{border-color:var(--ui-line);box-shadow:0 3px 12px #0f172a08}
+#content .panelhead h2{color:#142139}
+#content .panelbody{color:#334155}
+#content .tablewrap{border:1px solid var(--ui-line);border-radius:7px;box-shadow:0 2px 10px #0f172a08;scrollbar-color:#94a3b8 #e9eef5}
+#content .tablewrap th{background:var(--ui-ink);color:#f8fafc;border-bottom-color:var(--ui-ink)}
+#content .tablewrap td{border-bottom-color:#edf1f6}
+#content .tablewrap tbody tr:hover td{background:#f1f6ff}
+#content .tablewrap tbody tr:last-child td{border-bottom:0}
+#content .summaryitem{border-radius:6px;box-shadow:0 3px 12px #0f172a12}
+#content .kpiIcon{border-radius:5px}
+#content .toolbar:not(.jobFilters):not(.paymentToolbar){gap:8px}
+#content .toolbar .search,#content .toolbar select{border-radius:5px}
+#content .btn{border-radius:5px;transition:filter .15s ease,box-shadow .15s ease,transform .15s ease}
+#content .btn:hover:not(:disabled){filter:brightness(.97);box-shadow:0 3px 9px #0f172a12}
+#content .btn:active:not(:disabled){transform:translateY(1px)}
+#content .badge{border-radius:4px}
+#content .notice{border-radius:5px}
+#content .tabs{border-radius:8px}
+#content .tab{border-radius:6px;transition:background .15s ease,color .15s ease}
+#content .tab.active{box-shadow:0 2px 7px #1d4ed82b}
+#content .pipeline{border-radius:7px}
+#content .formsection{border-radius:3px}
+.field input,.field select,.field textarea,
+#modal input:not([type="checkbox"]),#modal select,#modal textarea{border-radius:5px}
+.field input:focus,.field select:focus,.field textarea:focus,
+#modal input:focus,#modal select:focus,#modal textarea:focus{box-shadow:0 0 0 2px #dbeafe}
+#modal .dialog{border-radius:10px;box-shadow:0 22px 55px #0b11204a}
+#modal .dialoghead{background:var(--ui-ink)}
+#modal .formactions{background:#f8fafc}
+#modal .formactions .btn:not(.secondary):not(.danger){box-shadow:0 3px 10px #2563eb2b}
+@media(max-width:700px){
+  #content .panel,#content .paymentRecords,#content .expensesDemoPage,#content .jobToolbarCard,#content .partsStockGuide{border-radius:6px}
+  #content .tablewrap{border-radius:6px}
+  #modal .dialog{border-radius:8px}
+}
+@media(prefers-reduced-motion:reduce){#content .btn,#content .tab{transition:none}}

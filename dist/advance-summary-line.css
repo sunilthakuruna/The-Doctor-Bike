@@ -1,0 +1,11 @@
+.jobBillingTotals .advanceSummaryLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  color: #0f766e;
+  font-weight: 700;
+  border-top: 1px solid #e2e8f0;
+}
+.jobBillingTotals .advanceSummaryLine b { color: #047857; }

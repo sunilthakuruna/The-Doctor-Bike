@@ -1,0 +1,9 @@
+/* Linked vendors use the same purchase history in main and godown views. */
+function partVendorPanel(partId){let vendors=partPurchaseVendors(partId);return '<section class="partVendorPanel"><h3>Vendor Names — Linked Purchase Entries</h3><p>Choose a preferred vendor from suppliers already entered in Purchase Entries. Linked purchase vendors are also listed below.</p>'+partVendorMarkup(partId)+(vendors.length?table(['Vendor','Purchase ID','Supplier Invoice','Purchase Date','Received Into','Quantity'],vendors.flatMap(v=>v.purchases.map(p=>[esc(v.name),esc(p.id),esc(p.invoice||'—'),esc(typeof displayDate==='function'?displayDate(p.date):p.date),esc(p.location),p.qty]))):'<p>Save a Purchase Entry containing this spare part and vendor to create the link.</p>')+'</section>'}
+function addPartVendorPanel(partId,form){let body=form?.querySelector('.formbody');if(!body||body.querySelector('.partVendorPanel'))return;body.insertAdjacentHTML('beforeend',partId?partVendorPanel(partId):'<section class="partVendorPanel"><h3>Vendor Names</h3><p>Select a preferred vendor from suppliers already entered in Purchase Entries. Purchase history will link automatically after receiving this part.</p></section>')}
+const editBeforePartVendors=editRecord;
+editRecord=function(key,id,initial){editBeforePartVendors(key,id,initial);if(key==='parts')addPartVendorPanel(id,$('#recordForm'))};
+const godownFormBeforeVendors=openGodownOpeningForm;
+openGodownOpeningForm=function(id){godownFormBeforeVendors(id);addPartVendorPanel(id,$('#godownOpeningForm'))};
+document.addEventListener('click',e=>{let button=e.target.closest('[data-part-vendor]');if(!button)return;e.preventDefault();purchaseVendorFilter=button.dataset.partVendor;purchasePartFilter=button.dataset.partVendorSku;purchaseLocationFilter='';closeModal();go('report-vendor-purchases')});
+render();

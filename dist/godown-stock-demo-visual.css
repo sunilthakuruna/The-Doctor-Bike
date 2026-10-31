@@ -1,0 +1,69 @@
+/* Godown Stock visual pass. Preserves stock balances, transfer rules and movement history. */
+body[data-view="godown"] #content .summaryitem{border:1px solid #ffffff40;border-radius:6px;box-shadow:0 3px 10px #0f172a16!important}
+body[data-view="godown"] #content .kpiIcon{border-radius:5px;background:#ffffff24}
+body[data-view="godown"] #content>.notice{padding:9px 12px;margin:0 0 10px;border:1px solid #bfdbfe;border-left:3px solid #2563eb;border-radius:5px;background:#eff6ff;color:#36577f;font-size:11px;line-height:1.5}
+body[data-view="godown"] #content>.toolbar{padding:10px;margin:0 0 12px;gap:8px;border:1px solid #dbe4ef;border-radius:8px;background:#fff;box-shadow:0 2px 8px #0f172a08}
+body[data-view="godown"] #content>.toolbar .search{min-height:36px;height:36px;border-radius:5px}
+body[data-view="godown"] #content>.toolbar>.btn{min-height:36px;padding:8px 12px;border-radius:5px;font-size:11px;font-weight:650}
+body[data-view="godown"] #content #godownOpeningButton{background:#0f766e}
+body[data-view="godown"] #content>.tablewrap{border:1px solid #dbe4ef;border-radius:8px;box-shadow:0 3px 12px #0f172a0a}
+body[data-view="godown"] #content>.tablewrap th{background:#111a2d;color:#f8fafc;padding:9px 10px;font-size:10px}
+body[data-view="godown"] #content>.tablewrap td{padding:9px 10px;font-size:11px}
+body[data-view="godown"] #content>.tablewrap tbody tr:hover td{background:#f1f6ff}
+body[data-view="godown"] #content>.tablewrap td:nth-child(14){background:#eff6ff;color:#1e40af;font-weight:750;white-space:nowrap}
+body[data-view="godown"] #content>.tablewrap td:nth-child(20){background:#f0fdf4;color:#166534;font-weight:750;white-space:nowrap}
+body[data-view="godown"] #content>.tablewrap td:nth-child(21){background:#ecfdf5;color:#065f46;font-weight:800;white-space:nowrap}
+body[data-view="godown"] #content>.tablewrap tbody tr:hover td:nth-child(14){background:#dbeafe}
+body[data-view="godown"] #content>.tablewrap tbody tr:hover td:nth-child(20),
+body[data-view="godown"] #content>.tablewrap tbody tr:hover td:nth-child(21){background:#dcfce7}
+body[data-view="godown"] #content>.tablewrap td .badge{border-radius:4px}
+body[data-view="godown"] #content .godown-row-actions .btn{border-radius:4px;min-height:29px}
+body[data-view="godown"] #content .godown-row-actions [data-godown-edit]{background:#f59e0b;color:#111827;border-color:#d97706}
+body[data-view="godown"] #content .godown-row-actions [data-godown-transfer]{background:#2563eb;color:#fff;border-color:#1d4ed8}
+body[data-view="godown"] #content .godown-row-actions [data-godown-history]{background:#6b7280;color:#fff;border-color:#4b5563}
+body[data-view="godown"] #content #exportGodownInventory,body[data-view="godown"] #content #exportGodownHistory{background:#16a34a;color:#fff;border-color:#15803d}
+body[data-view="godown"] #content h3{margin:16px 0 4px;padding:9px 11px;border-left:3px solid #2563eb;background:#f1f5f9;color:#111c31;font-size:13px}
+body[data-view="godown"] #content h3+p{margin:0 0 9px;color:#64748b;font-size:11px}
+body[data-view="godown"] #content .godownMovementHeading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+body[data-view="godown"] #content .godownMovementHeading h3{flex:1;margin:0 0 4px}
+body[data-view="godown"] #content .godownMovementHeading .btn{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:5px 10px;font-size:11px}
+body[data-view="godown"] #modal .dialog:has(#godownMovementForm),
+body[data-view="godown"] #modal .dialog:has(#godownOpeningForm){border-radius:10px;box-shadow:0 24px 60px #0b112050}
+body[data-view="godown"] #modal .dialog:has(#godownMovementForm) .dialoghead,
+body[data-view="godown"] #modal .dialog:has(#godownOpeningForm) .dialoghead{background:#111a2d}
+body[data-view="godown"] #modal #godownMovementForm>.formbody,
+body[data-view="godown"] #modal #godownOpeningForm>.formbody{padding:14px;background:#f8fafc}
+body[data-view="godown"] #modal #godownMovementForm>.formbody>p,
+body[data-view="godown"] #modal #godownOpeningForm>.formbody>p{padding:9px 11px;border:1px solid #bfdbfe;border-left:3px solid #2563eb;border-radius:5px;background:#eff6ff;color:#425a79;font-size:11px;line-height:1.5}
+body[data-view="godown"] #modal #godownMovementForm .formgrid,
+body[data-view="godown"] #modal #godownOpeningForm .formgrid{gap:10px 12px}
+body[data-view="godown"] #modal #godownPartDetails{margin:10px 0;padding:9px 11px;border:1px solid #c7d2fe;border-radius:5px;background:#eef2ff;color:#334155;font-size:11px;line-height:1.5}
+body[data-view="godown"] #modal #godownSharedDetails{margin-top:10px;padding:12px;border:1px solid #dbe4ef;border-radius:6px;background:#fff}
+body[data-view="godown"] #modal #godownSharedDetails h4{margin:0 0 5px;color:#111c31;font-size:12px}
+body[data-view="godown"] #modal #godownSharedDetails p{margin:0 0 10px;color:#64748b;font-size:10px;line-height:1.45}
+body[data-view="godown"] #modal #godownSharedDetails input[disabled]{background:#f1f5f9;color:#64748b}
+body[data-view="godown"] #modal .dialog:has(#godownMovementForm) .formgrid,
+body[data-view="godown"] #modal .dialog:has(#godownOpeningForm) .formgrid{background:#fff}
+@media(max-width:700px){
+  body[data-view="godown"] #content>.toolbar{padding:8px;border-radius:6px}
+  body[data-view="godown"] #modal #godownMovementForm>.formbody,
+  body[data-view="godown"] #modal #godownOpeningForm>.formbody{padding:8px}
+  body[data-view="godown"] #content>.tablewrap td:nth-child(14),
+  body[data-view="godown"] #content>.tablewrap td:nth-child(20),
+  body[data-view="godown"] #content>.tablewrap td:nth-child(21){font-size:10px}
+}
+
+body[data-view="godown"] #modal .dialog:has(.tablewrap){border-radius:10px;box-shadow:0 24px 60px #0b112050}
+body[data-view="godown"] #modal .dialog:has(.tablewrap) .tablewrap{border:1px solid #dbe4ef;border-radius:6px}
+body[data-view="godown"] #modal .dialog:has(.tablewrap) th{background:#111a2d;color:#f8fafc}
+body[data-view="godown"] #modal .dialog:has(.tablewrap) td{font-size:11px}
+
+
+/* Keep compact Godown row controls visible while the wide inventory table scrolls. */
+body[data-view="godown"] #content>.tablewrap th:last-child,
+body[data-view="godown"] #content>.tablewrap td:last-child{position:sticky!important;right:0;z-index:4;width:112px;min-width:112px;max-width:112px;box-shadow:-4px 0 8px #0f172a18;background:#fff}
+body[data-view="godown"] #content>.tablewrap th:last-child{z-index:5;background:#111a2d;color:#f8fafc}
+body[data-view="godown"] #content>.tablewrap tbody tr:hover td:last-child{background:#f1f6ff}
+body[data-view="godown"] #content .godown-row-actions{justify-content:center;gap:4px}
+body[data-view="godown"] #content .godown-row-actions .btn{display:inline-flex;align-items:center;justify-content:center;width:28px;min-width:28px;height:28px;min-height:28px;padding:4px;border-radius:4px}
+body[data-view="godown"] #content .godown-row-actions .btn svg{width:15px;height:15px}

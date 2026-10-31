@@ -1,0 +1,18 @@
+.invoiceGstBreakdown { margin: 16px 0; }
+.invoiceGstBreakdown h4 { margin: 0 0 8px; color: #123b4d; }
+.invoiceGstBreakdown table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.invoiceGstBreakdown th, .invoiceGstBreakdown td { padding: 6px 8px; border: 1px solid #dbe2ea; text-align: left; }
+.invoiceGstBreakdown th { background: #f1f5f9; color: #334155; }
+.invoiceGstBreakdown td:nth-child(2), .invoiceGstBreakdown td:nth-child(3) { text-align: right; white-space: nowrap; }
+.invoiceGstBreakdown .invoiceGstSubtotal { font-weight: 700; background: #f8fafc; }
+@media print { .invoiceGstBreakdown { break-inside: avoid; } }
+@media print {
+  body.printingA4 .invoiceGstBreakdown,
+  body.printingA4 .invoiceGstBreakdown * { display: revert !important; visibility: visible !important; }
+  body.printingA4 .invoiceGstBreakdown table { display: table !important; }
+  body.printingA4 .invoiceGstBreakdown thead { display: table-header-group !important; }
+  body.printingA4 .invoiceGstBreakdown tbody { display: table-row-group !important; }
+  body.printingA4 .invoiceGstBreakdown tr { display: table-row !important; }
+  body.printingA4 .invoiceGstBreakdown th,
+  body.printingA4 .invoiceGstBreakdown td { display: table-cell !important; }
+}

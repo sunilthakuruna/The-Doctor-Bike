@@ -1,0 +1,13 @@
+# Historical restore archives and local review artifacts
+backups/
+*.zip
+.openai/
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local browser/runtime data
+*.log
+*.tmp

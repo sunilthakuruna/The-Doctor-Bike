@@ -1,0 +1,9 @@
+/* Let regular and thermal invoice header/footer content grow with entered data. */
+.invoice .invoicebrand,.invoice .invoiceinfo,.invoice .invoiceBottom,.invoice .invoiceFoot{min-width:0}
+.invoice .invoicebrand>div,.invoice .invoiceinfo>div,.invoice .invoiceBottom>div,.invoice .invoiceFoot>div{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.invoice .invoicebrand{align-items:flex-start;gap:18px;flex-wrap:wrap}
+.invoice .invoicebrand p,.invoice .invoiceFoot p,.invoice .invoiceFoot div{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.invoice .invoiceFoot{height:auto!important;min-height:0!important;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.thermalInvoice .thermalCenter,.thermalInvoice .paymentStampFooter,.thermalInvoice p{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:650px){.invoice .invoicebrand,.invoice .invoiceinfo,.invoice .invoiceBottom,.invoice .invoiceFoot{display:block}.invoice .invoicebrand>div+div,.invoice .invoiceinfo>div+div,.invoice .invoiceBottom>div+div,.invoice .invoiceFoot>div+div{margin-top:10px}}
+@media print{.invoice .invoicebrand,.invoice .invoiceinfo,.invoice .invoiceBottom,.invoice .invoiceFoot{break-inside:avoid;page-break-inside:avoid}}

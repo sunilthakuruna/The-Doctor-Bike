@@ -1,0 +1,56 @@
+/* Compact global page chrome so lists and records begin higher on screen. */
+header{height:58px;min-height:58px;padding:0 16px;gap:12px}
+.pagetitle small{font-size:10px;margin-bottom:1px}
+.pagetitle h1{font-size:18px;line-height:1.12}
+.headeractions{gap:16px}
+.iconbtn{width:32px;height:34px}
+.iconbtn svg{width:21px;height:21px}
+.profile{font-size:12px}
+.profile small{font-size:10px}
+main{padding:10px 16px}
+.toolbar{margin-bottom:14px;min-height:38px;gap:8px}
+.toolbar>.btn{min-height:34px;padding:7px 12px;font-size:12.5px}
+.toolbar .search{height:34px;min-height:34px;padding-top:8px;padding-bottom:8px}
+.columnVisibilityButton{margin-top:0}
+@media(max-width:600px){header{height:54px;min-height:54px;padding:0 10px}.pagetitle h1{font-size:16px}.pagetitle small{font-size:9px}.headeractions{gap:2px}main{padding:8px 10px}.toolbar{margin-bottom:10px}}
+
+/* AMC Management is intentionally dense so the reminder list is visible without excessive scrolling. */
+.amcManagementPage .intro h2{font-size:17px;margin-bottom:2px}
+.amcManagementPage .intro p{font-size:11px;margin-bottom:8px;line-height:1.35}
+.amcManagementPage .summary{gap:8px;margin-bottom:10px}
+.amcManagementPage .summaryitem{min-height:54px;padding:9px 12px;gap:9px}
+.amcManagementPage .summaryitem strong{font-size:18px;margin-top:2px}
+.amcManagementPage .summaryitem small{font-size:9px}
+.amcManagementPage .panel{margin-bottom:10px}
+.amcManagementPage .panelhead{padding:10px 14px}
+.amcManagementPage .panelhead h2{font-size:14px}
+.amcManagementPage .panelhead .btn{min-height:32px;padding:6px 10px;font-size:12px}
+.amcPlanHeaderActions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.amcManagementPage .panelbody{padding:10px 14px}
+.amcManagementPage .panelbody>p{font-size:11px;line-height:1.35;margin:0 0 8px}
+.amcManagementPage th{padding:8px 10px;height:30px;font-size:10px}
+.amcManagementPage td{padding:8px 10px;height:40px;font-size:12px}
+.amcManagementPage .toolbar{margin-bottom:8px}
+
+/* Vehicle Service Reminders: retain every control while reducing vertical use. */
+body[data-view="service-reminders"] #content .reminderActionToolbar{padding:6px 8px;margin-bottom:8px;gap:7px;min-height:38px}
+body[data-view="service-reminders"] #content .reminderActionToolbar>.btn{min-height:32px;padding:6px 9px;font-size:11px}
+body[data-view="service-reminders"] #content .reminderActionToolbar>span{font-size:10.5px;line-height:1.3}
+body[data-view="service-reminders"] #content .summary{gap:8px;margin:8px 0 10px}
+body[data-view="service-reminders"] #content .summaryitem{min-height:52px;padding:7px 10px;gap:8px}
+body[data-view="service-reminders"] #content .summaryitem .kpiIcon{width:26px;height:26px;flex-basis:26px}
+body[data-view="service-reminders"] #content .summaryitem .kpiIcon svg{width:14px;height:14px}
+body[data-view="service-reminders"] #content .summaryitem small{font-size:8.5px;line-height:1.05}
+body[data-view="service-reminders"] #content .summaryitem strong{font-size:16px;margin-top:2px}
+body[data-view="service-reminders"] #content .notice{padding:7px 10px;margin:0 0 10px;font-size:10.5px;line-height:1.4}
+body[data-view="service-reminders"] #content .toolbar{margin-bottom:8px;gap:7px}
+body[data-view="service-reminders"] #content .toolbar .search,body[data-view="service-reminders"] #content .toolbar select{height:32px;min-height:32px;font-size:11px}
+body[data-view="service-reminders"] #content .toolbar>.btn{min-height:32px;padding:6px 10px;font-size:11px}
+body[data-view="service-reminders"] #content th{padding:8px 10px;height:31px;font-size:10px}
+body[data-view="service-reminders"] #content td{padding:8px 10px;height:42px;font-size:12px}
+body[data-view="service-reminders"] .remindersActionTable .reminderActionCell{min-width:122px;max-width:122px!important;padding:6px!important}
+body[data-view="service-reminders"] .reminderActionCell .rowactions{flex-direction:row;justify-content:center;gap:5px}
+body[data-view="service-reminders"] .reminderActionCell .btn{width:30px!important;min-width:30px;height:30px;min-height:30px;padding:5px!important;justify-content:center;gap:0;font-size:0}
+body[data-view="service-reminders"] .reminderActionCell .btn span{display:none}
+body[data-view="service-reminders"] .reminderActionCell .btn svg{width:16px;height:16px}
+@media(max-width:600px){body[data-view="service-reminders"] #content .reminderActionToolbar>span{display:none}body[data-view="service-reminders"] #content .summary{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -1,0 +1,18 @@
+.backupScopeReset{margin-top:16px;border:1px solid #ef4444;background:#fff7f7}
+.backupScopeReset .panelhead{background:#7f1d1d;color:#fff}
+.backupScopeReset .panelhead h2,.backupScopeReset .panelhead h2 *{color:#fff!important}
+.backupScopeReset .panelhead{padding:9px 13px}
+.backupScopeReset .panelbody{padding:10px 13px}
+.backupScopeReset p{margin:0 0 7px;line-height:1.35}
+.backupScopeDisclosure summary{cursor:pointer;font-weight:700;font-size:13px}
+.backupScopeDisclosure summary span{font-weight:400;color:#64748b;margin-left:5px}
+.backupScopeDisclosure[open]{padding-bottom:9px}
+.backupScopeDisclosure[open] p{font-size:12px;margin:7px 0}
+.backupScopeChoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:3px 10px;margin:6px 0}
+.backupScopeChoices label{display:flex;align-items:center;gap:6px;font-size:12px}
+.backupScopeChoices input{width:16px;height:16px;flex:none}
+.backupScopeReset .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+.backupScopeActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:8px}
+.backupScopeFootnote{font-size:11px;color:#7f1d1d;margin:7px 0 0!important}
+.freshResetReview input[type=text]{width:100%;max-width:300px;padding:9px;border:1px solid #cbd5e1}
+.freshBackupStatus{font-size:11px;color:#92400e}.freshBackupStatus.confirmed{color:#166534;font-weight:700}
