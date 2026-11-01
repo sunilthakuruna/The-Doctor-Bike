@@ -30,7 +30,7 @@
     const result=previousEditRecord.apply(this,arguments);
     if(key==='parts'){
       const select=document.querySelector('#recordForm [name="gst"]');
-      if(select){const current=select.value;select.innerHTML=managedRates().map(rate=>`<option value="${rate}" ${String(rate)===String(current)?'selected':''}>${rate}%</option>`).join('')}
+      if(select){const current=db.settings.defaultPurchaseGstRate??db.settings.defaultGstRate??select.value;select.innerHTML=managedRates().map(rate=>`<option value="${rate}" ${String(rate)===String(current)?'selected':''}>${rate}%</option>`).join('')}
     }
     return result;
   };
