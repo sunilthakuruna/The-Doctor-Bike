@@ -39,11 +39,17 @@ basicPage=function(key){
 const renderBeforeInsuranceReminders=render;
 render=function(){
   renderBeforeInsuranceReminders();if(page!=='insurance')return;
+  let policyTable=$$('#content table').find(table=>table.querySelector('[data-edit^="insurance|"]'));
+  let actionHeader=policyTable&&[...policyTable.querySelectorAll('thead th')].find(header=>header.textContent.trim().toLowerCase()==='actions');
+  if(actionHeader){let header=document.createElement('th');header.textContent='PDF / Document';actionHeader.before(header)}
   for(let edit of $$('[data-edit^="insurance|"]')){
     let id=edit.dataset.edit.slice('insurance|'.length),policy=find('insurance',id),file;
     try{file=typeof policy?.policyDocument==='string'?JSON.parse(policy.policyDocument):policy?.policyDocument}catch{file=null}
-    if(!file?.data||!/^data:(application\/pdf|image\/(jpeg|png|webp));base64,/i.test(file.data))continue;
-    let link=document.createElement('a');link.className='btn small secondary';link.textContent=file.type==='application/pdf'?'Download PDF':'Download Image';link.href=file.data;link.download=file.name||'insurance-document';link.title='Download policy document';edit.parentNode.append(link);
+    let actionCell=edit.closest('td'),cell=document.createElement('td');
+    if(file?.data&&/^data:(application\/pdf|image\/(jpeg|png|webp));base64,/i.test(file.data)){
+      let link=document.createElement('a');link.className='btn small secondary';link.textContent=file.name||'Download document';link.href=file.data;link.download=file.name||'insurance-document';link.title='Download policy document';cell.append(link);
+    }else cell.textContent='No document attached';
+    if(actionHeader&&actionCell)actionCell.before(cell);
   }
   for(let button of $$('[data-insurance-whatsapp]'))button.onclick=()=>{let policy=find('insurance',button.dataset.insuranceWhatsapp),vehicle=policy&&find('bikes',policy.bike),customer=policy&&find('customers',vehicle?.customer||policy.customer);if(!customer?.mobile){toast('Add a mobile number for this customer first.');return}messagePreview(customer.mobile,`Hello ${customer.name||''}, a reminder that insurance for vehicle ${vehicle?.number||''} expires on ${policy.expiry}. Please arrange renewal. Thank you.`)};
   for(let button of $$('[data-insurance-sent]'))button.onclick=()=>{let policy=find('insurance',button.dataset.insuranceSent);if(!policy)return;let previous=policy.insuranceReminderSentAt,previousExpiry=policy.insuranceReminderExpiry;policy.insuranceReminderSentAt=new Date().toISOString();policy.insuranceReminderExpiry=policy.expiry;if(save('Insurance reminder marked sent')===false){policy.insuranceReminderSentAt=previous;policy.insuranceReminderExpiry=previousExpiry;return}render()};
