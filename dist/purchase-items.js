@@ -124,7 +124,7 @@ function readPurchaseItemInput(event){
     const part=purchaseLookupPart(input.value,kind,line.part);
     if(part){if(line.part!==part.id){jobDraft.record.partLines[Number(index)]=purchaseSelectedPart(line,part);syncPurchaseItemInputs(Number(index))}input.setCustomValidity('')}
     else{line.part='';if(kind==='code')line.partCode=input.value;else line.name=input.value;input.setCustomValidity(input.value?'Choose a saved part from the code or name suggestions.':'')}
-    updateBillTotals();
+    updateBillTotals();refreshPurchaseItemTotals();
   }else if(data.purchaseBrand!==undefined){const index=Number(data.purchaseBrand);if(jobDraft.record.partLines[index])jobDraft.record.partLines[index].brand=input.value.trim()}
   else if(data.purchaseVendor!==undefined){const index=Number(data.purchaseVendor);if(jobDraft.record.partLines[index])jobDraft.record.partLines[index].vendor=input.value.trim()}
   else if(data.purchaseText!==undefined){const [index,key]=data.purchaseText.split('|');jobDraft.record.partLines[Number(index)][key]=input.value}
@@ -134,7 +134,7 @@ function readPurchaseItemInput(event){
       for(const line of record.partLines)line.gst=0;
       record.invoiceType='gst';
     }
-    record.partLines[Number(index)][key]=input.value.trim()===''?NaN:Number(input.value);updateBillTotals();
+    record.partLines[Number(index)][key]=input.value.trim()===''?NaN:Number(input.value);updateBillTotals();refreshPurchaseItemTotals();
   }
 }
 const lineRenderBeforePurchaseItems=lineRender;
