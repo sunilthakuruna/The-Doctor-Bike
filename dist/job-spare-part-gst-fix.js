@@ -114,7 +114,7 @@ const options=kind==='part'?partOptions().map(item=>{const part=find('parts',ite
   },true);
   document.addEventListener('click',event=>{
     const button=event.target.closest('[data-action="addPart"]');
-    if(!button||!jobDraft||!['jobs','sales'].includes(jobDraft.key)||jobDraft.id)return;
+    if(!button||!jobDraft||!['jobs','sales','purchases'].includes(jobDraft.key)||jobDraft.id)return;
     const line=jobDraft.record.partLines?.at(-1);if(!line)return;
     line.gst=defaultSelling();
     const select=document.querySelector('[data-partfield="'+(jobDraft.record.partLines.length-1)+'|gst"]');
