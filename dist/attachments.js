@@ -57,6 +57,23 @@ render=function(){
 
 /* Insurance uses the same customer-first, filtered vehicle selection as Job Cards. */
 const editRecordBeforeInsuranceCustomerVehicle=editRecord;
+let insuranceRelatedContext=null;
+const closeBeforeInsuranceRelated=closeModal;
+closeModal=function(){
+  if(!insuranceRelatedContext)return closeBeforeInsuranceRelated();
+  let context=insuranceRelatedContext;insuranceRelatedContext=null;
+  $('#modalBody').replaceChildren(context.fragment);$('#modalTitle').innerHTML=context.title;$('.dialog').className=context.dialogClass;$('#modal').hidden=false;document.body.style.overflow='hidden';
+  if(context.savedId){let record=find(context.key,context.savedId),customer=context.form.querySelector('[name="customer"]'),bike=context.form.querySelector('[name="bike"]');let customerId=context.key==='customers'?record?.id:record?.customer;if(customerId&&customer){if(![...customer.options].some(o=>o.value===customerId))customer.add(new Option(name('customers',customerId),customerId));customer.value=customerId;customer.dispatchEvent(new Event('change',{bubbles:true}));let visible=customer.parentNode.querySelector('.insuranceSearchInput');if(visible)visible.value=name('customers',customerId)}if(context.key==='bikes'&&record&&bike){if(![...bike.options].some(o=>o.value===record.id))bike.add(new Option(record.number,record.id));bike.value=record.id;bike.dispatchEvent(new Event('change',{bubbles:true}))}}
+};
+const saveBeforeInsuranceRelated=save;
+save=function(message){let result=saveBeforeInsuranceRelated(message),context=insuranceRelatedContext;if(result!==false&&context?.submitting&&find(context.key,context.candidateId))context.savedId=context.candidateId;return result};
+function openInsuranceRelated(key,customerId){
+  let form=$('#recordForm');if(!form||insuranceRelatedContext)return;
+  if(key==='bikes'&&!customerId){toast('Select a customer before adding a vehicle.');return}
+  let body=$('#modalBody'),fragment=document.createDocumentFragment();insuranceRelatedContext={key,form,fragment,title:$('#modalTitle').innerHTML,dialogClass:$('.dialog').className};
+  while(body.firstChild)fragment.appendChild(body.firstChild);
+  try{editRecord(key,null,key==='bikes'?{customer:customerId}:{});let related=$('#recordForm'),submit=related?.onsubmit,context=insuranceRelatedContext;if(!related||!submit)throw Error('Unable to open the form.');related.onsubmit=function(event){context.candidateId=related.querySelector('[name="id"]')?.value||'';context.submitting=true;try{return submit.call(this,event)}finally{context.submitting=false}}}catch(error){closeModal();toast(error.message)}
+}
 editRecord=function(key,id,initial={}){
   let seed=initial;
   if(key==='insurance'){
@@ -79,7 +96,7 @@ editRecord=function(key,id,initial={}){
   let addCustomer=document.createElement('div');
   addCustomer.className='jobRelatedButtons';
   addCustomer.innerHTML='<button type="button" class="btn secondary small">+ Add Customer</button>';
-  addCustomer.querySelector('button').onclick=()=>editRecord('customers');
+  addCustomer.querySelector('button').onclick=()=>openInsuranceRelated('customers',customer.value);
   customerField.append(addCustomer);
   let ensureCustomerField=(name,label,type='text',full=false)=>{
     if(form.querySelector(`[name="${name}"]`))return;
@@ -93,7 +110,7 @@ editRecord=function(key,id,initial={}){
   let addVehicle=document.createElement('div');
   addVehicle.className='jobRelatedButtons';
   addVehicle.innerHTML='<button type="button" class="btn secondary small">+ Add Vehicle</button>';
-  addVehicle.querySelector('button').onclick=()=>editRecord('bikes',null,{customer:customer.value});
+  addVehicle.querySelector('button').onclick=()=>openInsuranceRelated('bikes',customer.value);
   if(bikeField)bikeField.append(addVehicle);else grid.append(addVehicle);
   customer.innerHTML=opts(reference('customers'),selected);
   function searchableSelect(select,items,labelFor,placeholder){
