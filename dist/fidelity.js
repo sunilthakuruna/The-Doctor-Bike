@@ -62,5 +62,6 @@ $('#profile').onclick=()=>$('#headerPanel')?closeHeaderPanel():headerPanel('prof
 $('#notifications').onclick=()=>$('#headerPanel')?closeHeaderPanel():headerPanel('notifications');
 document.addEventListener('click',e=>{if($('#headerPanel')&&!e.target.closest('#headerPanel,#profile,#notifications'))closeHeaderPanel();if(e.target.closest('#headerPanel [data-page]'))closeHeaderPanel()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#headerPanel')){closeHeaderPanel();$('#profile').focus()}},true);
+const openModalWithJobStatus= openModal;openModal=function(title,html){openModalWithJobStatus(title,html);if(html.includes('id="billForm"')){const form=$('#billForm'),status=form?.querySelector('.jobStatusSelect')?.closest('.field'),left=form?.querySelector('.jobLeft');if(status&&left)left.insertBefore(status,left.firstElementChild)}};
 
 
