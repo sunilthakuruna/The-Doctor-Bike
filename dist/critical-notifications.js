@@ -2,6 +2,7 @@
 (function(){
   const day=value=>value?Math.round((Date.parse(value+'T00:00:00Z')-Date.parse(today()+'T00:00:00Z'))/86400000):null;
   const notice=(level,title,detail,target)=>({level,title,detail,target});
+  const sentToday=log=>{if(!log?.at)return false;const date=new Date(log.at);if(Number.isNaN(date.getTime()))return false;const now=new Date();return date.getFullYear()===now.getFullYear()&&date.getMonth()===now.getMonth()&&date.getDate()===now.getDate()};
   function items(){
     const list=[];
     const openJobs=(db.jobs||[]).filter(job=>!['Completed','Delivered','Cancelled'].includes(job.status));
@@ -14,10 +15,10 @@
     if(stockAlerts.length)list.push(notice(stockAlerts.some(part=>stock(part.id)<=0)?'critical':'action','Stock alert',`${stockAlerts.length} spare part${stockAlerts.length===1?' is':'s are'} at or below the minimum stock level.`, 'parts'));
     const insurance=(db.insurance||[]).filter(record=>{const remaining=day(record.expiry);return remaining!==null&&remaining<=30});
     if(insurance.length)list.push(notice(insurance.some(record=>day(record.expiry)<0)?'critical':'reminder','Insurance expiry',`${insurance.length} vehicle insurance polic${insurance.length===1?'y is':'ies are'} expired or due within 30 days.`, 'insurance'));
-    const service=(db.bikes||[]).filter(bike=>{const remaining=day(bike.nextServiceDate),sent=typeof serviceReminderLastLog==='function'?serviceReminderLastLog(bike):null;return remaining!==null&&remaining<=10&&(!sent||sent.at.slice(0,10)!==today())});
+    const service=(db.bikes||[]).filter(bike=>{const remaining=day(bike.nextServiceDate),sent=typeof serviceReminderLastLog==='function'?serviceReminderLastLog(bike):null;return remaining!==null&&remaining<=10&&!sentToday(sent)});
     if(service.length)list.push(notice(service.some(bike=>day(bike.nextServiceDate)<0)?'critical':'reminder','Vehicle service reminder',`${service.length} vehicle service${service.length===1?' is':'s are'} overdue or due within 10 days. Alerts repeat daily until the due date is updated.`, 'service-reminders'));
     if(typeof amcContractEntries==='function'&&typeof amcExpiryDays==='function'){
-      const amc=amcContractEntries().filter(contract=>{const remaining=amcExpiryDays(contract),sent=typeof contractReminderLog==='function'?contractReminderLog(contract):null;return remaining!==null&&remaining<=10&&(!sent||sent.at.slice(0,10)!==today())});
+      const amc=amcContractEntries().filter(contract=>{const remaining=amcExpiryDays(contract),sent=typeof contractReminderLog==='function'?contractReminderLog(contract):null;return remaining!==null&&remaining<=10&&!sentToday(sent)});
       if(amc.length)list.push(notice(amc.some(contract=>amcExpiryDays(contract)<0)?'critical':'reminder','AMC expiry reminder',`${amc.length} AMC contract${amc.length===1?' is':'s are'} expired or due within 10 days. Alerts repeat daily until the expiry date is updated.`, 'amc-plans'));
     }
     const appointments=(db.appointments||[]).filter(appointment=>appointment.status==='Confirmed'&&appointment.date<=today());
