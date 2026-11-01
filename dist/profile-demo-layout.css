@@ -3,10 +3,11 @@
 #modal:has(.profileAccess) .dialog { pointer-events: auto; width: min(525px, calc(100vw - 32px)); max-height: calc(100dvh - 100px); box-shadow: 0 12px 32px #0f172a35; }
 #modal:has(.profileAccess) #modalBody { overflow: hidden; min-height: 0; }
 .profileAccess { max-height: calc(100dvh - 100px); }
-.profileAccessHero { background: linear-gradient(110deg, #082b3c, #10475c); padding: 20px 24px; }
+.profileAccessHero { background: linear-gradient(110deg, #082b3c, #10475c); padding: 20px 24px; flex: 0 0 auto; height: auto; min-height: max-content; overflow: visible; }
 .profileHeroTitle p { color: #9dc7fa; font-size: 15px; }
-.profileIdentity { padding-top: 18px; }
-.profileAccessBody { min-height: 0; padding: 16px 22px; }
+.profileIdentity { position: static; padding-top: 18px; min-height: 56px; }
+.profileAccessBody { position: relative; flex: 1 1 auto; min-height: 0; padding: 16px 22px; }
+.profileAccessFooter { flex: 0 0 auto; }
 .accessTabs { display: flex; flex-wrap: wrap; gap: 2px; background: #e2e8f0; border: 0; width: fit-content; }
 .accessTabs button { border: 0; padding: 7px 10px; }
 .accessTabs button.active { background: white; border: 0; box-shadow: 0 1px 4px #0f172a22; }
