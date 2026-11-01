@@ -22,6 +22,9 @@ body[data-view="jobs"] #content .rowactions .btn:hover{transform:translateY(-1px
 #modal .dialog:has(.jobSplit) .jobRight .lineheading{border-radius:4px 4px 0 0}
 #modal .dialog:has(.jobSplit) .jobRight .jobBillingTotals{border-radius:6px}
 #modal .dialog:has(.jobSplit) .formactions{background:#f8fafc}
+#modal .dialog:has(.jobSplit) .jobSplit{display:block;min-width:0;width:100%;max-width:100%;overflow:visible}
+#modal .dialog:has(.jobSplit) .jobLeft,#modal .dialog:has(.jobSplit) .jobRight{width:100%;max-width:100%;min-width:0;border:0;box-sizing:border-box}
+#modal .dialog:has(.jobSplit) .jobRight{border-top:1px solid #dbe2ea}
 @media(max-width:600px){
   body[data-view="jobs"] #content .jobToolbarCard,
   body[data-view="jobs"] #content .pipeline,
