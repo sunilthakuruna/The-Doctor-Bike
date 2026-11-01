@@ -1,0 +1,16 @@
+/* Keep linked add-option controls inside the usable form area on small screens. */
+#modal .dialog{min-width:0;max-width:calc(100vw - 20px);overflow:hidden}
+#modalBody{min-width:0;max-width:100%;overflow:hidden}
+#modalBody>#recordForm>.formbody{min-width:0;max-width:100%;overflow:auto}
+#recordForm .formgrid{grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}
+#recordForm .field{min-width:0;max-width:100%}
+#recordForm .field input,#recordForm .field select,#recordForm .field textarea{min-width:0;max-width:100%}
+#recordForm .field:has(>button){display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:8px}
+#recordForm .field:has(>button)>span{grid-column:1/-1}
+#recordForm .field:has(>button)>button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:700px){
+  #modal .dialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px)}
+  #recordForm .formgrid{grid-template-columns:minmax(0,1fr)}
+  #recordForm .field:has(>button){grid-template-columns:minmax(0,1fr) auto}
+  #recordForm .field:has(>button)>button{font-size:10px;padding:7px 8px}
+}
