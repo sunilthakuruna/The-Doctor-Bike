@@ -77,6 +77,11 @@ const options=kind==='part'?partOptions().map(item=>{const part=find('parts',ite
     paintPage();
   }
   lineRender=function(){
+    if(jobDraft?.key==='jobs'||jobDraft?.key==='sales'){
+      (jobDraft.record.partLines||[]).forEach(line=>{
+        if(!line.part&&!Number(line.gst))line.gst=defaultSelling();
+      });
+    }
     const result=oldLineRender.apply(this,arguments);
     searchableRows('#serviceLines','select[data-line^="service|"]','service');
     searchableRows('#partLines','select[data-line^="part|"]','part');
