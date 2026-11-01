@@ -25,6 +25,34 @@ const billBeforeAttachments=billForm;
 billForm=function(key,id,initial){billBeforeAttachments(key,id,initial);addFormAttachments(key,id)};
 render();
 
+/* Insurance uses the same customer-first, filtered vehicle selection as Job Cards. */
+const editRecordBeforeInsuranceCustomerVehicle=editRecord;
+editRecord=function(key,id,initial={}){
+  let seed=initial;
+  if(key==='insurance'){
+    let existing=id?find('insurance',id):initial;
+    let vehicle=existing?.bike?find('bikes',existing.bike):null;
+    seed={...initial,customer:existing?.customer||vehicle?.customer||''};
+  }
+  editRecordBeforeInsuranceCustomerVehicle(key,id,seed);
+  if(key!=='insurance')return;
+  let form=$('#recordForm'),bike=form?.querySelector('[name="bike"]'),grid=form?.querySelector('.formgrid');
+  if(!form||!bike||!grid)return;
+  let bikeField=bike.closest('.field'),customerField=document.createElement('label');
+  customerField.className='field';
+  customerField.innerHTML='<span>Customer Name <b class="required">*</b></span><select name="customer" required></select>';
+  if(bikeField)bikeField.parentNode.insertBefore(customerField,bikeField);else grid.prepend(customerField);
+  let customer=customerField.querySelector('select'),selected=seed.customer||'';
+  customer.innerHTML=opts(reference('customers'),selected);
+  let refreshVehicles=()=>{
+    let current=bike.value;
+    let vehicles=db.bikes.filter(v=>!customer.value||v.customer===customer.value).map(v=>({value:v.id,label:v.number}));
+    bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,vehicles.some(v=>v.value===current)?current:'');
+  };
+  customer.onchange=refreshVehicles;
+  refreshVehicles();
+};
+
 function removeCameraUploadControls(root=document){
   root.querySelectorAll?.('.attachmentCameraButton,#staffPhotoCamera,[data-camera-capture-for],[data-camera-for]').forEach(node=>node.remove());
   root.querySelectorAll?.('input[type="file"][capture]').forEach(input=>input.removeAttribute('capture'));
