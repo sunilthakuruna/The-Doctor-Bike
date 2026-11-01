@@ -25,4 +25,13 @@
     if(jobDraft?.key==='sales'||jobDraft?.key==='jobs')document.querySelectorAll('[data-partfield$="|gst"]').forEach(select=>{const current=select.value,values=managedRates();select.innerHTML=values.map(rate=>`<option value="${rate}" ${String(rate)===String(current)?'selected':''}>${rate}%</option>`).join('')});
     return result;
   };
+  const previousEditRecord=editRecord;
+  editRecord=function(key,id,initial){
+    const result=previousEditRecord.apply(this,arguments);
+    if(key==='parts'){
+      const select=document.querySelector('#recordForm [name="gst"]');
+      if(select){const current=select.value;select.innerHTML=managedRates().map(rate=>`<option value="${rate}" ${String(rate)===String(current)?'selected':''}>${rate}%</option>`).join('')}
+    }
+    return result;
+  };
 })();
