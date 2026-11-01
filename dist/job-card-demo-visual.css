@@ -35,3 +35,5 @@ body[data-view="jobs"] #content .rowactions .btn:hover{transform:translateY(-1px
 #modal .dialog:has(#serviceLines) .jobLinesScroll{display:block;width:100%;max-width:100%;margin-top:18px}
 #modal .dialog:has(#serviceLines) .jobLinesScroll>.lineheading,#modal .dialog:has(#serviceLines) .jobLinesScroll>.notice,#modal .dialog:has(#serviceLines) .jobLinesScroll>#serviceLines,#modal .dialog:has(#serviceLines) .jobLinesScroll>#partLines{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
 #modal .dialog:has(#serviceLines) .jobBillingPanel{display:block;width:100%;margin-top:18px}
+.jobDialog .jobInlineAdd{display:flex;width:100%;min-height:26px;height:26px;margin-top:0;padding:3px 7px;box-sizing:border-box;justify-content:flex-start;align-items:center;font-size:10px;gap:4px}
+.jobDialog .jobInlineAdd svg{width:14px;height:14px;flex:0 0 auto}
