@@ -1,15 +1,15 @@
 /* Keep the Attendance edit control available while the staff table scrolls. */
 .attendanceDailyTable table th.attendanceEditActionHead,
 .attendanceDailyTable table td.attendanceEditAction {
-  position: sticky;
-  right: 0;
+  position: static;
+  right: auto;
   min-width: 92px;
   width: 92px;
-  box-shadow: -5px 0 10px rgba(15, 23, 42, .10);
+  box-shadow: none;
 }
 
 .attendanceDailyTable table th.attendanceEditActionHead {
-  z-index: 4;
+  z-index: auto;
   background: #111827;
 }
 
