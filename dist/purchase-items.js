@@ -71,6 +71,7 @@ function refreshPurchaseItemTotals(){
 }
 function renderPurchaseItems(){
   const record=jobDraft.record,container=document.getElementById('partLines');if(!container)return;
+  const previousScrollLeft=container.querySelector('.purchaseItemScroll')?.scrollLeft||0;
   const stockLocation=record.stockLocation==='godown'?'godown':'main',stockLabel='MAIN STOCK',totalStockLabel='TOTAL MAIN STOCK';
   const heading=container.previousElementSibling;
   if(heading?.classList.contains('lineheading')){
@@ -102,6 +103,8 @@ function renderPurchaseItems(){
     const empty=purchaseTable.tBodies[0].querySelector('td[colspan]');if(empty)empty.colSpan=15;
     purchaseTable.style.width='2420px';purchaseTable.style.minWidth='2420px';
   }
+  const purchaseScroll=container.querySelector('.purchaseItemScroll');
+  if(purchaseScroll)purchaseScroll.scrollLeft=previousScrollLeft;
   const pricePolicy=document.createElement('p');pricePolicy.className='notice purchasePricePolicyNote';pricePolicy.textContent='Each line keeps its bill-specific rate. The master purchase-price reference updates to this receipt’s weighted average only if combined Main Stock and Godown stock was zero before receipt.';container.prepend(pricePolicy);
   updateBillTotals();
 }
