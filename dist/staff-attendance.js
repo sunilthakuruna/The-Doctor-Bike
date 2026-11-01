@@ -3,7 +3,7 @@
 let attendanceActiveView='daily',attendanceSelectedDate=today(),attendanceSelectedMonth=today().slice(0,7),attendanceSearchText='',attendanceDailyDrafts=Object.create(null);
 function attendanceStaff(){return db.staff.filter(s=>s.status!=='Inactive')}
 function normalizeAttendanceStatus(value){return ['P','Present'].includes(value)?'Present':['H','HD','Half Day'].includes(value)?'Half Day':['A','Absent'].includes(value)?'Absent':'Unmarked'}
-function attendanceFor(date,id){return db.attendance?.[date]?.[id]||{}}
+function attendanceFor(date,id){if(date===attendanceSelectedDate&&attendanceDailyDrafts[date]&&Object.prototype.hasOwnProperty.call(attendanceDailyDrafts[date],id))return attendanceDailyDrafts[date][id]||{};return db.attendance?.[date]?.[id]||{}}
 function getDailyDraft(){if(!attendanceDailyDrafts[attendanceSelectedDate])attendanceDailyDrafts[attendanceSelectedDate]=structuredClone(db.attendance?.[attendanceSelectedDate]||{});return attendanceDailyDrafts[attendanceSelectedDate]}
 function attendanceLabel(status){return normalizeAttendanceStatus(status)==='Present'?'P':normalizeAttendanceStatus(status)==='Half Day'?'H':normalizeAttendanceStatus(status)==='Absent'?'A':'—'}
 function attendanceTotals(date,staff=attendanceStaff()){let counts={Present:0,'Half Day':0,Absent:0};for(const person of staff){const s=normalizeAttendanceStatus(attendanceFor(date,person.id).status);if(s!=='Unmarked')counts[s]++}return counts}
