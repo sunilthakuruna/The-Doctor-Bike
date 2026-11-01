@@ -1,0 +1,26 @@
+@media screen and (max-width: 700px) {
+  #billForm .jobBillingPanel > .jobBillingTotals {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  #billForm .jobBillingPanel > .jobBillingTotals > div {
+    grid-column: 1 / -1;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  #billForm .jobBillingTotals > .jobChargeBreakdown {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  #billForm .jobChargeBreakdown > .breakdownColumn,
+  #billForm .jobChargeBreakdown > p.wide { grid-column: 1 / -1; min-width: 0; }
+  #billForm .jobChargeBreakdown p,
+  #billForm .jobGrandSummary p { flex-wrap: wrap; gap: 3px 8px; }
+  #billForm .jobChargeBreakdown p span,
+  #billForm .jobBillingTotals > div > span,
+  #billForm .jobBillingTotals > div > label { min-width: 0; overflow-wrap: anywhere; }
+  #billForm .jobChargeBreakdown strong,
+  #billForm .jobBillingTotals > div > b { max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-align: right; }
+}
