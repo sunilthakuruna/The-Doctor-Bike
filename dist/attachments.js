@@ -23,6 +23,26 @@ editRecord=function(key,id,initial){editBeforeAttachments(key,id,initial);if(!['
 const billBeforeAttachments=billForm;
 billForm=function(key,id,initial){billBeforeAttachments(key,id,initial);addFormAttachments(key,id)};
 render();
+
+function enhanceDocumentCameraInputs(){
+  for(let input of document.querySelectorAll('input[type="file"]')){
+    let accept=String(input.getAttribute('accept')||'').toLowerCase();
+    if(!accept.includes('image/')&&!accept.includes('.png')&&!accept.includes('.jpg')&&!accept.includes('application/pdf'))continue;
+    input.setAttribute('capture',input.id==='staffPhotoUpload'?'user':'environment');
+    input.setAttribute('aria-label',(input.getAttribute('aria-label')||'Upload document')+' or use camera');
+    let anchor=input.closest('label')||input;
+    if(anchor.nextElementSibling?.matches?.('button')&&/camera/i.test(anchor.nextElementSibling.textContent||''))continue;
+    let button=document.createElement('button');
+    button.type='button';button.className='btn secondary small';button.textContent='📷 Use Camera';
+    button.dataset.cameraCaptureFor=input.id||input.name||'document';
+    button.setAttribute('aria-label','Use camera to capture document');
+    button.onclick=()=>input.click();
+    anchor.insertAdjacentElement('afterend',button);
+  }
+}
+const renderBeforeGlobalDocumentCamera=render;
+render=function(){renderBeforeGlobalDocumentCamera();enhanceDocumentCameraInputs()};
+render();
 /* File sharing is consolidated in invoice-media.js so saved and selected files can be shared together. */
 const messageBeforeInvoiceSharing=messagePreview;
 messagePreview=function(phone,message){messageBeforeInvoiceSharing(phone,message)};
