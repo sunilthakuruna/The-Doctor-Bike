@@ -1,6 +1,6 @@
 /* Payroll presentation aligned with the recorded screen and authorized demo.
    Earnings retain the existing completed-labour rule; no pay-policy migration. */
-let payrollStaffFilter='per-job';
+let payrollStaffFilter='all';
 moduleGradients.payroll=[['#081d26','#0f3544'],['#0284c7','#0369a1'],['#10b981','#059669'],['#6366f1','#4f46e5'],['#ef4444','#dc2626']];
 function payrollNormalizeText(value){return String(value??'').trim().replace(/\s+/g,' ').toLocaleLowerCase()}
 function payrollIsPerJob(staff){return payrollNormalizeText(staff.salaryType).replace(/[-_]+/g,' ')==='per job'}
