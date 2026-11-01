@@ -13,6 +13,15 @@
       invoiceHeader.textContent='Invoice No.';
       header.insertBefore(invoiceHeader,header.cells[supplierIndex+1]);
     }
+    const skuHeaderIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='SKU');
+    if(skuHeaderIndex>=0){
+      const skuHeader=header.cells[skuHeaderIndex];
+      ['Vehicle Make','Vehicle Model','Brand Name'].forEach(label=>{
+        const cell=document.createElement('th');
+        cell.textContent=label;
+        header.insertBefore(cell,skuHeader);
+      });
+    }
     const unitIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Unit Price');
     const totalIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Total');
     if(unitIndex<0||totalIndex<0)return;
@@ -28,12 +37,17 @@
       if(row.cells.length<totalIndex+1)return;
       const billId=row.cells[0]?.textContent.trim();
       const bill=(db.purchases||[]).find(item=>item.id===billId);
+      const partId=row.cells[4]?.textContent.trim();
+      const line=(bill?.partLines||[]).find(item=>String(item.part)===partId)||bill?.partLines?.[0];
+      const part=find('parts',line?.part||partId)||{};
+      const details=[part.vehicleMake||part.make||'—',part.vehicleModel||part.model||'—',part.brand||'—'];
+      const skuCell=row.cells[5];
+      details.forEach(value=>{const cell=document.createElement('td');cell.textContent=value;row.insertBefore(cell,skuCell)});
       const invoiceCell=document.createElement('td');
       invoiceCell.textContent=bill?.invoice||'—';
       row.insertBefore(invoiceCell,row.cells[3]);
       const partIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='SKU');
       const qtyIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Qty');
-      const line=(bill?.partLines||[]).find(item=>String(item.part)===row.cells[partIndex]?.textContent.trim())||bill?.partLines?.[0];
       const qty=Number(row.cells[qtyIndex]?.textContent||0);
       const unit=Number(line?.price||0);
       const rate=Number(line?.gst||0);
