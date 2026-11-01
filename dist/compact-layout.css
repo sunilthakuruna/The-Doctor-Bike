@@ -53,4 +53,7 @@ body[data-view="service-reminders"] .reminderActionCell .rowactions{flex-directi
 body[data-view="service-reminders"] .reminderActionCell .btn{width:30px!important;min-width:30px;height:30px;min-height:30px;padding:5px!important;justify-content:center;gap:0;font-size:0}
 body[data-view="service-reminders"] .reminderActionCell .btn span{display:none}
 body[data-view="service-reminders"] .reminderActionCell .btn svg{width:16px;height:16px}
+body[data-view="service-reminders"] .reminderActionCell .btn[data-service-sent]{width:auto!important;min-width:88px;padding:5px 8px!important;font-size:11px;white-space:nowrap}
+body[data-view="service-reminders"] .reminderActionCell .btn[data-service-sent] span{display:inline}
+body[data-view="service-reminders"] .remindersActionTable .reminderActionCell{min-width:170px;max-width:170px!important}
 @media(max-width:600px){body[data-view="service-reminders"] #content .reminderActionToolbar>span{display:none}body[data-view="service-reminders"] #content .summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
