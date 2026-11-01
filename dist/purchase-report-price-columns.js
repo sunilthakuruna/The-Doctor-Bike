@@ -7,8 +7,14 @@
     const header=table.tHead?.rows[0];
     if(!header)return;
     const cells=[...header.cells];
-    const unitIndex=cells.findIndex(cell=>cell.textContent.trim()==='Unit Price');
-    const totalIndex=cells.findIndex(cell=>cell.textContent.trim()==='Total');
+    const supplierIndex=cells.findIndex(cell=>cell.textContent.trim()==='Supplier');
+    if(supplierIndex>=0){
+      const invoiceHeader=document.createElement('th');
+      invoiceHeader.textContent='Invoice No.';
+      header.insertBefore(invoiceHeader,header.cells[supplierIndex+1]);
+    }
+    const unitIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Unit Price');
+    const totalIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Total');
     if(unitIndex<0||totalIndex<0)return;
     header.cells[unitIndex].textContent='Price / Unit (₹)';
     header.cells[totalIndex].textContent='Total Purchase Price (₹)';
@@ -22,8 +28,13 @@
       if(row.cells.length<totalIndex+1)return;
       const billId=row.cells[0]?.textContent.trim();
       const bill=(db.purchases||[]).find(item=>item.id===billId);
-      const line=(bill?.partLines||[]).find(item=>String(item.part)===row.cells[4]?.textContent.trim())||bill?.partLines?.[0];
-      const qty=Number(row.cells[5]?.textContent||0);
+      const invoiceCell=document.createElement('td');
+      invoiceCell.textContent=bill?.invoice||'—';
+      row.insertBefore(invoiceCell,row.cells[3]);
+      const partIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='SKU');
+      const qtyIndex=[...header.cells].findIndex(cell=>cell.textContent.trim()==='Qty');
+      const line=(bill?.partLines||[]).find(item=>String(item.part)===row.cells[partIndex]?.textContent.trim())||bill?.partLines?.[0];
+      const qty=Number(row.cells[qtyIndex]?.textContent||0);
       const unit=Number(line?.price||0);
       const rate=Number(line?.gst||0);
       const gst=unit*qty*rate/100;
