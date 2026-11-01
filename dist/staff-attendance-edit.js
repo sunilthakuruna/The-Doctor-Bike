@@ -4,6 +4,14 @@ const dailyAttendanceBeforeEdit = dailyAttendanceMarkup;
 dailyAttendanceMarkup = function () {
   const host = document.createElement('div');
   host.innerHTML = dailyAttendanceBeforeEdit();
+  for (const group of host.querySelectorAll('.attendanceChoices')) {
+    const seen = new Set();
+    for (const button of group.querySelectorAll('[data-attendance-status]')) {
+      const status = button.dataset.attendanceStatus;
+      if (seen.has(status)) button.remove();
+      else seen.add(status);
+    }
+  }
   const table = host.querySelector('.attendanceDailyTable table');
   if (!table) return host.innerHTML;
   const head = table.tHead && table.tHead.rows[0];
