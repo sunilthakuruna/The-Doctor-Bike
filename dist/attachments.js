@@ -54,11 +54,39 @@ editRecord=function(key,id,initial={}){
   addVehicle.querySelector('button').onclick=()=>editRecord('bikes',null,{customer:customer.value});
   if(bikeField)bikeField.append(addVehicle);else grid.append(addVehicle);
   customer.innerHTML=opts(reference('customers'),selected);
+  function searchableSelect(select,items,labelFor,placeholder){
+    let wrap=document.createElement('div');
+    wrap.className='insuranceSearchSelect';
+    wrap.style.cssText='position:relative;width:100%;z-index:20';
+    let input=document.createElement('input');
+    input.type='search';input.className='insuranceSearchInput';input.placeholder=placeholder;input.autocomplete='off';
+    let menu=document.createElement('div');
+    menu.className='insuranceSearchMenu';
+    menu.style.cssText='display:none;position:absolute;left:0;right:0;top:100%;max-height:240px;overflow:auto;background:#fff;border:1px solid #94a3b8;border-radius:6px;box-shadow:0 8px 20px rgba(15,23,42,.18);z-index:1000';
+    select.style.display='none';
+    select.parentNode.insertBefore(wrap,select);wrap.append(input,menu);
+    let currentItems=[];
+    let renderItems=query=>{
+      currentItems=items().filter(item=>labelFor(item).toLowerCase().includes(query.toLowerCase()));
+      menu.innerHTML=currentItems.length?currentItems.map(item=>`<button type="button" class="insuranceSearchOption" data-value="${esc(item.id)}" style="display:block;width:100%;padding:9px 11px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e2e8f0;cursor:pointer"><strong>${esc(labelFor(item))}</strong></button>`).join(''):'<div style="padding:10px;color:#64748b">No matching records</div>';
+      menu.style.display='block';
+      menu.querySelectorAll('[data-value]').forEach(option=>option.onclick=()=>{select.value=option.dataset.value;input.value=labelFor(currentItems.find(item=>item.id===option.dataset.value)||{});menu.style.display='none';select.dispatchEvent(new Event('change',{bubbles:true}))});
+    };
+    input.value=labelFor(items().find(item=>item.id===select.value)||{});
+    input.onfocus=()=>renderItems(input.value);
+    input.oninput=()=>renderItems(input.value);
+    document.addEventListener('click',event=>{if(!wrap.contains(event.target))menu.style.display='none'});
+    return {refresh(list){items=list;input.value=labelFor(list().find(item=>item.id===select.value)||{});},open:()=>renderItems(input.value)};
+  }
+  let customerSearch=searchableSelect(customer,()=>db.customers,c=>c.name||'', 'Search customer name...');
+  let vehicleSearch;
   let refreshVehicles=()=>{
     let current=bike.value;
     let vehicles=db.bikes.filter(v=>!customer.value||v.customer===customer.value).map(v=>({value:v.id,label:v.number}));
     bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,vehicles.some(v=>v.value===current)?current:'');
+    if(vehicleSearch)vehicleSearch.refresh(()=>db.bikes.filter(v=>!customer.value||v.customer===customer.value));
   };
+  vehicleSearch=searchableSelect(bike,()=>db.bikes.filter(v=>!customer.value||v.customer===customer.value),v=>v.number||'', 'Search vehicle number...');
   customer.onchange=refreshVehicles;
   refreshVehicles();
 };
