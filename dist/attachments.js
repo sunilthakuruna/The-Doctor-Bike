@@ -1,5 +1,5 @@
 /* Device-selected files are kept temporarily in memory and are never saved with records. */
-const attachmentModules=['parts','jobs','sales','purchases','insurance','expenses'];
+const attachmentModules=['parts','jobs','sales','purchases','insurance','expenses','staff'];
 const temporaryAttachmentFiles=new Map();
 const temporaryAttachmentNotes=new Map();
 let removedOldAttachments=false;for(let key of attachmentModules)for(let record of(db[key]||[]))if(record.attachments?.length){delete record.attachments;removedOldAttachments=true}if(Array.isArray(db.attachments)&&db.attachments.length){db.attachments=[];removedOldAttachments=true}if(removedOldAttachments)save('Old saved attachments removed; new files are temporary');
