@@ -1,7 +1,7 @@
 /* Reminder actions remain visible even when no due records match the current filter. */
 serviceReminderFilter='all';amcReminderFilter='all';
 function openReminderAmcRecord(){openModal('Add / Edit AMC Reminder',`<div class="formbody"><p>Select the customer or vehicle whose AMC plan and expiry date you want to update.</p><label class="field"><span>Customer / Vehicle</span><select id="reminderAmcRecord" aria-label="Customer or vehicle for AMC">${opts([...db.customers.map(c=>({value:'customers|'+c.id,label:'Customer: '+c.name+' — '+c.id})),...db.bikes.map(b=>({value:'bikes|'+b.id,label:'Vehicle: '+b.number+' — '+name('customers',b.customer)}))])}</select></label></div><div class="formactions">${btn('Cancel','cancel','secondary')}<button type="button" class="btn" id="editReminderAmcRecord">Open AMC Details</button></div>`);$('#editReminderAmcRecord').onclick=()=>{let value=$('#reminderAmcRecord').value;if(!value)return toast('Select a customer or vehicle.');editRecord(...value.split('|'))}}
-function reminderActionLabel(action){return {whatsapp:'WhatsApp Reminder',service:'Edit Due Date',amc:'Edit AMC',sent:'Record Sent'}[action]||action}
+function reminderActionLabel(action){return {whatsapp:'WhatsApp Reminder',service:'Edit Due Date',amc:'Edit AMC',sent:'Mark Sent'}[action]||action}
 const remindersPageBeforeActionToolbar=serviceRemindersPage;
 serviceRemindersPage=function(){return `<div class="toolbar reminderActionToolbar"><button type="button" class="btn" id="reminderScheduleAction">${icon('calendar')}Schedule Vehicle Service</button><span>Use the Actions column on each row to send, edit or record a service reminder.</span></div>`+remindersPageBeforeActionToolbar()};
 const renderBeforeReminderActions=render;
