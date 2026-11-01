@@ -30,3 +30,5 @@
 #content td:has([data-action]),
 #content td:has([data-edit]),
 #content td:has([data-delete]){position:static!important;left:auto!important;right:auto!important;box-shadow:none!important}
+#content .attendanceChoice.selected.paidleave{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+#content .attendanceChoice.selected.weeklyoff{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd}
