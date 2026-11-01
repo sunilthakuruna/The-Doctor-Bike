@@ -19,3 +19,7 @@
 /* Keep the attendance controls compact instead of stretching across the pane. */
 #content .attendanceDateRow input[type="date"]{width:260px!important;max-width:260px!important;flex:0 0 260px}
 #content .attendanceActionsRow input[type="search"]{width:260px!important;max-width:260px!important;flex:0 0 260px}
+/* The estimated salary column follows the monthly table horizontally. */
+#content .attendanceMatrix th:last-child,
+#content .attendanceMatrix td:last-child,
+#content .attendanceMatrixPay{position:static!important;left:auto!important;right:auto!important;z-index:auto!important}
