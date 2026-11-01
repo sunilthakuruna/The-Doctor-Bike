@@ -16,3 +16,6 @@
 .attendanceDailyTable .attendancePerson strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .attendanceDailyTable .attendanceChoices{flex-wrap:wrap}
 .attendanceDailyTable .attendanceNote{max-width:180px}
+/* Keep the attendance controls compact instead of stretching across the pane. */
+#content .attendanceDateRow input[type="date"]{width:260px!important;max-width:260px!important;flex:0 0 260px}
+#content .attendanceActionsRow input[type="search"]{width:260px!important;max-width:260px!important;flex:0 0 260px}
