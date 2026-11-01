@@ -47,7 +47,7 @@
     return `<div class="toolbar"><select id="amcReminderFilter" aria-label="AMC reminder filter">${opts([{value:'due',label:'Expired & Today'},{value:'expired',label:'Expired'},{value:'today',label:'Expires Today'},{value:'upcoming',label:'Expiring Soon'},{value:'all',label:'All AMC Contracts'},{value:'incomplete',label:'Missing Expiry'}],amcReminderFilter)}</select><select id="amcReminderWindow" aria-label="AMC reminder window">${opts([{value:'7',label:'Next 7 Days'},{value:'30',label:'Next 30 Days'},{value:'90',label:'Next 90 Days'}],amcReminderWindow)}</select><button type="button" class="btn" data-amc-manage-add>Add / Edit Vehicle AMC</button><button type="button" class="btn secondary" data-amc-manage-export>Export Excel</button></div>`+table(['Customer','Vehicle','AMC Plan','Valid Until','Status','Reminder Status','Actions'],entries.map(entry=>{const days=amcExpiryDays(entry),last=contractReminderLog(entry),value=entry.contractKey+'|'+entry.contractId;return [esc(entry.name),esc(entry.vehicleNumbers||'—'),esc(entry.amcType),esc(entry.amcExpiry||'—'),badge(customerAmcStatus(entry)),`${esc(reminderStatus(entry))}${last?'<small>Last recorded: '+esc(uiDateTime(last.at))+'</small>':''}`,`<div class="rowactions"><button type="button" class="btn small extraAction green" data-amc-manage-message="${esc(value)}" ${days===null?'disabled':''}>${whatsappIcon()}</button><button type="button" class="btn small editButton" data-amc-manage-edit="${esc(value)}">${icon('edit')}</button><button type="button" class="btn small secondary" data-amc-manage-renew="${esc(value)}">Renew</button></div>`]}));
   }
   amcPlansPage=function(){
-    return `<div class="amcManagementPage">${plansPageBeforeManagement()}<section class="panel"><div class="panelhead"><h2>AMC Expiry Reminders</h2></div><div class="panelbody"><p>Review expiry, prepare the WhatsApp reminder, and record it after it has been sent.</p>${amcManagementReminderMarkup()}</div></section></div>`;
+    return `<div class="amcManagementPage">${plansPageBeforeManagement()}<section class="panel"><div class="panelhead"><h2>AMC Expiry Reminders</h2></div><div class="panelbody"><p>Review expiry, prepare the WhatsApp reminder, and record it after it has been sent.</p>${amcManagementReminderMarkup()}</div></section><section class="panel"><div class="panelhead"><h2>Vehicle Service Reminders</h2></div><div class="panelbody"><p>Service due dates are managed per vehicle. Open the service reminder workspace to schedule a service, review due vehicles, and prepare reminders.</p><button type="button" class="btn" data-amc-service-reminders>Manage Service Reminders</button></div></section></div>`;
   };
 
   function bindAmcManagement(){
@@ -60,6 +60,7 @@
     for(const button of $$('[data-amc-manage-message]'))button.onclick=()=>performAmcAction('whatsapp',button.dataset.amcManageMessage);
     for(const button of $$('[data-amc-manage-edit]'))button.onclick=()=>performAmcAction('edit',button.dataset.amcManageEdit);
     for(const button of $$('[data-amc-manage-renew]'))button.onclick=()=>performAmcAction('renew',button.dataset.amcManageRenew);
+    for(const button of $$('[data-amc-service-reminders]'))button.onclick=()=>go('service-reminders');
   }
   const renderBeforeAmcManagement=render;
   render=function(){renderBeforeAmcManagement();bindAmcManagement()};
