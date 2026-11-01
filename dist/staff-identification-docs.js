@@ -14,4 +14,8 @@
   const staffDocStyle=document.createElement('style');staffDocStyle.textContent='.staffIdentityFile{border:1px solid #dbe3ef;border-radius:8px;padding:12px;background:#f8fafc}.staffIdentityFile>strong{display:block;margin-bottom:8px}.staffIdentityCurrent{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;font-size:12px;color:#475569}.staffIdentityFile .field{margin:8px 0 0}.staffIdentityFile .field small{display:block;margin-top:5px;color:#64748b}';document.head.appendChild(staffDocStyle);
 })();
 
+const renderBeforeStaffDocumentCamera=render;
+render=function(){renderBeforeStaffDocumentCamera();if(page!=='staff')return;for(let input of $$('[data-identity-upload]')){input.setAttribute('capture','environment');input.setAttribute('aria-label','Attach document or use camera');if(input.nextElementSibling?.dataset?.cameraFor===input.dataset.identityUpload)continue;let button=document.createElement('button');button.type='button';button.className='btn secondary small';button.textContent='📷 Use Camera';button.dataset.cameraFor=input.dataset.identityUpload;button.onclick=()=>input.click();input.insertAdjacentElement('afterend',button)}};
+render();
+
 
