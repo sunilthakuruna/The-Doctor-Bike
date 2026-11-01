@@ -24,6 +24,7 @@ function refreshJobBillingBreakdown(){
   }
   let box=totals.querySelector('.jobChargeBreakdown');
   if(!box){box=document.createElement('div');box.className='jobChargeBreakdown';const taxRow=document.getElementById('sumTax')?.parentElement;totals.insertBefore(box,taxRow||totals.querySelector('.grand'));}
+  document.querySelectorAll('#billForm .jobGrandSummary').forEach(node=>node.remove());
   const row=(label,value,wide=false)=>'<p'+(wide?' class=\"wide\"':'')+'><span>'+label+'</span><strong>'+esc(value)+'</strong></p>';
   const column=(title,rows)=>'<div class=\"breakdownColumn\"><h4>'+title+'</h4>'+rows+'</div>';
   const serviceDetails=row('Discount',money(d.labourDiscount))+row('Net before GST',money(d.netLabour))+row('GST source',d.labourRateSource)+row('GST rates',d.labourRate)+row('Net after discount + GST',money(d.netLabourWithGst));
