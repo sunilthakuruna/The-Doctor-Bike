@@ -9,6 +9,7 @@ dailyAttendanceMarkup = function () {
   const head = table.tHead && table.tHead.rows[0];
   if (head) {
     const th = document.createElement('th');
+    th.className = 'attendanceEditActionHead';
     th.textContent = 'ACTIONS';
     head.appendChild(th);
   }
@@ -19,7 +20,8 @@ dailyAttendanceMarkup = function () {
     }
     const id = row.cells[0]?.textContent.trim();
     const cell = row.insertCell(-1);
-    cell.innerHTML = '<button type="button" class="btn secondary small" data-attendance-edit="' + esc(id) + '" title="Edit saved attendance">Edit</button>';
+    cell.className = 'attendanceEditAction';
+    cell.innerHTML = '<button type="button" class="btn secondary small attendanceEditButton" data-attendance-edit="' + esc(id) + '" title="Edit saved attendance">Edit</button>';
   }
   return host.innerHTML;
 };
