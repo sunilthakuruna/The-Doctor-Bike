@@ -97,16 +97,34 @@ editRecord=function(key,id,initial={}){
     let record=find('customers',customer.value);if(!record)return;
     let setValue=(names,value,label)=>{
       let field=names.map(name=>form.querySelector(`[name="${name}"]`)).find(Boolean);
-      if(!field)field=[...form.querySelectorAll('.field')].find(node=>new RegExp(`^\\s*${label}\\s*$`,'i').test(node.querySelector('span')?.textContent||''))?.querySelector('input,textarea,select');
+      if(!field)field=[...form.querySelectorAll('.field')].find(node=>(node.querySelector('span')?.textContent||'').toLowerCase().includes(label.toLowerCase()))?.querySelector('input,textarea,select');
       if(field&&value!==undefined)field.value=value||'';
     };
     setValue(['mobile','customerMobile'],'mobile number', 'mobile number');
+    setValue(['alt','alternateMobile'],'alternate mobile','alternate mobile');
     setValue(['email','customerEmail'],'email','email');
     setValue(['address','customerAddress'],'address','address');
+    setValue(['city','customerCity'],'city','city');
+    setValue(['state','customerState'],'state','state');
+    setValue(['pin','customerPin'],'pin','pin');
+  };
+  let fillVehicleDetails=()=>{
+    let record=find('bikes',bike.value);if(!record)return;
+    let set=(names,value,label)=>{
+      let field=names.map(name=>form.querySelector(`[name="${name}"]`)).find(Boolean);
+      if(!field)field=[...form.querySelectorAll('.field')].find(node=>(node.querySelector('span')?.textContent||'').toLowerCase().includes(label))?.querySelector('input,textarea,select');
+      if(field)field.value=value||'';
+    };
+    set(['vehicleNumber','registration','number'],record.number,'vehicle number');
+    set(['vehicleMake','make','brand'],record.brand,'vehicle make');
+    set(['vehicleModel','model'],record.model,'vehicle model');
+    set(['vehicleType','type'],record.type,'vehicle type');
   };
   customer.onchange=()=>{refreshVehicles();fillCustomerDetails()};
+  bike.onchange=fillVehicleDetails;
   refreshVehicles();
   fillCustomerDetails();
+  fillVehicleDetails();
 };
 
 function removeCameraUploadControls(root=document){
