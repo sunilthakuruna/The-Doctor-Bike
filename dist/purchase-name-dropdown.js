@@ -38,13 +38,18 @@
   }
   function filter(query){
     const term=query.trim().toLocaleLowerCase();
+    const index=activeInput?Number(activeInput.dataset.purchaseLookup.split('|')[0]):-1;
+    const record=jobDraft?.record;
     const matches=(db.parts||[]).filter(part=>[part.name,part.id,part.brand,part.hsn].some(value=>String(value||'').toLocaleLowerCase().includes(term))).slice(0,60);
     results.replaceChildren();
     if(!matches.length){const empty=document.createElement('div');empty.className='purchasePartNameEmpty';empty.textContent='No matching saved parts';results.append(empty)}
     for(const part of matches){
       const option=document.createElement('button');option.type='button';option.setAttribute('role','option');option.className='purchasePartNameOption';
       const title=document.createElement('strong');title.textContent=part.name;
-      const detail=document.createElement('small');detail.textContent=[part.id,part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN '+part.hsn:''].filter(Boolean).join(' · ');
+      const location=record?.stockLocation==='godown'?'godown':'main';
+      const current=typeof locationStock==='function'?locationStock(part.id,location):location==='main'?stock(part.id):0;
+      const other=typeof locationStock==='function'?locationStock(part.id,location==='main'?'godown':'main'):0;
+      const detail=document.createElement('small');detail.textContent=[part.id,part.partType?'Type: '+part.partType:'',part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN: '+part.hsn:'','Current '+(location==='main'?'Main':'Godown')+' Stock: '+current+' '+(part.unit||'PCS'),'Other Stock: '+other+' '+(part.unit||'PCS')].filter(Boolean).join(' · ');
       option.append(title,detail);
       option.addEventListener('pointerdown',event=>event.preventDefault());
       option.addEventListener('click',()=>choose(part));
