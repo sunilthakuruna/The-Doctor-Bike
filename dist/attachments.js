@@ -51,6 +51,15 @@ editRecord=function(key,id,initial={}){
   addCustomer.innerHTML='<button type="button" class="btn secondary small">+ Add Customer</button>';
   addCustomer.querySelector('button').onclick=()=>editRecord('customers');
   customerField.append(addCustomer);
+  let ensureCustomerField=(name,label,type='text',full=false)=>{
+    if(form.querySelector(`[name="${name}"]`))return;
+    let field=document.createElement('label');field.className='field'+(full?' full':'');
+    field.innerHTML=`<span>${label}</span><input name="${name}" type="${type}" readonly>`;
+    customerField.parentNode.insertBefore(field,bikeField||null);
+  };
+  ensureCustomerField('mobile','Mobile Number','tel');
+  ensureCustomerField('email','Email ID','email');
+  ensureCustomerField('address','Address','text',true);
   let addVehicle=document.createElement('div');
   addVehicle.className='jobRelatedButtons';
   addVehicle.innerHTML='<button type="button" class="btn secondary small">+ Add Vehicle</button>';
