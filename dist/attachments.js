@@ -100,7 +100,8 @@ editRecord=function(key,id,initial={}){
   let refreshVehicles=()=>{
     let current=bike.value;
     let vehicles=db.bikes.filter(v=>!customer.value||v.customer===customer.value).map(v=>({value:v.id,label:v.number}));
-    bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,vehicles.some(v=>v.value===current)?current:'');
+    let chosen=vehicles.some(v=>v.value===current)?current:(vehicles.length===1?vehicles[0].value:'');
+    bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,chosen);
   };
   let fillCustomerDetails=()=>{
     let record=find('customers',customer.value);if(!record)return;
@@ -109,13 +110,13 @@ editRecord=function(key,id,initial={}){
       if(!field)field=[...form.querySelectorAll('.field')].find(node=>(node.querySelector('span')?.textContent||'').toLowerCase().includes(label.toLowerCase()))?.querySelector('input,textarea,select');
       if(field&&value!==undefined)field.value=value||'';
     };
-    setValue(['mobile','customerMobile'],'mobile number', 'mobile number');
-    setValue(['alt','alternateMobile'],'alternate mobile','alternate mobile');
-    setValue(['email','customerEmail'],'email','email');
-    setValue(['address','customerAddress'],'address','address');
-    setValue(['city','customerCity'],'city','city');
-    setValue(['state','customerState'],'state','state');
-    setValue(['pin','customerPin'],'pin','pin');
+    setValue(['mobile','customerMobile'],record.mobile, 'mobile number');
+    setValue(['alt','alternateMobile'],record.alt,'alternate mobile');
+    setValue(['email','customerEmail'],record.email,'email');
+    setValue(['address','customerAddress'],record.address,'address');
+    setValue(['city','customerCity'],record.city,'city');
+    setValue(['state','customerState'],record.state,'state');
+    setValue(['pin','customerPin'],record.pin,'pin');
   };
   let fillVehicleDetails=()=>{
     let record=find('bikes',bike.value);if(!record)return;
@@ -129,7 +130,7 @@ editRecord=function(key,id,initial={}){
     set(['vehicleModel','model'],record.model,'vehicle model');
     set(['vehicleType','type'],record.type,'vehicle type');
   };
-  customer.onchange=()=>{refreshVehicles();fillCustomerDetails()};
+  customer.onchange=()=>{refreshVehicles();fillCustomerDetails();fillVehicleDetails()};
   bike.onchange=fillVehicleDetails;
   refreshVehicles();
   fillCustomerDetails();
