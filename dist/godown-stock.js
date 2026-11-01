@@ -18,10 +18,17 @@ function validateStockMovement(data){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(data.date||'')||!Number.isFinite(Date.parse(data.date))||new Date(data.date+'T00:00:00Z').toISOString().slice(0,10)!==data.date)throw Error('Enter a valid movement date.');
  if(data.kind==='transfer'&&Number(data.qty)>godownStock(data.part))throw Error('Not enough godown stock. Available: '+godownStock(data.part));
  let cost=Number(data.unitCost??find('parts',data.part).purchase??0),gst=Number(data.unitGst??find('parts',data.part).gst??0);if(data.kind==='opening'&&(!Number.isFinite(cost)||cost<0))throw Error('Enter a valid purchase cost per unit.');if(data.kind==='opening'&&![0,5,12,18,28].includes(gst))throw Error('Choose a valid purchase GST rate.');
- return {kind:data.kind,part:data.part,qty:Number(data.qty),date:data.date,note:String(data.note||'').trim().slice(0,500),...(data.kind==='opening'?{unitCost:cost,purchaseGstRate:gst,unitCostAfterGst:round(cost+cost*gst/100),purchaseDate:data.date}:{}),...(data.kind==='transfer'&&data.sourcePurchaseId?{sourcePurchaseId:String(data.sourcePurchaseId),sourceVendor:String(data.sourceVendor||''),sourceBrand:String(data.sourceBrand||''),sourceUnitCost:Number(data.sourceUnitCost||0),sourcePurchaseDate:String(data.sourcePurchaseDate||'')}:{})};
+ return {kind:data.kind,part:data.part,qty:Number(data.qty),date:data.date,note:String(data.note||'').trim().slice(0,500),...(data.kind==='opening'?{unitCost:cost,purchaseGstRate:gst,unitCostAfterGst:round(cost+cost*gst/100),purchaseDate:data.date}:{}),...(data.kind==='transfer'&&data.sourcePurchaseId?{sourcePurchaseId:String(data.sourcePurchaseId),sourcePurchaseLine:Number(data.sourcePurchaseLine),sourceVendor:String(data.sourceVendor||''),sourceBrand:String(data.sourceBrand||''),sourceUnitCost:Number(data.sourceUnitCost||0),sourceSellingPrice:Number(data.sourceSellingPrice||0),sourcePurchaseDate:String(data.sourcePurchaseDate||'')}:{})};
 }
 function recordStockMovement(data){
  let entry=validateStockMovement(data),before=structuredClone(db);
+ if(entry.kind==='transfer'){
+   const lot=godownTransferLots(entry.part).find(item=>item.purchaseId===entry.sourcePurchaseId&&item.lineIndex===entry.sourcePurchaseLine);
+   if(!lot||entry.qty>lot.qty)throw Error('Choose an available purchase lot with enough stock.');
+   if(locationStock(entry.part,'main')>0)throw Error('Main Stock must reach zero before transferring a purchase lot.');
+   entry.sourceSellingPrice=lot.sellingPrice;entry.sourceUnitCost=lot.price;entry.sourceVendor=lot.vendor;entry.sourceBrand=lot.brand;entry.sourcePurchaseDate=lot.date;
+   find('parts',entry.part).price=lot.sellingPrice;
+ }
  db.stockMovements=db.stockMovements||[];
  let serial=1;while(db.stockMovements.some(m=>m.id==='MOV-'+String(serial).padStart(5,'0')))serial++;
  entry={...entry,id:'MOV-'+String(serial).padStart(5,'0'),createdAt:new Date().toISOString()};db.stockMovements.push(entry);
@@ -73,11 +80,11 @@ function godownLatestPurchaseInfo(partId){let receipts=[];for(let [index,purchas
 
 /* Preserve the selected Godown purchase lot on transfers. Stock totals remain location based. */
 function godownTransferLots(partId){
-  const used={};for(const m of (db.stockMovements||[]))if(m.kind==='transfer'&&m.sourcePurchaseId)used[m.sourcePurchaseId]=(used[m.sourcePurchaseId]||0)+Number(m.qty||0);
+  const used={};for(const m of (db.stockMovements||[]))if(m.kind==='transfer'&&m.sourcePurchaseId){const key=m.sourcePurchaseId+'|'+Number(m.sourcePurchaseLine||0);used[key]=(used[key]||0)+Number(m.qty||0)}
   return (db.purchases||[]).flatMap(p=>{
     if(p.status==='Cancelled'||p.stockLocation!=='godown')return [];
-    return (p.partLines||[]).filter(l=>l.part===partId&&Number(l.qty)>0).map((l,index)=>({
-      id:p.id+'|'+index,purchaseId:p.id,date:p.date||'',invoice:p.invoice||p.id,qty:Math.max(0,Number(l.qty||0)-(used[p.id]||0)),price:Number(l.price||0),gst:Number(l.gst||0),vendor:l.vendor||p.supplier||'',brand:l.brand||find('parts',partId)?.brand||''
+    return (p.partLines||[]).map((l,index)=>({l,index})).filter(({l})=>l.part===partId&&Number(l.qty)>0).map(({l,index})=>({
+      id:p.id+'|'+index,purchaseId:p.id,lineIndex:index,date:p.date||'',invoice:p.invoice||p.id,qty:Math.max(0,Number(l.qty||0)-(used[p.id+'|'+index]||0)),price:Number(l.price||0),sellingPrice:Number(l.sellingPrice??find('parts',partId)?.price??0),gst:Number(l.gst||0),vendor:l.vendor||p.supplier||'',brand:l.brand||find('parts',partId)?.brand||''
     }));
   }).filter(l=>l.qty>0).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 }
@@ -88,17 +95,19 @@ stockMovementForm=function(kind,partId=''){
   const form=$('#godownMovementForm');if(!form)return result;
   const partSelect=form.querySelector('[name="part"]');
   const grid=form.querySelector('.formgrid');if(!partSelect||!grid)return result;
-  const wrap=document.createElement('label');wrap.className='field';wrap.innerHTML='<span>TRANSFER FROM PURCHASE LOT</span><select name="sourcePurchaseLot" aria-label="Transfer from purchase lot"><option value="">All available Godown stock</option></select><small>Choose the vendor, brand and purchase price to transfer. The selection is saved in transfer history.</small>';
+  const wrap=document.createElement('label');wrap.className='field';wrap.innerHTML='<span>TRANSFER FROM PURCHASE LOT</span><select name="sourcePurchaseLot" required aria-label="Transfer from purchase lot"><option value="">Select a purchase lot</option></select><small>Choose the purchase entry and its selling price. Main Stock must be zero before transfer.</small>';
   grid.appendChild(wrap);const lotSelect=wrap.querySelector('select');
   function refreshLots(){
-    const lots=godownTransferLots(partSelect.value);lotSelect.innerHTML='<option value="">All available Godown stock</option>'+lots.map(l=>`<option value="${esc(l.id)}">${esc(l.date||'Undated')} · ${esc(l.vendor||'Vendor not recorded')} · ${esc(l.brand||'Brand not recorded')} · ${money(l.price)} · Qty ${l.qty}</option>`).join('');
+    const lots=godownTransferLots(partSelect.value);lotSelect.innerHTML='<option value="">Select a purchase lot</option>'+lots.map(l=>`<option value="${esc(l.id)}">${esc(l.date||'Undated')} · ${esc(l.invoice)} · Buy ${money(l.price)} · Sell ${money(l.sellingPrice)} · Qty ${l.qty}</option>`).join('');
   }
   refreshLots();partSelect.addEventListener('change',refreshLots);
   const submit=form.onsubmit;form.onsubmit=event=>{
     const selected=godownTransferLots(partSelect.value).find(l=>l.id===lotSelect.value);
     if(selected){const requested=Number(form.querySelector('[name="qty"]')?.value||0);if(!Number.isInteger(requested)||requested<=0||requested>selected.qty){event.preventDefault();return toast('Transfer quantity must be a whole number within the selected purchase lot quantity.')}}
-    for(const key of ['sourcePurchaseId','sourceVendor','sourceBrand','sourceUnitCost','sourcePurchaseDate'])form.querySelector('[name="'+key+'"]')?.remove();
-    if(selected){for(const [key,value] of Object.entries({sourcePurchaseId:selected.purchaseId,sourceVendor:selected.vendor,sourceBrand:selected.brand,sourceUnitCost:selected.price,sourcePurchaseDate:selected.date})){const input=document.createElement('input');input.type='hidden';input.name=key;input.value=value;form.appendChild(input)}}
+    if(!selected){event.preventDefault();return toast('Choose a purchase lot to transfer.')}
+    if(stock(partSelect.value)>0){event.preventDefault();return toast('Transfer is available after Main Stock reaches zero.')}
+    for(const key of ['sourcePurchaseId','sourcePurchaseLine','sourceVendor','sourceBrand','sourceUnitCost','sourceSellingPrice','sourcePurchaseDate'])form.querySelector('[name="'+key+'"]')?.remove();
+    if(selected){for(const [key,value] of Object.entries({sourcePurchaseId:selected.purchaseId,sourcePurchaseLine:selected.lineIndex,sourceVendor:selected.vendor,sourceBrand:selected.brand,sourceUnitCost:selected.price,sourceSellingPrice:selected.sellingPrice,sourcePurchaseDate:selected.date})){const input=document.createElement('input');input.type='hidden';input.name=key;input.value=value;form.appendChild(input)}}
     return submit(event);
   };
   return result;

@@ -1,7 +1,7 @@
 /* Purchase item entry: linked code/name lookups and transaction snapshots. */
-function newPurchaseItem(){return {part:'',partCode:'',name:'',hsn:'',qty:1,price:0,gst:0,vendor:'',brand:''}}
+function newPurchaseItem(){return {part:'',partCode:'',name:'',hsn:'',qty:1,price:0,sellingPrice:0,gst:0,vendor:'',brand:''}}
 function purchaseSelectedPart(line,part){
-  const next={...line,part:part?.id||'',partCode:part?.id||'',name:part?.name||'',hsn:String(part?.hsn||''),price:Number(part?.purchase||0),gst:Number(part?.gst??0)};
+  const next={...line,part:part?.id||'',partCode:part?.id||'',name:part?.name||'',hsn:String(part?.hsn||''),price:Number(part?.purchase||0),sellingPrice:Number(part?.price||0),gst:Number(part?.gst??0)};
   delete next.sourceAmount;return next;
 }
 function purchaseLookupPart(value,kind,selectedId){
@@ -49,6 +49,7 @@ function purchaseItemValidation(record){
     if(!find('parts',line.part))return label+'choose a saved part by code or name.';
     if(!Number.isFinite(Number(line.qty))||Number(line.qty)<=0)return label+'enter a quantity greater than zero.';
     if(!Number.isFinite(Number(line.price))||Number(line.price)<0)return label+'enter a valid purchase price.';
+    if(record.stockLocation==='godown'&&(!Number.isFinite(Number(line.sellingPrice))||Number(line.sellingPrice)<0))return label+'enter a valid selling price.';
     if(!Number.isFinite(Number(line.gst))||Number(line.gst)<0||Number(line.gst)>100)return label+'enter a GST rate from 0 to 100.';
   }
   return '';
@@ -88,6 +89,19 @@ function renderPurchaseItems(){
     return '<tr><td>'+(i+1)+'</td><td><input type="text" list="purchasePartCodes" autocomplete="off" required data-purchase-lookup="'+i+'|code" aria-label="Part code '+(i+1)+'" placeholder="Part Code" value="'+esc(code)+'"></td><td><input type="text" list="purchasePartNames" autocomplete="off" required data-purchase-lookup="'+i+'|name" aria-label="Part name '+(i+1)+'" placeholder="Part Name" value="'+esc(partName)+'"></td><td><select data-purchase-vendor="'+i+'" aria-label="Vendor for part '+(i+1)+'"><option value="">— Select vendor —</option>'+vendorOptions.map(v=>'<option value="'+esc(v)+'" '+(v.toLocaleLowerCase()===vendor.toLocaleLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></td><td><input type="text" data-purchase-text="'+i+'|hsn" aria-label="HSN code '+(i+1)+'" placeholder="HSN" value="'+esc(hsn)+'"></td><td><output data-purchase-stock="'+i+'|existing" title="Current Main Stock"></output></td><td><output data-purchase-stock="'+i+'|godown" title="Current Godown Stock"></output></td><td><output data-purchase-stock="'+i+'|total" title="Main Stock after saving this purchase"></output></td><td><input type="text" inputmode="decimal" autocomplete="off" data-purchase-number="'+i+'|qty" aria-label="Quantity '+(i+1)+'" value="'+esc(line.qty??1)+'"></td><td><input type="text" inputmode="decimal" autocomplete="off" data-purchase-number="'+i+'|price" aria-label="Purchase rate for this bill '+(i+1)+'" title="Bill-specific rate saved on this invoice. Master purchase-price reference refreshes only if Main Stock plus Godown stock is zero before receipt." value="'+esc(line.price??0)+'"></td><td><select data-purchase-number="'+i+'|gst" aria-label="Purchase GST '+(i+1)+'" title="GST rate for this supplier invoice; this rate is included in the purchase total. Master GST is shown under the part name as reference.">'+gstRates.map(rate=>'<option value="'+rate+'" '+((nonGst?0:Number(line.gst||0))===rate?'selected':'')+'>'+rate+'%</option>').join('')+'</select></td><td><output data-purchase-gst-amount="'+i+'" aria-label="GST amount '+(i+1)+'">'+money(purchaseLineGst(record,line))+'</output></td><td><output id="lineAmount'+i+'" aria-label="Item total including GST '+(i+1)+'">'+money(purchaseLineTotal(record,line))+'</output></td><td><button type="button" class="btn danger small" data-purchase-remove="'+i+'" aria-label="Remove item '+(i+1)+'" title="Remove item">'+icon('trash')+'</button></td></tr>';
   }).join('');
   container.innerHTML='<datalist id="purchasePartCodes">'+codeOptions+'</datalist><datalist id="purchasePartNames">'+nameOptions+'</datalist><div class="purchaseItemScroll" role="region" aria-label="Purchase items" tabindex="0"><table class="purchaseItemsTable"><colgroup><col style="width:28px"><col style="width:110px"><col style="width:230px"><col style="width:115px"><col style="width:85px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:95px"><col style="width:70px"><col style="width:90px"><col style="width:95px"><col style="width:38px"></colgroup><thead><tr><th>#</th><th>PART CODE <span class="required">*</span></th><th>PART NAME <span class="required">*</span></th><th>VENDOR</th><th>HSN CODE</th><th title="Current Main Stock">'+stockLabel+'</th><th title="Current Godown Stock">GODOWN STOCK</th><th title="Main Stock after saving this purchase">'+totalStockLabel+'</th><th>QTY</th><th>PURCHASE RATE (₹)</th><th>PURCHASE GST (%)</th><th>GST AMOUNT (₹)</th><th>TOTAL (₹)</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>'+rows+(!rows?'<tr><td colspan="14">Add an item to begin.</td></tr>':'')+'</tbody></table></div><div class="purchaseItemsFooter"><button type="button" class="btn secondary small" data-purchase-add>+ Add Another Item</button><span data-purchase-count></span><span>Purchase total: <strong id="purchaseItemsTotal"></strong></span></div>';
+  const purchaseTable=container.querySelector('.purchaseItemsTable');
+  if(stockLocation==='godown'&&purchaseTable){
+    const heading=purchaseTable.querySelector('thead th:nth-child(11)');
+    heading?.insertAdjacentHTML('beforebegin','<th>SELLING PRICE (₹)</th>');
+    for(const [index,row] of [...purchaseTable.tBodies[0].rows].entries()){
+      if(index>=record.partLines.length)break;
+      const value=record.partLines[index].sellingPrice??find('parts',record.partLines[index].part)?.price??0;
+      row.cells[10].insertAdjacentHTML('beforebegin','<td><input type="text" inputmode="decimal" data-purchase-number="'+index+'|sellingPrice" aria-label="Godown selling price '+(index+1)+'" value="'+esc(value)+'"></td>');
+    }
+    purchaseTable.querySelector('col:nth-child(11)')?.insertAdjacentHTML('beforebegin','<col style="width:150px">');
+    const empty=purchaseTable.tBodies[0].querySelector('td[colspan]');if(empty)empty.colSpan=15;
+    purchaseTable.style.width='2420px';purchaseTable.style.minWidth='2420px';
+  }
   const pricePolicy=document.createElement('p');pricePolicy.className='notice purchasePricePolicyNote';pricePolicy.textContent='Each line keeps its bill-specific rate. The master purchase-price reference updates to this receipt’s weighted average only if combined Main Stock and Godown stock was zero before receipt.';container.prepend(pricePolicy);
   updateBillTotals();
 }
@@ -97,7 +111,7 @@ function syncPurchaseItemInputs(index){
   const brand=document.querySelector('[data-purchase-brand="'+index+'"]');if(brand)brand.value=line.brand||find('parts',line.part)?.brand||'';
   const vendor=document.querySelector('[data-purchase-vendor="'+index+'"]');if(vendor)vendor.value=line.vendor||jobDraft.record.supplier||'';
   const hsn=document.querySelector('[data-purchase-text="'+index+'|hsn"]');if(hsn)hsn.value=line.hsn;
-  for(const key of ['qty','price','gst']){const input=document.querySelector('[data-purchase-number="'+index+'|'+key+'"]');if(input)input.value=jobDraft.record.invoiceType==='non-gst'&&key==='gst'?0:line[key]}
+  for(const key of ['qty','price','sellingPrice','gst']){const input=document.querySelector('[data-purchase-number="'+index+'|'+key+'"]');if(input)input.value=jobDraft.record.invoiceType==='non-gst'&&key==='gst'?0:line[key]}
 }
 function readPurchaseItemInput(event){
   if(jobDraft?.key!=='purchases')return;
@@ -144,7 +158,7 @@ saveBill=function(event){
   const values=Object.fromEntries(new FormData(event.target)),data={...draft.record,...values};
   data.advance=Number(data.advance||0);data.discount=Number(data.discount||0);data.tax=Number(data.tax||0);
   data.supplier=String(data.supplier||'').trim();data.invoice=String(data.invoice||'').trim();
-  data.partLines=structuredClone(draft.record.partLines).map(line=>({...line,vendor:String(line.vendor||data.supplier||'').trim()}));data.serviceLines=structuredClone(draft.record.serviceLines||[]);
+  data.partLines=structuredClone(draft.record.partLines).map(line=>({...line,sellingPrice:line.sellingPrice??Number(find('parts',line.part)?.price||0),vendor:String(line.vendor||data.supplier||'').trim()}));data.serviceLines=structuredClone(draft.record.serviceLines||[]);
   const problem=purchaseItemValidation(data);if(problem)return toast(problem);
   if(!data.supplier||!data.invoice)return toast('Choose a supplier and enter the supplier invoice number.');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(data.date||'')||!Number.isFinite(Date.parse(data.date))||new Date(data.date+'T00:00:00Z').toISOString().slice(0,10)!==data.date)return toast('Enter a valid purchase date.');
@@ -162,7 +176,7 @@ saveBill=function(event){
     }
   }
   const before=structuredClone(db),masterCostRefresh=new Map();
-  if(!draft.id&&data.status!=='Cancelled'){
+  if(!draft.id&&data.status!=='Cancelled'&&data.stockLocation!=='godown'){
     const byPart=new Map();for(const line of data.partLines){const group=byPart.get(line.part)||{qty:0,cost:0};group.qty+=Number(line.qty);group.cost+=Number(line.qty)*Number(line.price);byPart.set(line.part,group)}
     for(const [partId,group] of byPart){const onHand=typeof locationStock==='function'?locationStock(partId,'main')+locationStock(partId,'godown'):stock(partId);if(onHand===0&&group.qty>0)masterCostRefresh.set(partId,round(group.cost/group.qty))}
   }
