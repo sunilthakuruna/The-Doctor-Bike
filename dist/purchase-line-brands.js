@@ -16,6 +16,7 @@
     if(head&&!head.querySelector('[data-purchase-brand-heading]')){const th=document.createElement('th');th.textContent='BRAND';th.dataset.purchaseBrandHeading='1';head.children[2]?.after(th)}
     const columns=document.querySelector('.purchaseItemsTable colgroup');
     if(columns&&!columns.querySelector('[data-purchase-brand-column]')){const col=document.createElement('col');col.dataset.purchaseBrandColumn='1';columns.children[2]?.after(col)}
+    const empty=document.querySelector('.purchaseItemsTable tbody tr td[colspan]');if(empty)empty.colSpan=15;
   }
   const oldLineRender=lineRender;
   lineRender=function(){const out=oldLineRender.apply(this,arguments);enhance();return out};
