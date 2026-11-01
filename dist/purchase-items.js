@@ -8,7 +8,10 @@ function purchaseLookupPart(value,kind,selectedId){
   const text=String(value||'').trim().toLocaleLowerCase();if(!text)return null;
   const parts=db.parts||[];
   if(kind==='code')return parts.find(p=>String(p.id).toLocaleLowerCase()===text)||null;
-  const exact=parts.filter(p=>String(p.name||'').toLocaleLowerCase()===text);
+  const displayName=text.split(' · ')[0].trim();
+  const sku=text.match(/sku:\s*([^·]+)/i)?.[1]?.trim().toLocaleLowerCase();
+  if(sku)return parts.find(p=>String(p.id).toLocaleLowerCase()===sku)||null;
+  const exact=parts.filter(p=>String(p.name||'').toLocaleLowerCase()===displayName);
   if(exact.length)return exact.find(p=>p.id===selectedId)||(exact.length===1?exact[0]:null);
   return parts.find(p=>(p.name+' — '+p.id).toLocaleLowerCase()===text)||null;
 }
@@ -80,7 +83,7 @@ function renderPurchaseItems(){
     heading.querySelector('[data-purchase-add]').onclick=event=>{event.preventDefault();jobDraft.record.partLines=jobDraft.record.partLines||[];jobDraft.record.partLines.push(newPurchaseItem());lineRender();document.querySelector('[data-purchase-lookup="'+(jobDraft.record.partLines.length-1)+'|code"]')?.focus()};
   }
   const codeOptions=db.parts.map(p=>'<option value="'+esc(p.id)+'" label="'+esc(p.name+(p.hsn?' · HSN: '+p.hsn:''))+'"></option>').join('');
-  const nameOptions=db.parts.map(p=>{const quantities=purchaseStockQuantities(record,{part:p.id},jobDraft.id),details=[p.partType?'Type: '+p.partType:'',p.brand?'Brand: '+p.brand:'',p.vehicleMake?'Make: '+p.vehicleMake:'',p.vehicleModel?'Model: '+p.vehicleModel:'',p.hsn?'HSN: '+p.hsn:''].filter(Boolean).join(' · ');return '<option value="'+esc(p.name)+'" label="'+esc(details+' · Current '+stockLocation+' stock: '+purchaseStockText(quantities.existing,quantities.unit)+' · After purchase: '+purchaseStockText(quantities.total,quantities.unit))+'"></option>'}).join('');
+  const nameOptions=db.parts.map(p=>{const quantities=purchaseStockQuantities(record,{part:p.id},jobDraft.id),details=[p.partType?'Type: '+p.partType:'',p.brand?'Brand: '+p.brand:'',p.vehicleMake?'Make: '+p.vehicleMake:'',p.vehicleModel?'Model: '+p.vehicleModel:'',p.hsn?'HSN: '+p.hsn:''].filter(Boolean).join(' · '),display=[p.name,details,'SKU: '+p.id,'Current '+stockLocation+' stock: '+purchaseStockText(quantities.existing,quantities.unit),'After purchase: '+purchaseStockText(quantities.total,quantities.unit)].filter(Boolean).join(' · ');return '<option value="'+esc(display)+'"></option>'}).join('');
   const vendorOptions=purchaseVendorOptions(record);
   const rows=record.partLines.map((line,i)=>{
     const part=find('parts',line.part),hsn=line.hsn??part?.hsn??'',code=line.partCode??line.part??'',partName=part?purchasePartNameValue({...part,name:line.name??part.name}):(line.name??''),nonGst=record.invoiceType==='non-gst';
