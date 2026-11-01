@@ -1,0 +1,8 @@
+name = "the-doctor-bike"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bike-doctor-production"
+database_id = "17798c77-6a82-46aa-b335-34462bcde5cb"
+migrations_dir = "migrations"
