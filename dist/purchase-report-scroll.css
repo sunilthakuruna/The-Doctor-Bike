@@ -1,0 +1,7 @@
+/* Purchase-report columns, including Total Purchase Price, scroll together. */
+body[data-view="report-purchases"] #content .tablewrap th:last-child,
+body[data-view="report-purchases"] #content .tablewrap td:last-child{
+  position:static!important;
+  right:auto!important;
+  box-shadow:none!important;
+}
