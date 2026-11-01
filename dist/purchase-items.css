@@ -5,25 +5,27 @@
 #billForm .purchaseItemHeading b{background:#28bdf2;color:#102036;padding:2px 5px}
 #billForm .purchaseItemHeading button{padding:4px 9px;min-height:25px;font-size:11px;white-space:nowrap}
 #billForm .purchaseItemScroll{overflow:auto;max-width:100%;max-height:45vh;border:1px solid #dce3ed;background:#fff}
-#billForm .purchaseItemsTable{width:1321px;min-width:1321px;border-collapse:collapse;table-layout:fixed}
+#billForm .purchaseItemsTable{width:1504px;min-width:1504px;border-collapse:collapse;table-layout:fixed}
 #billForm .purchaseItemsTable col:first-child{width:28px}
 #billForm .purchaseItemsTable th:first-child,#billForm .purchaseItemsTable td:first-child{width:28px;min-width:28px;max-width:28px;box-sizing:border-box;padding-left:4px;padding-right:4px;text-align:center}
-#billForm .purchaseItemsTable th{position:sticky;top:0;background:#101a2e;color:#fff;padding:7px 5px;font-size:10px;white-space:nowrap}
+#billForm .purchaseItemsTable th{position:sticky;top:0;background:#101a2e;color:#fff;padding:7px 5px;font-size:10px;white-space:normal;overflow-wrap:normal;line-height:1.3;text-align:center}
 #billForm .purchaseItemsTable td{padding:5px;vertical-align:middle;border-bottom:1px solid #e1e7ef;font-size:11px}
-#billForm .purchaseItemsTable th:nth-child(1){width:28px}
-#billForm .purchaseItemsTable th:nth-child(2){width:110px}
-#billForm .purchaseItemsTable th:nth-child(3){width:230px}
-#billForm .purchaseItemsTable th:nth-child(4){width:120px}
-#billForm .purchaseItemsTable th:nth-child(5){width:85px}
-#billForm .purchaseItemsTable th:nth-child(6){width:90px}
-#billForm .purchaseItemsTable th:nth-child(7),#billForm .purchaseItemsTable th:nth-child(8){width:90px}
-#billForm .purchaseItemsTable th:nth-child(9){width:55px}
-#billForm .purchaseItemsTable th:nth-child(10){width:105px}
-#billForm .purchaseItemsTable th:nth-child(11){width:85px}
-#billForm .purchaseItemsTable th:nth-child(12){width:100px}
-#billForm .purchaseItemsTable th:nth-child(13){width:105px}
-#billForm .purchaseItemsTable th:nth-child(14){width:38px}
-#billForm .purchaseItemsTable col:nth-child(1){width:28px!important}#billForm .purchaseItemsTable col:nth-child(2){width:110px!important}#billForm .purchaseItemsTable col:nth-child(3){width:230px!important}#billForm .purchaseItemsTable col:nth-child(4){width:120px!important}#billForm .purchaseItemsTable col:nth-child(5){width:85px!important}#billForm .purchaseItemsTable col:nth-child(6),#billForm .purchaseItemsTable col:nth-child(7){width:90px!important}#billForm .purchaseItemsTable col:nth-child(8){width:55px!important}#billForm .purchaseItemsTable col:nth-child(9){width:105px!important}#billForm .purchaseItemsTable col:nth-child(10){width:85px!important}#billForm .purchaseItemsTable col:nth-child(11){width:100px!important}#billForm .purchaseItemsTable col:nth-child(12){width:105px!important}#billForm .purchaseItemsTable col:nth-child(13){width:38px!important}
+#billForm .purchaseItemsTable col:nth-child(1){width:28px}
+#billForm .purchaseItemsTable col:nth-child(2){width:125px}
+#billForm .purchaseItemsTable col:nth-child(3){width:240px}
+#billForm .purchaseItemsTable col:nth-child(4){width:110px}
+#billForm .purchaseItemsTable col:nth-child(5){width:125px}
+#billForm .purchaseItemsTable col:nth-child(6){width:90px}
+#billForm .purchaseItemsTable col:nth-child(7){width:105px}
+#billForm .purchaseItemsTable col:nth-child(8){width:125px}
+#billForm .purchaseItemsTable col:nth-child(9){width:70px}
+#billForm .purchaseItemsTable col:nth-child(10){width:115px}
+#billForm .purchaseItemsTable col:nth-child(11){width:110px}
+#billForm .purchaseItemsTable col:nth-child(12){width:100px}
+#billForm .purchaseItemsTable col:nth-child(13){width:115px}
+#billForm .purchaseItemsTable col:nth-child(14){width:46px}
+#billForm .purchaseItemsTable td{text-align:center}
+#billForm .purchaseItemsTable td:nth-child(3){text-align:left}
 #billForm .purchaseItemsTable input,#billForm .purchaseItemsTable select{width:100%;min-width:0;box-sizing:border-box;height:31px;min-height:31px;padding:4px 6px;font-size:11px;border:1px solid #cbd5e1;background:white;color:#172033}
 #billForm .purchaseItemsTable output{font-size:11px;font-weight:700;white-space:nowrap}
 #billForm .purchaseMasterPriceInfo{display:block;margin-top:3px;color:#64748b;font-size:9px;line-height:1.3;white-space:normal}
