@@ -3,15 +3,4 @@
 .sidebarCollapseButton>span:first-child{font-size:20px;line-height:12px}
 .navcollapsed .sidebarCollapseButton{width:42px;margin-left:auto;margin-right:auto}
 .navcollapsed .sidebarCollapseLabel{display:none}
-.attendanceDensityButton{margin-left:auto;min-height:29px;padding:5px 10px;font-size:10px}
-.attendanceCompact .attendanceStats{margin-bottom:8px;gap:7px}
-.attendanceCompact .attendanceStat{min-height:52px;padding:8px 11px}
-.attendanceCompact .attendanceStatIcon{width:32px;height:32px;flex-basis:32px}
-.attendanceCompact .attendanceStat strong{font-size:18px}
-.attendanceCompact .attendanceControlCard{padding:8px 10px;margin-bottom:10px}
-.attendanceCompact .attendanceDateRow,.attendanceCompact .attendanceActionsRow{gap:5px;margin-top:0}
-.attendanceCompact .attendanceActionsRow{margin-top:6px}
-.attendanceCompact .attendanceSaveRow{margin-top:6px}
-.attendanceCompact .attendanceSaveRow>span{font-size:9px}
-.attendanceCompact .attendanceDailyTable table{min-width:900px}
-@media(max-width:600px){.sidebarCollapseButton{margin-top:8px}.attendanceDensityButton{width:100%;margin-left:0}.attendanceCompact .attendanceActionsRow input[type=search]{flex-basis:220px;width:auto}}
+@media(max-width:600px){.sidebarCollapseButton{margin-top:8px}}
