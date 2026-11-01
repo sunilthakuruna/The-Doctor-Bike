@@ -38,11 +38,13 @@ editRecord=function(key,id,initial={}){
   if(key!=='insurance')return;
   let form=$('#recordForm'),bike=form?.querySelector('[name="bike"]'),grid=form?.querySelector('.formgrid');
   if(!form||!bike||!grid)return;
+  let existingCustomer=form.querySelector('[name="customer"]'),existingCustomerValue=existingCustomer?.value||seed.customer||'';
+  form.querySelectorAll('[name="customer"]').forEach(select=>select.closest('.field')?.remove());
   let bikeField=bike.closest('.field'),customerField=document.createElement('label');
   customerField.className='field';
   customerField.innerHTML='<span>Customer Name <b class="required">*</b></span><select name="customer" required></select>';
   if(bikeField)bikeField.parentNode.insertBefore(customerField,bikeField);else grid.prepend(customerField);
-  let customer=customerField.querySelector('select'),selected=seed.customer||'';
+  let customer=customerField.querySelector('select'),selected=existingCustomerValue;
   let addCustomer=document.createElement('div');
   addCustomer.className='jobRelatedButtons';
   addCustomer.innerHTML='<button type="button" class="btn secondary small">+ Add Customer</button>';
@@ -85,14 +87,11 @@ editRecord=function(key,id,initial={}){
     return {refresh(list){items=list;input.value=labelFor(list().find(item=>item.id===select.value)||{});},open:()=>renderItems(input.value)};
   }
   let customerSearch=searchableSelect(customer,()=>db.customers,c=>c.name||'', 'Search customer name...');
-  let vehicleSearch;
   let refreshVehicles=()=>{
     let current=bike.value;
     let vehicles=db.bikes.filter(v=>!customer.value||v.customer===customer.value).map(v=>({value:v.id,label:v.number}));
     bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,vehicles.some(v=>v.value===current)?current:'');
-    if(vehicleSearch)vehicleSearch.refresh(()=>db.bikes.filter(v=>!customer.value||v.customer===customer.value));
   };
-  vehicleSearch=searchableSelect(bike,()=>db.bikes.filter(v=>!customer.value||v.customer===customer.value),v=>v.number||'', 'Search vehicle number...');
   customer.onchange=refreshVehicles;
   refreshVehicles();
 };
