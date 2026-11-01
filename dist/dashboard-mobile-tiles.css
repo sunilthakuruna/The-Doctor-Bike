@@ -1,0 +1,14 @@
+@media screen and (max-width: 700px) {
+  #content .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+  #content .cards .stat { min-width: 0; height: auto; display: flex; flex-direction: column; }
+  #content .cards .statmain { min-width: 0; flex: 1; position: relative; z-index: 1; }
+  #content .cards .statlabel { min-width: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+  #content .cards .statlabel svg { flex: 0 0 auto; }
+  #content .cards .statvalue { min-width: 0; font-size: clamp(17px, 4.8vw, 25px); line-height: 1.2; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+  #content .cards .statdesc { white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+  #content .cards .statmore { position: relative; z-index: 1; margin-top: auto; }
+  #content .cards .watermark { pointer-events: none; opacity: .12; }
+}
+@media screen and (max-width: 340px) {
+  #content .cards { grid-template-columns: minmax(0, 1fr); }
+}
