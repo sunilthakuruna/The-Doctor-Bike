@@ -163,6 +163,10 @@ saveBill=function(event){
   data.supplier=String(data.supplier||'').trim();data.invoice=String(data.invoice||'').trim();
   data.partLines=structuredClone(draft.record.partLines).map(line=>({...line,sellingPrice:line.sellingPrice??Number(find('parts',line.part)?.price||0),vendor:String(line.vendor||data.supplier||'').trim()}));data.serviceLines=structuredClone(draft.record.serviceLines||[]);
   const problem=purchaseItemValidation(data);if(problem)return toast(problem);
+  if(!draft.id&&data.status!=='Cancelled'&&(data.stockLocation||'main')==='main'){
+    const blocked=[...new Set(data.partLines.map(line=>line.part).filter(Boolean))].find(partId=>typeof locationStock==='function'?locationStock(partId,'main')>0:stock(partId)>0);
+    if(blocked)return toast('Main Stock must reach zero before purchasing this spare part into Main Stock. Receive it into Godown until Main Stock is exhausted.');
+  }
   if(!data.supplier||!data.invoice)return toast('Choose a supplier and enter the supplier invoice number.');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(data.date||'')||!Number.isFinite(Date.parse(data.date))||new Date(data.date+'T00:00:00Z').toISOString().slice(0,10)!==data.date)return toast('Enter a valid purchase date.');
   if(!find('accounts',data.account))return toast('Choose the account used for this purchase.');
