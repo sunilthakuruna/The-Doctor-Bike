@@ -93,8 +93,20 @@ editRecord=function(key,id,initial={}){
     let vehicles=db.bikes.filter(v=>!customer.value||v.customer===customer.value).map(v=>({value:v.id,label:v.number}));
     bike.innerHTML='<option value="">-- Select Vehicle --</option>'+opts(vehicles,vehicles.some(v=>v.value===current)?current:'');
   };
-  customer.onchange=refreshVehicles;
+  let fillCustomerDetails=()=>{
+    let record=find('customers',customer.value);if(!record)return;
+    let setValue=(names,value,label)=>{
+      let field=names.map(name=>form.querySelector(`[name="${name}"]`)).find(Boolean);
+      if(!field)field=[...form.querySelectorAll('.field')].find(node=>new RegExp(`^\\s*${label}\\s*$`,'i').test(node.querySelector('span')?.textContent||''))?.querySelector('input,textarea,select');
+      if(field&&value!==undefined)field.value=value||'';
+    };
+    setValue(['mobile','customerMobile'],'mobile number', 'mobile number');
+    setValue(['email','customerEmail'],'email','email');
+    setValue(['address','customerAddress'],'address','address');
+  };
+  customer.onchange=()=>{refreshVehicles();fillCustomerDetails()};
   refreshVehicles();
+  fillCustomerDetails();
 };
 
 function removeCameraUploadControls(root=document){
