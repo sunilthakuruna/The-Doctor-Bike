@@ -38,6 +38,7 @@ editRecord=function(key,id,initial={}){
   if(key!=='insurance')return;
   let form=$('#recordForm'),bike=form?.querySelector('[name="bike"]'),grid=form?.querySelector('.formgrid');
   if(!form||!bike||!grid)return;
+  form.querySelectorAll('.field').forEach(field=>{if(field.querySelector('input')&&/^\s*customer name\s*$/i.test(field.querySelector('span')?.textContent||''))field.remove()});
   let existingCustomer=form.querySelector('[name="customer"]'),existingCustomerValue=existingCustomer?.value||seed.customer||'';
   form.querySelectorAll('[name="customer"]').forEach(select=>select.closest('.field')?.remove());
   let bikeField=bike.closest('.field'),customerField=document.createElement('label');
