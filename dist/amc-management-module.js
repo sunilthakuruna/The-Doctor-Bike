@@ -52,6 +52,21 @@
 
   function bindAmcManagement(){
     if(page!=='amc-plans')return;
+    const reminderPanel=[...$$('.amcManagementPage .panel')].find(panel=>panel.querySelector('h2')?.textContent==='AMC Expiry Reminders');
+    const reminderTable=reminderPanel?.querySelector('table');
+    if(reminderTable){
+      const header=[...reminderTable.querySelectorAll('thead th')].find(cell=>cell.textContent.trim()==='Actions');
+      if(header){const cell=document.createElement('th');cell.textContent='Last Reminder Sent';header.before(cell)}
+      for(const row of reminderTable.querySelectorAll('tbody tr')){
+        const action=row.querySelector('[data-amc-manage-message]');
+        if(!action)continue;
+        const entry=amcContractByKey(action.dataset.amcManageMessage);
+        const log=entry&&contractReminderLog(entry);
+        const cell=document.createElement('td');cell.textContent=log?uiDateTime(log.at)+' (manual)':'—';
+        const actionsCell=action.closest('td');actionsCell?.before(cell);
+        const sent=document.createElement('button');sent.type='button';sent.className='btn small extraAction blue';sent.textContent='Mark Sent';sent.title='Record AMC reminder sent';sent.onclick=()=>performAmcAction('sent',action.dataset.amcManageMessage);actionsCell?.querySelector('.rowactions')?.append(sent);
+      }
+    }
     const filter=$('#amcReminderFilter'),windowSelect=$('#amcReminderWindow');
     if(filter)filter.onchange=event=>{amcReminderFilter=event.target.value;render()};
     if(windowSelect)windowSelect.onchange=event=>{amcReminderWindow=event.target.value;render()};
