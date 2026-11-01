@@ -345,3 +345,7 @@ body[data-view="jobs"] #content .jobDateField input{box-sizing:border-box;width:
 
 #serviceLines table th[data-service-gst-header],#serviceLines table td[data-service-gst-cell]{min-width:82px;white-space:nowrap}#serviceLines table td[data-service-gst-cell] select{min-width:70px;width:70px;padding:8px}
 
+/* Keep table values centered consistently across modules. */
+#content table:not(.thermalItems) th,#content table:not(.thermalItems) td{text-align:center;vertical-align:middle}
+#content table:not(.thermalItems) td .rowactions{justify-content:center}
+
