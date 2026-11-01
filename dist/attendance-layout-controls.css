@@ -23,3 +23,10 @@
 #content .attendanceMatrix th:last-child,
 #content .attendanceMatrix td:last-child,
 #content .attendanceMatrixPay{position:static!important;left:auto!important;right:auto!important;z-index:auto!important}
+/* Table action columns follow the horizontal scrollbar in every module. */
+#content .reminderActionCell,
+#content .amcVisibleActionCell,
+#content td:has(> .rowactions),
+#content td:has([data-action]),
+#content td:has([data-edit]),
+#content td:has([data-delete]){position:static!important;left:auto!important;right:auto!important;box-shadow:none!important}
