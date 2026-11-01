@@ -8,9 +8,9 @@
     host.innerHTML = originalDailyAttendanceMarkup();
     const table = host.querySelector('.attendanceDailyTable table');
     if (!table) return host.innerHTML;
-    for (const group of host.querySelectorAll('.attendanceChoices')) {
+    for (const row of host.querySelectorAll('.attendanceDailyTable tbody tr')) {
       const seen = new Set();
-      for (const button of group.querySelectorAll('[data-attendance-status]')) {
+      for (const button of row.querySelectorAll('[data-attendance-status]')) {
         const status = button.dataset.attendanceStatus;
         if (seen.has(status)) button.remove();
         else seen.add(status);
