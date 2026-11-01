@@ -23,6 +23,7 @@ function savedPartMatches(query,limit=12){
 }
 function addPartNameAutofill(){
   let form=$('#recordForm'),input=form?.querySelector('[name="name"]');if(!input||form.querySelector('.partNameMatches'))return;
+  let datalist=document.createElement('datalist');datalist.id='savedPartNames';datalist.innerHTML=(db.parts||[]).map(part=>`<option value="${esc(part.name||'')}" label="${esc([part.id,part.brand,part.vehicleMake,part.vehicleModel].filter(Boolean).join(' · '))}"></option>`).join('');form.append(datalist);input.setAttribute('list',datalist.id);
   let box=document.createElement('div');box.className='partNameMatches';box.id='savedPartNameMatches';box.hidden=true;box.setAttribute('role','listbox');box.setAttribute('aria-label','Saved spare parts');input.after(box);
   let hint=document.createElement('small');hint.className='partNameAutofillHint';hint.textContent='Type a part name to find saved parts. Select a match to load and edit its saved details, or enter a new name to create a part.';box.after(hint);
   input.setAttribute('autocomplete','off');input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-controls',box.id);input.setAttribute('aria-expanded','false');
