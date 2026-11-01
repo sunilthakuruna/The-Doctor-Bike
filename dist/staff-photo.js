@@ -11,8 +11,5 @@ const renderBeforeStaffPhoto=render;
 render=function(){renderBeforeStaffPhoto();if(page!=='staff')return;for(let image of $$('#content .staffPhotoThumb'))image.loading='lazy'};
 render();
 
-const renderBeforeStaffPhotoCamera=render;
-render=function(){renderBeforeStaffPhotoCamera();if(page!=='staff')return;let input=$('#staffPhotoUpload');if(input){input.setAttribute('capture','user');input.setAttribute('aria-label','Choose staff photo or use camera');if(!$('#staffPhotoCamera')){let button=document.createElement('button');button.type='button';button.id='staffPhotoCamera';button.className='btn secondary small';button.textContent='📷 Use Camera';button.onclick=()=>input.click();input.insertAdjacentElement('afterend',button)}}};
-render();
 
 
