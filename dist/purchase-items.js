@@ -91,14 +91,14 @@ function renderPurchaseItems(){
   container.innerHTML='<datalist id="purchasePartCodes">'+codeOptions+'</datalist><datalist id="purchasePartNames">'+nameOptions+'</datalist><div class="purchaseItemScroll" role="region" aria-label="Purchase items" tabindex="0"><table class="purchaseItemsTable"><colgroup><col style="width:28px"><col style="width:110px"><col style="width:230px"><col style="width:115px"><col style="width:85px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:95px"><col style="width:70px"><col style="width:90px"><col style="width:95px"><col style="width:38px"></colgroup><thead><tr><th>#</th><th>PART CODE <span class="required">*</span></th><th>PART NAME <span class="required">*</span></th><th>VENDOR</th><th>HSN CODE</th><th title="Current Main Stock">'+stockLabel+'</th><th title="Current Godown Stock">GODOWN STOCK</th><th title="Main Stock after saving this purchase">'+totalStockLabel+'</th><th>QTY</th><th>PURCHASE RATE (₹)</th><th>PURCHASE GST (%)</th><th>GST AMOUNT (₹)</th><th>TOTAL (₹)</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>'+rows+(!rows?'<tr><td colspan="14">Add an item to begin.</td></tr>':'')+'</tbody></table></div><div class="purchaseItemsFooter"><button type="button" class="btn secondary small" data-purchase-add>+ Add Another Item</button><span data-purchase-count></span><span>Purchase total: <strong id="purchaseItemsTotal"></strong></span></div>';
   const purchaseTable=container.querySelector('.purchaseItemsTable');
   if(stockLocation==='godown'&&purchaseTable){
-    const heading=purchaseTable.querySelector('thead th:nth-child(11)');
+    const heading=purchaseTable.querySelector('thead th:last-child');
     heading?.insertAdjacentHTML('beforebegin','<th>SELLING PRICE (₹)</th>');
     for(const [index,row] of [...purchaseTable.tBodies[0].rows].entries()){
       if(index>=record.partLines.length)break;
       const value=record.partLines[index].sellingPrice??find('parts',record.partLines[index].part)?.price??0;
-      row.cells[10].insertAdjacentHTML('beforebegin','<td><input type="text" inputmode="decimal" data-purchase-number="'+index+'|sellingPrice" aria-label="Godown selling price '+(index+1)+'" value="'+esc(value)+'"></td>');
+      row.cells[row.cells.length-1].insertAdjacentHTML('beforebegin','<td><input type="text" inputmode="decimal" data-purchase-number="'+index+'|sellingPrice" aria-label="Godown selling price '+(index+1)+'" value="'+esc(value)+'"></td>');
     }
-    purchaseTable.querySelector('col:nth-child(11)')?.insertAdjacentHTML('beforebegin','<col style="width:150px">');
+    purchaseTable.querySelector('col:last-child')?.insertAdjacentHTML('beforebegin','<col style="width:150px">');
     const empty=purchaseTable.tBodies[0].querySelector('td[colspan]');if(empty)empty.colSpan=15;
     purchaseTable.style.width='2420px';purchaseTable.style.minWidth='2420px';
   }

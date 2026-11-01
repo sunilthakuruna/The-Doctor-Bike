@@ -26,7 +26,7 @@
 #billForm .purchaseItemsTable col:nth-child(14){width:130px!important}
 #billForm .purchaseItemsTable col:nth-child(15){width:52px!important}
 #billForm .purchaseItemsTable td{text-align:center}
-#billForm .purchaseItemsTable:has([data-purchase-number$="|sellingPrice"]) col:nth-child(11){width:150px!important}
+#billForm .purchaseItemsTable:has([data-purchase-number$="|sellingPrice"]) col:nth-last-child(2){width:150px!important}
 #billForm .purchaseItemsTable td:nth-child(3){text-align:left}
 #billForm .purchaseItemsTable input,#billForm .purchaseItemsTable select{width:100%;min-width:0;box-sizing:border-box;height:31px;min-height:31px;padding:4px 6px;font-size:11px;border:1px solid #cbd5e1;background:white;color:#172033}
 #billForm .purchaseItemsTable input[data-purchase-lookup$="|name"]{display:block!important;width:100%!important;min-width:100%!important;max-width:none!important;height:38px!important;min-height:38px!important;font-size:13px!important}
