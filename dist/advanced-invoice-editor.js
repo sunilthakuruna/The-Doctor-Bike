@@ -19,8 +19,8 @@
     sync();
   }
   const before=settingsPage;
-  settingsPage=function(){return before()+`<section class="panel advancedInvoiceEditorLaunch"><div class="panelhead"><h2>Advanced Invoice Editor</h2></div><div class="panelbody"><p>Edit your invoice visually with drag-and-drop sections and a live preview.</p><button type="button" class="btn" id="openAdvancedInvoiceEditor">Open Advanced Editor</button></div></section>`};
+  settingsPage=function(){const presets=(db.invoiceTemplates||[]).filter(t=>t.mode==='regular'&&String(t.id).indexOf('TPL-PRESET-')===0);const options=presets.map(t=>`<option value="${escText(t.id)}">${escText(t.name)}</option>`).join('');return before()+`<section class="panel advancedInvoiceEditorLaunch"><div class="panelhead"><h2>Advanced Invoice Editor</h2></div><div class="panelbody"><p>Edit your invoice visually with drag-and-drop sections and a live preview.</p><div class="aieLaunchRow"><select id="advancedInvoicePreset" aria-label="Choose a pre-designed invoice template"><option value="">Choose a pre-designed template</option>${options}</select><button type="button" class="btn" id="openAdvancedInvoiceEditor">Open Advanced Editor</button></div></div></section>`};
   const oldRender=render;
-  render=function(){oldRender();if(page!=='settings')return;$('#openAdvancedInvoiceEditor')?.addEventListener('click',()=>editor(base()))};
+  render=function(){oldRender();if(page!=='settings')return;$('#openAdvancedInvoiceEditor')?.addEventListener('click',()=>{const id=$('#advancedInvoicePreset')?.value;const chosen=id?(db.invoiceTemplates||[]).find(t=>t.id===id):null;editor(chosen||base())})};
   render();
 })();
