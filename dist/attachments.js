@@ -123,7 +123,7 @@ editRecord=function(key,id,initial={}){
     let set=(names,value,label)=>{
       let field=names.map(name=>form.querySelector(`[name="${name}"]`)).find(Boolean);
       if(!field)field=[...form.querySelectorAll('.field')].find(node=>(node.querySelector('span')?.textContent||'').toLowerCase().includes(label))?.querySelector('input,textarea,select');
-      if(field)field.value=value||'';
+      if(field&&field!==bike)field.value=value||'';
     };
     set(['vehicleNumber','registration','number'],record.number,'vehicle number');
     set(['vehicleMake','make','brand'],record.brand,'vehicle make');
