@@ -4,3 +4,15 @@
 .navcollapsed .sidebarCollapseButton{width:42px;margin-left:auto;margin-right:auto}
 .navcollapsed .sidebarCollapseLabel{display:none}
 @media(max-width:600px){.sidebarCollapseButton{margin-top:8px}}
+/* Keep the daily attendance table compact while preserving readable controls. */
+.attendanceDailyTable table{min-width:860px!important;table-layout:fixed}
+.attendanceDailyTable th:nth-child(1),.attendanceDailyTable td:nth-child(1){width:82px;min-width:82px}
+.attendanceDailyTable th:nth-child(2),.attendanceDailyTable td:nth-child(2){width:190px;min-width:190px}
+.attendanceDailyTable th:nth-child(3),.attendanceDailyTable td:nth-child(3){width:110px;min-width:110px}
+.attendanceDailyTable th:nth-child(4),.attendanceDailyTable td:nth-child(4){width:105px;min-width:105px}
+.attendanceDailyTable th:nth-child(5),.attendanceDailyTable td:nth-child(5){width:255px;min-width:255px}
+.attendanceDailyTable th:nth-child(6),.attendanceDailyTable td:nth-child(6){width:180px;min-width:180px}
+.attendanceDailyTable .attendancePerson{min-width:0}
+.attendanceDailyTable .attendancePerson strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attendanceDailyTable .attendanceChoices{flex-wrap:wrap}
+.attendanceDailyTable .attendanceNote{max-width:180px}
