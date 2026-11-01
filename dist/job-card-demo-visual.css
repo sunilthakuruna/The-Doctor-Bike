@@ -27,3 +27,8 @@ body[data-view="jobs"] #content .rowactions .btn:hover{transform:translateY(-1px
   body[data-view="jobs"] #content .pipeline,
   body[data-view="jobs"] #content .tablewrap{border-radius:6px}
 }
+#modal .dialog:has(#serviceLines) .formbody{display:block}
+#modal .dialog:has(#serviceLines) .formgrid{grid-template-columns:1fr}
+#modal .dialog:has(#serviceLines) .jobLinesScroll{display:block;width:100%;max-width:100%;margin-top:18px}
+#modal .dialog:has(#serviceLines) .jobLinesScroll>.lineheading,#modal .dialog:has(#serviceLines) .jobLinesScroll>.notice,#modal .dialog:has(#serviceLines) .jobLinesScroll>#serviceLines,#modal .dialog:has(#serviceLines) .jobLinesScroll>#partLines{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+#modal .dialog:has(#serviceLines) .jobBillingPanel{display:block;width:100%;margin-top:18px}
