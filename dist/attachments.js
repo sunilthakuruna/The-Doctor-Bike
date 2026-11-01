@@ -61,20 +61,26 @@ editRecord=function(key,id,initial={}){
     let input=document.createElement('input');
     input.type='search';input.className='insuranceSearchInput';input.placeholder=placeholder;input.autocomplete='off';
     let menu=document.createElement('div');
+    let menuSearch=document.createElement('input');
+    let menuResults=document.createElement('div');
     menu.className='insuranceSearchMenu';
     menu.style.cssText='display:none;position:absolute;left:0;right:0;top:100%;max-height:240px;overflow:auto;background:#fff;border:1px solid #94a3b8;border-radius:6px;box-shadow:0 8px 20px rgba(15,23,42,.18);z-index:1000';
+    menuSearch.type='search';menuSearch.className='insuranceDropdownSearch';menuSearch.placeholder='Search in this list...';menuSearch.autocomplete='off';
+    menuSearch.style.cssText='display:block;width:calc(100% - 16px);margin:8px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:5px';
     select.style.display='none';
-    select.parentNode.insertBefore(wrap,select);wrap.append(input,menu);
+    select.parentNode.insertBefore(wrap,select);wrap.append(input,menu);menu.append(menuSearch,menuResults);
     let currentItems=[];
     let renderItems=query=>{
       currentItems=items().filter(item=>labelFor(item).toLowerCase().includes(query.toLowerCase()));
-      menu.innerHTML=currentItems.length?currentItems.map(item=>`<button type="button" class="insuranceSearchOption" data-value="${esc(item.id)}" style="display:block;width:100%;padding:9px 11px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e2e8f0;cursor:pointer"><strong>${esc(labelFor(item))}</strong></button>`).join(''):'<div style="padding:10px;color:#64748b">No matching records</div>';
+      menuResults.innerHTML=currentItems.length?currentItems.map(item=>`<button type="button" class="insuranceSearchOption" data-value="${esc(item.id)}" style="display:block;width:100%;padding:9px 11px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e2e8f0;cursor:pointer"><strong>${esc(labelFor(item))}</strong></button>`).join(''):'<div style="padding:10px;color:#64748b">No matching records</div>';
       menu.style.display='block';
-      menu.querySelectorAll('[data-value]').forEach(option=>option.onclick=()=>{select.value=option.dataset.value;input.value=labelFor(currentItems.find(item=>item.id===option.dataset.value)||{});menu.style.display='none';select.dispatchEvent(new Event('change',{bubbles:true}))});
+      menuResults.querySelectorAll('[data-value]').forEach(option=>option.onclick=()=>{select.value=option.dataset.value;input.value=labelFor(currentItems.find(item=>item.id===option.dataset.value)||{});menu.style.display='none';select.dispatchEvent(new Event('change',{bubbles:true}))});
     };
     input.value=labelFor(items().find(item=>item.id===select.value)||{});
-    input.onfocus=()=>renderItems(input.value);
-    input.oninput=()=>renderItems(input.value);
+    input.onfocus=()=>{menuSearch.value='';renderItems('')};
+    input.onclick=()=>{menuSearch.value='';renderItems('')};
+    input.oninput=()=>{menuSearch.value=input.value;renderItems(input.value)};
+    menuSearch.oninput=()=>renderItems(menuSearch.value);
     document.addEventListener('click',event=>{if(!wrap.contains(event.target))menu.style.display='none'});
     return {refresh(list){items=list;input.value=labelFor(list().find(item=>item.id===select.value)||{});},open:()=>renderItems(input.value)};
   }
