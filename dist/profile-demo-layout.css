@@ -1,0 +1,23 @@
+/* User profile panel inspired by the supplied dashboard reference. */
+#modal:has(.profileAccess) { align-items: flex-start; justify-content: flex-end; padding: 84px 26px 18px; background: transparent; backdrop-filter: none; pointer-events: none; }
+#modal:has(.profileAccess) .dialog { pointer-events: auto; width: min(525px, calc(100vw - 32px)); max-height: calc(100dvh - 100px); box-shadow: 0 12px 32px #0f172a35; }
+#modal:has(.profileAccess) #modalBody { overflow: hidden; min-height: 0; }
+.profileAccess { max-height: calc(100dvh - 100px); }
+.profileAccessHero { background: linear-gradient(110deg, #082b3c, #10475c); padding: 20px 24px; }
+.profileHeroTitle p { color: #9dc7fa; font-size: 15px; }
+.profileIdentity { padding-top: 18px; }
+.profileAccessBody { min-height: 0; padding: 16px 22px; }
+.accessTabs { display: flex; flex-wrap: wrap; gap: 2px; background: #e2e8f0; border: 0; width: fit-content; }
+.accessTabs button { border: 0; padding: 7px 10px; }
+.accessTabs button.active { background: white; border: 0; box-shadow: 0 1px 4px #0f172a22; }
+.accessRows { border: 0; display: grid; gap: 5px; }
+.accessRow { border: 1px solid #e5edf4; min-width: 0; }
+.accessRow strong { min-width: 0; overflow-wrap: anywhere; }
+.accessBadge { white-space: nowrap; }
+@media (max-width: 640px) {
+  #modal:has(.profileAccess) { padding: 70px 8px 8px; }
+  #modal:has(.profileAccess) .dialog { width: 100%; max-height: calc(100dvh - 78px); }
+  .profileAccess { max-height: calc(100dvh - 78px); }
+  .profileAccessHero { padding: 14px 16px; }
+  .profileAccessBody { padding: 12px; }
+}
