@@ -1,3 +1,4 @@
+#content .cards .stat:has(.statmore[data-page]) { cursor: pointer; }
 #content .cards .statmore {
   display: flex;
   align-items: center;
