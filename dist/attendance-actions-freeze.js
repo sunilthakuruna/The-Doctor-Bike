@@ -8,6 +8,14 @@
     host.innerHTML = originalDailyAttendanceMarkup();
     const table = host.querySelector('.attendanceDailyTable table');
     if (!table) return host.innerHTML;
+    for (const group of host.querySelectorAll('.attendanceChoices')) {
+      const seen = new Set();
+      for (const button of group.querySelectorAll('[data-attendance-status]')) {
+        const status = button.dataset.attendanceStatus;
+        if (seen.has(status)) button.remove();
+        else seen.add(status);
+      }
+    }
 
     const headerRow = table.tHead && table.tHead.rows[0];
     if (headerRow && !headerRow.querySelector('.attendanceEditActionHead')) {
