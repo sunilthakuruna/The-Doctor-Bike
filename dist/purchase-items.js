@@ -209,5 +209,31 @@ const purchaseVendorRender=render;
 render=function(){purchaseVendorRender();if(page!=='purchases')return;for(const select of document.querySelectorAll('[data-purchase-vendor]')){if(select.parentElement.querySelector('[data-purchase-add-vendor]'))continue;const button=document.createElement('button');button.type='button';button.className='btn secondary small';button.textContent='+ Add Vendor';button.dataset.purchaseAddVendor='true';select.parentElement.appendChild(button);button.onclick=()=>{openModal('Add Vendor','<form id="purchaseAddVendorForm"><div class="formbody"><label class="field"><span>Vendor Name</span><input name="vendor" required maxlength="120" autofocus></label></div><div class="formactions">'+btn('Cancel','cancel','secondary')+'<button type="submit" class="btn">Add Vendor</button></div></form>');document.querySelector('#purchaseAddVendorForm').onsubmit=e=>{e.preventDefault();const nameValue=String(new FormData(e.target).get('vendor')||'').trim();if(!nameValue)return;if(!db.lists)db.lists={};if(!db.lists.Vendors)db.lists.Vendors=[];if(!db.lists.Vendors.some(v=>v.toLowerCase()===nameValue.toLowerCase()))db.lists.Vendors.push(nameValue);save('Vendor added');closeModal();lineRender()}}}}
 if(!document.getElementById('purchasePartNameOverflowStyle')){const s=document.createElement('style');s.id='purchasePartNameOverflowStyle';s.textContent='.purchaseItemsTable td:nth-child(3){position:relative;z-index:20}.purchaseItemsTable td:nth-child(3) input:focus{position:relative;z-index:30}';document.head.appendChild(s)}
 document.addEventListener('click',event=>{const button=event.target.closest('[data-purchase-add]');if(!button||jobDraft?.key!=='purchases')return;event.preventDefault();event.stopImmediatePropagation();jobDraft.record.partLines=jobDraft.record.partLines||[];jobDraft.record.partLines.push(newPurchaseItem());lineRender();document.querySelector('[data-purchase-lookup="'+(jobDraft.record.partLines.length-1)+'|code"]')?.focus()},true);
-function addPurchaseDestinationColumn(){if(page!=='purchases')return;for(const table of document.querySelectorAll('#content table')){const head=table.tHead?.rows[0];if(!head||![...head.cells].some(cell=>cell.textContent.trim()==='Purchase ID'))continue;[...head.cells].find(cell=>cell.dataset.purchaseDestination==='1')?.remove();const invoiceHeader=[...head.cells].find(cell=>cell.textContent.trim()==='INVOICE NO.');if(!invoiceHeader)continue;const header=document.createElement('th');header.textContent='STOCK DESTINATION';header.dataset.purchaseDestination='1';invoiceHeader.after(header);for(const row of table.tBodies[0]?.rows||[]){[...row.cells].find(cell=>cell.dataset.purchaseDestination==='1')?.remove();const invoiceCell=row.cells[3],id=row.cells[0]?.textContent.trim(),purchase=db.purchases.find(item=>item.id===id),cell=document.createElement('td');cell.textContent=purchase?.stockLocation==='godown'?'Godown':'Main Stock';cell.dataset.purchaseDestination='1';invoiceCell?.after(cell)}}}
+function addPurchaseDestinationColumn(){
+  if(page!=='purchases')return;
+  for(const table of document.querySelectorAll('#content table')){
+    const head=table.tHead?.rows[0];
+    if(!head)continue;
+    const headers=[...head.cells].map(cell=>cell.textContent.trim().toUpperCase());
+    const idIndex=headers.indexOf('PURCHASE ID'),invoiceIndex=headers.indexOf('INVOICE NO.');
+    if(idIndex<0||invoiceIndex<0)continue;
+    [...head.cells].find(cell=>cell.dataset.purchaseDestination==='1')?.remove();
+    const header=document.createElement('th');
+    header.textContent='STOCK DESTINATION';
+    header.dataset.purchaseDestination='1';
+    const currentInvoiceIndex=[...head.cells].findIndex(cell=>cell.textContent.trim().toUpperCase()==='INVOICE NO.');
+    head.cells[currentInvoiceIndex]?.after(header);
+    for(const row of table.tBodies[0]?.rows||[]){
+      [...row.cells].find(cell=>cell.dataset.purchaseDestination==='1')?.remove();
+      const rowHeaders=[...head.cells].map(cell=>cell.textContent.trim().toUpperCase());
+      const currentIdIndex=rowHeaders.indexOf('PURCHASE ID'),currentInvoiceCell=[...row.cells][rowHeaders.indexOf('INVOICE NO.')];
+      const id=row.cells[currentIdIndex]?.textContent.trim(),purchase=db.purchases.find(item=>item.id===id);
+      if(!currentInvoiceCell)continue;
+      const cell=document.createElement('td');
+      cell.textContent=purchase?.stockLocation==='godown'?'Godown':'Main Stock';
+      cell.dataset.purchaseDestination='1';
+      currentInvoiceCell.after(cell);
+    }
+  }
+}
 const renderBeforePurchaseDestination=render;render=function(){const result=renderBeforePurchaseDestination();addPurchaseDestinationColumn();return result};
