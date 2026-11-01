@@ -69,6 +69,7 @@ function renderPurchaseItems(){
   if(heading?.classList.contains('lineheading')){
     heading.classList.add('purchaseItemHeading');
     heading.innerHTML='<span>PURCHASE PARTS ITEMS <b data-purchase-count></b></span><button type="button" class="btn small" data-purchase-add>+ ADD ITEM</button>';
+    heading.querySelector('[data-purchase-add]').onclick=()=>{jobDraft.record.partLines.push(newPurchaseItem());lineRender();document.querySelector('[data-purchase-lookup="'+(jobDraft.record.partLines.length-1)+'|code"]')?.focus()};
   }
   const codeOptions=db.parts.map(p=>'<option value="'+esc(p.id)+'" label="'+esc(p.name+(p.hsn?' · HSN: '+p.hsn:''))+'"></option>').join('');
   const nameOptions=db.parts.map(p=>{const quantities=purchaseStockQuantities(record,{part:p.id},jobDraft.id);return '<option value="'+esc(p.name)+'" label="'+esc('Current '+stockLocation+' stock: '+purchaseStockText(quantities.existing,quantities.unit)+' · After purchase: '+purchaseStockText(quantities.total,quantities.unit)+(p.hsn?' · HSN: '+p.hsn:''))+'"></option>'}).join('');
