@@ -44,7 +44,7 @@
     for(const part of matches){
       const option=document.createElement('button');option.type='button';option.setAttribute('role','option');option.className='purchasePartNameOption';
       const title=document.createElement('strong');title.textContent=part.name;
-      const detail=document.createElement('small');detail.textContent=[part.id,part.brand,part.hsn?'HSN '+part.hsn:''].filter(Boolean).join(' · ');
+      const detail=document.createElement('small');detail.textContent=[part.id,part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN '+part.hsn:''].filter(Boolean).join(' · ');
       option.append(title,detail);
       option.addEventListener('pointerdown',event=>event.preventDefault());
       option.addEventListener('click',()=>choose(part));
