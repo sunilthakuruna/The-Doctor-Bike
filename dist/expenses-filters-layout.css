@@ -1,0 +1,24 @@
+#content .expenseFilters {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) minmax(150px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 14px;
+  margin: 14px 0;
+  background: #f8fafc;
+  border: 1px solid #dbe5f1;
+  border-radius: 8px;
+}
+#content .expenseFilters > * { min-width: 0; width: 100%; box-sizing: border-box; }
+#content .expenseFilters label { display: flex; flex-direction: column; gap: 5px; color: #475569; font-size: 12px; font-weight: 600; }
+#content .expenseFilters input, #content .expenseFilters select { width: 100%; min-width: 0; box-sizing: border-box; min-height: 42px; }
+#content .expenseFilters > .btn { width: auto; min-height: 42px; white-space: nowrap; }
+@media (max-width: 900px) {
+  #content .expenseFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #content .expenseFilters > .search, #content .expenseFilters > select { grid-column: 1 / -1; }
+  #content .expenseFilters > .btn { justify-self: start; }
+}
+@media (max-width: 360px) {
+  #content .expenseFilters { grid-template-columns: minmax(0, 1fr); }
+  #content .expenseFilters > * { grid-column: 1; }
+}
