@@ -46,10 +46,10 @@
     for(const part of matches){
       const option=document.createElement('button');option.type='button';option.setAttribute('role','option');option.className='purchasePartNameOption';
       const title=document.createElement('strong');title.textContent=part.name;
-      const location=record?.stockLocation==='godown'?'godown':'main';
-      const current=typeof locationStock==='function'?locationStock(part.id,location):location==='main'?stock(part.id):0;
-      const other=typeof locationStock==='function'?locationStock(part.id,location==='main'?'godown':'main'):0;
-      const detail=document.createElement('small');detail.textContent=[part.id,part.partType?'Type: '+part.partType:'',part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN: '+part.hsn:'','Current '+(location==='main'?'Main':'Godown')+' Stock: '+current+' '+(part.unit||'PCS'),'Other Stock: '+other+' '+(part.unit||'PCS')].filter(Boolean).join(' · ');
+      const mainStock=typeof locationStock==='function'?locationStock(part.id,'main'):stock(part.id);
+      const godownStock=typeof locationStock==='function'?locationStock(part.id,'godown'):0;
+      const totalStock=Number(mainStock||0)+Number(godownStock||0);
+      const detail=document.createElement('small');detail.textContent=[part.id,part.partType?'Type: '+part.partType:'',part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN: '+part.hsn:'','Main Stock: '+mainStock+' '+(part.unit||'PCS'),'Godown Stock: '+godownStock+' '+(part.unit||'PCS'),'Total Stock: '+totalStock+' '+(part.unit||'PCS')].filter(Boolean).join(' · ');
       option.append(title,detail);
       option.addEventListener('pointerdown',event=>event.preventDefault());
       option.addEventListener('click',()=>choose(part));
