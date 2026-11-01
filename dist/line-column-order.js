@@ -25,8 +25,15 @@
 
     const serviceTable=document.querySelector('#serviceLines table');
     if(!serviceTable)return;
+    const lines=jobDraft.record.serviceLines||[];
     const header=serviceTable.tHead?.rows[0]||serviceTable.rows[0];
     if(!header)return;
+    if(!lines.length){
+      header.querySelector('[data-service-amount]')?.remove();
+      header.querySelector('[data-service-gst-header]')?.remove();
+      serviceTable.tBodies?.[0]?.querySelectorAll('[data-service-amount],[data-service-gst-cell]').forEach(cell=>cell.remove());
+      return;
+    }
     if(!header.querySelector('[data-service-amount]')){
       const th=document.createElement('th');
       th.dataset.serviceAmount='1';
@@ -34,7 +41,6 @@
       header.insertBefore(th,header.lastElementChild);
     }
 
-    const lines=jobDraft.record.serviceLines||[];
     const rows=serviceTable.tBodies?.[0]?.rows||[];
     [...rows].forEach((row,i)=>{
       if(row.classList.contains('empty'))return;
