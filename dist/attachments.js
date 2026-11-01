@@ -43,6 +43,16 @@ editRecord=function(key,id,initial={}){
   customerField.innerHTML='<span>Customer Name <b class="required">*</b></span><select name="customer" required></select>';
   if(bikeField)bikeField.parentNode.insertBefore(customerField,bikeField);else grid.prepend(customerField);
   let customer=customerField.querySelector('select'),selected=seed.customer||'';
+  let addCustomer=document.createElement('div');
+  addCustomer.className='jobRelatedButtons';
+  addCustomer.innerHTML='<button type="button" class="btn secondary small">+ Add Customer</button>';
+  addCustomer.querySelector('button').onclick=()=>editRecord('customers');
+  customerField.append(addCustomer);
+  let addVehicle=document.createElement('div');
+  addVehicle.className='jobRelatedButtons';
+  addVehicle.innerHTML='<button type="button" class="btn secondary small">+ Add Vehicle</button>';
+  addVehicle.querySelector('button').onclick=()=>editRecord('bikes',null,{customer:customer.value});
+  if(bikeField)bikeField.append(addVehicle);else grid.append(addVehicle);
   customer.innerHTML=opts(reference('customers'),selected);
   let refreshVehicles=()=>{
     let current=bike.value;
