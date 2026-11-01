@@ -6,5 +6,6 @@ const billBeforeTemporaryDocumentCoverage=billForm;
 billForm=function(key,id,initial){billBeforeTemporaryDocumentCoverage(key,id,initial);ensureRecordDocuments(key,id,$('#billForm'))};
 const godownFormBeforeTemporaryDocuments=openGodownOpeningForm;
 openGodownOpeningForm=function(partId){godownFormBeforeTemporaryDocuments(partId);ensureRecordDocuments('parts',partId,$('#godownOpeningForm'))};
-const godownActionsBeforeTemporaryDocuments=openGodownActions; openGodownActions=function(id){godownActionsBeforeTemporaryDocuments(id)}; render();
+// Godown row actions are bound by godown-stock.js; there is no openGodownActions hook.
+render();
 

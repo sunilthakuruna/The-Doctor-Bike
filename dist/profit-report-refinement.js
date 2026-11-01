@@ -9,7 +9,7 @@
       const monday=new Date(d);monday.setDate(d.getDate()-((d.getDay()+6)%7));
       return 'Week of '+monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
     }
-    return d.toISOString().slice(0,7);
+    return String(date).slice(0,7);
   }
   function profitReport(){
     if(page!=='report-profit')return previousReportPage();
@@ -18,13 +18,15 @@
     const rows=bills.filter(inRange).map(b=>{
       const serviceIncome=(b.serviceLines||[]).reduce((sum,line)=>sum+Math.max(0,Number(line.charge||0)-Number(line.discount||0)),0);
       const partsIncome=(b.partLines||[]).reduce((sum,line)=>sum+Math.max(0,Number(line.price||0)*Number(line.qty||0)-Number(line.discount||0)),0);
-      const partsProfit=(b.partLines||[]).reduce((sum,line)=>{const qty=Number(line.qty||0),sale=Number(line.price||0)*qty,cost=Number(find('parts',line.part)?.purchase||0)*qty;return sum+Math.max(0,sale-Number(line.discount||0)-cost)},0);
-      return {date:b.date,bill:b.id,labour:serviceIncome,parts:partsProfit,serviceIncome,partsIncome};
+      const knownCost=(b.partLines||[]).reduce((sum,line)=>sum+Number(find('parts',line.part)?.purchase||0)*Number(line.qty||0),0);
+      const totals=billTotals(b),net=Number(totals.total||0)-Number(totals.tax||0)-Number(b.paymentRoundOff||0),share=serviceIncome+partsIncome;
+      const labour=share?net*serviceIncome/share:0,partsNet=net-labour;
+      return {date:b.date,bill:b.id,labour,parts:partsNet-knownCost,serviceIncome:labour,partsIncome:partsNet};
     });
     const totalLabour=rows.reduce((n,r)=>n+r.labour,0),totalParts=rows.reduce((n,r)=>n+r.parts,0),labourRevenue=rows.reduce((n,r)=>n+r.serviceIncome,0),partsRevenue=rows.reduce((n,r)=>n+r.partsIncome,0),total=totalLabour+totalParts;
     const operatingExpenses=(db.expenses||[]).filter(inRange).reduce((sum,expense)=>sum+Number(expense.amount||0),0),operatingProfit=total-operatingExpenses;
     const purchaseExpenditure=(db.purchases||[]).filter(purchase=>purchase.status!=='Cancelled'&&inRange(purchase)).reduce((sum,purchase)=>sum+Number(billTotals(purchase).total||0),0),totalExpenditure=purchaseExpenditure+operatingExpenses;
-    const jobCardRows=bills.filter(inRange).map(b=>{const serviceIncome=(b.serviceLines||[]).reduce((sum,line)=>sum+Math.max(0,Number(line.charge||0)-Number(line.discount||0)),0),partLines=b.partLines||[],partsIncome=partLines.reduce((sum,line)=>sum+Math.max(0,Number(line.price||0)*Number(line.qty||0)-Number(line.discount||0)),0),partsCost=partLines.reduce((sum,line)=>sum+Number(find('parts',line.part)?.purchase||0)*Number(line.qty||0),0),partsProfit=Math.max(0,partsIncome-partsCost),jobProfit=serviceIncome+partsProfit,jobIncome=serviceIncome+partsIncome,customer=b.customer?name('customers',b.customer):b.walkin||'Walk-in Customer',vehicle=b.bike?number(b.bike):b.vehicleNumber||'—';return [esc(b.id),esc(b.date||'—'),esc(customer),esc(vehicle),money(serviceIncome),money(partsIncome),money(partsCost),money(jobProfit),jobIncome?(jobProfit/jobIncome*100).toFixed(1)+'%':'0%']});
+    const jobCardRows=rows.map(r=>{const b=bills.find(b=>b.id===r.bill),partsCost=r.partsIncome-r.parts,jobProfit=r.labour+r.parts,jobIncome=r.serviceIncome+r.partsIncome,customer=b.customer?name('customers',b.customer):b.walkin||'Walk-in Customer',vehicle=b.bike?number(b.bike):b.vehicleNumber||'—';return [esc(b.id),esc(b.date||'—'),esc(customer),esc(vehicle),money(r.serviceIncome),money(r.partsIncome),money(partsCost),money(jobProfit),jobIncome?(jobProfit/jobIncome*100).toFixed(1)+'%':'0%']});
     const grouped={};for(const r of rows){const k=profitDateKey(r.date,period)||'Undated';grouped[k]??={labour:0,parts:0,expenses:0};grouped[k].labour+=r.labour;grouped[k].parts+=r.parts}
     for(const expense of db.expenses||[]){if(!inRange(expense))continue;const k=profitDateKey(expense.date,period)||'Undated';grouped[k]??={labour:0,parts:0,expenses:0};grouped[k].expenses+=Number(expense.amount||0)}
     const groupRows=Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>[esc(k),money(v.labour),money(v.parts),money(v.labour+v.parts),money(v.labour+v.parts-v.expenses),total?((v.labour+v.parts)/total*100).toFixed(1)+'%':'0%']);

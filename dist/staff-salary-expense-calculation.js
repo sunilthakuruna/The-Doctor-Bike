@@ -2,7 +2,8 @@
 (function(){
   const salaryRecord=expense=>['Salary','Staff Salary / Advance'].includes(expense.category)&&expense.staff;
   function salaryTotals(staff){
-    const records=(db.expenses||[]).filter(salaryRecord).filter(expense=>expense.staff===staff.id);
+    const month=today().slice(0,7);
+    const records=(db.expenses||[]).filter(salaryRecord).filter(expense=>expense.staff===staff.id&&String(expense.date||'').startsWith(month));
     const advance=records.filter(expense=>expense.salaryPaymentType==='advance').reduce((sum,expense)=>sum+Number(expense.amount||0),0);
     const salaryPaid=records.filter(expense=>expense.salaryPaymentType!=='advance').reduce((sum,expense)=>sum+Number(expense.amount||0),0);
     const total=advance+salaryPaid,monthly=staff.salaryType==='Monthly'?Number(staff.salary||0):0;
@@ -15,7 +16,7 @@
     tableEl.dataset.salaryExpenseCalculation='true';
     const header=tableEl.querySelector('thead tr');
     if(!header)return;
-    header.insertAdjacentHTML('beforeend','<th>SALARY ADVANCE</th><th>SALARY PAID</th><th>TOTAL PAID</th><th>SALARY DUE</th>');
+    header.insertAdjacentHTML('beforeend','<th>MONTH ADVANCE</th><th>MONTH PAID</th><th>MONTH TOTAL PAID</th><th>MONTH BASE DUE</th>');
     for(const row of tableEl.querySelectorAll('tbody tr')){
       const id=row.cells?.[0]?.textContent.trim(),staff=find('staff',id);
       if(!staff)continue;
@@ -23,7 +24,7 @@
       row.insertAdjacentHTML('beforeend',`<td>${money(totals.advance)}</td><td>${money(totals.salaryPaid)}</td><td><strong>${money(totals.total)}</strong></td><td><span class="staffSalaryDue ${totals.due===0?'settled':''}">${due}</span></td>`);
     }
     const all=db.staff||[],totalAdvance=all.reduce((sum,staff)=>sum+salaryTotals(staff).advance,0),totalPaid=all.reduce((sum,staff)=>sum+salaryTotals(staff).salaryPaid,0),totalDue=all.reduce((sum,staff)=>sum+Number(salaryTotals(staff).due||0),0);
-    tableEl.closest('.tablewrap')?.insertAdjacentHTML('beforebegin',`<div class="staffSalaryExpenseStrip"><span><small>TOTAL SALARY ADVANCE</small><b>${money(totalAdvance)}</b></span><span><small>TOTAL SALARY PAID</small><b>${money(totalPaid)}</b></span><span><small>TOTAL MONTHLY SALARY DUE</small><b>${money(totalDue)}</b></span><em>Calculated from saved Salary Advance and Salary Payment expense entries.</em></div>`);
+    tableEl.closest('.tablewrap')?.insertAdjacentHTML('beforebegin',`<div class="staffSalaryExpenseStrip"><span><small>THIS MONTH ADVANCE</small><b>${money(totalAdvance)}</b></span><span><small>THIS MONTH PAID</small><b>${money(totalPaid)}</b></span><span><small>THIS MONTH BASE DUE</small><b>${money(totalDue)}</b></span><em>Monthly base salary less this month's saved advance and payment entries. Attendance and per-job pay are shown in the salary report.</em></div>`);
   }
   const renderBeforeStaffSalaryCalculation=render;
   render=function(){renderBeforeStaffSalaryCalculation();applyStaffSalaryCalculation()};

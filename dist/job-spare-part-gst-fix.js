@@ -1,18 +1,27 @@
 /* Final Job Card spare-part GST synchronization. */
 (function(){
+  function netSalesBreakdown(b){
+    const totals=billTotals(b),net=Math.max(0,round(Number(totals.total||0)-Number(totals.tax||0)-Number(b.paymentRoundOff||0)));
+    const labourBase=(b.serviceLines||[]).reduce((s,l)=>s+Math.max(0,Number(l.charge||0)-(typeof itemDiscount==='function'?itemDiscount(l,'service'):0)),0);
+    const partsBase=(b.partLines||[]).reduce((s,l)=>s+Math.max(0,Number(l.qty||0)*Number(l.price||0)-(typeof itemDiscount==='function'?itemDiscount(l,'part'):0)),0);
+    const d=typeof splitDiscounts==='function'?splitDiscounts(b):{service:0,part:0};
+    const labourAfter=Math.max(0,labourBase-Number(d.service||0)),partsAfter=Math.max(0,partsBase-Number(d.part||0));
+    const labour=labourAfter+partsAfter?round(net*labourAfter/(labourAfter+partsAfter)):0;
+    return {labour,parts:round(net-labour),total:net};
+  }
   function addTodaySalesTile(){
     const cards=document.querySelector('#content .cards');
     if(!cards||cards.querySelector('[data-today-sales-tile]'))return;
-    const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date===today()),parts=bills.reduce((s,b)=>s+billTotals(b).parts,0),labour=bills.reduce((s,b)=>s+billTotals(b).labour,0),total=parts+labour;
-    const tile=document.createElement('article');tile.className='stat teal';tile.dataset.todaySalesTile='1';tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}TODAY'S SALES</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)}</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile);
+    const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date===today()),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),total=round(parts+labour);
+    const tile=document.createElement('article');tile.className='stat teal';tile.dataset.todaySalesTile='1';tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}TODAY'S NET SALES</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile);
   }
   addTodaySalesTile();
   function addPeriodSalesTiles(){
     const cards=document.querySelector('#content .cards');
     if(!cards)return;
-    const now=new Date(),startWeek=new Date(now);startWeek.setHours(0,0,0,0);startWeek.setDate(now.getDate()-((now.getDay()+6)%7));
-    const startMonth=new Date(now.getFullYear(),now.getMonth(),1);const periods=[['week','THIS WEEK\'S SALES',startWeek,'#1d4ed8','#3b82f6'],['month','THIS MONTH\'S SALES',startMonth,'#7c2d12','#f97316']];
-    periods.forEach(([key,label,start,color,accent])=>{if(cards.querySelector(`[data-period-sales="${key}"]`))return;const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date&&new Date(b.date+'T00:00:00')>=start),parts=bills.reduce((s,b)=>s+billTotals(b).parts,0),labour=bills.reduce((s,b)=>s+billTotals(b).labour,0),total=parts+labour,tile=document.createElement('article');tile.className='stat';tile.dataset.periodSales=key;tile.style.background=`linear-gradient(135deg,${color},${accent})`;tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}${label}</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)}</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile)});
+    const end=today(),now=new Date(end+'T12:00:00Z'),startWeekDate=new Date(now);startWeekDate.setUTCDate(now.getUTCDate()-((now.getUTCDay()+6)%7));
+    const startWeek=startWeekDate.toISOString().slice(0,10),startMonth=end.slice(0,7)+'-01';const periods=[['week','THIS WEEK\'S NET SALES',startWeek,'#1d4ed8','#3b82f6'],['month','THIS MONTH\'S NET SALES',startMonth,'#7c2d12','#f97316']];
+    periods.forEach(([key,label,start,color,accent])=>{if(cards.querySelector(`[data-period-sales="${key}"]`))return;const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date>=start&&b.date<=end),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),total=round(parts+labour),tile=document.createElement('article');tile.className='stat';tile.dataset.periodSales=key;tile.style.background=`linear-gradient(135deg,${color},${accent})`;tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}${label}</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile)});
   }
   addPeriodSalesTiles();
   function addDashboardHints(){

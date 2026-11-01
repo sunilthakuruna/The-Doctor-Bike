@@ -144,6 +144,15 @@ saveBill=function(event){
   if(!Number.isFinite(data.advance)||data.advance<0||!Number.isFinite(data.discount)||data.discount<0)return toast('Enter valid paid and discount amounts.');
   const totals=billTotals(data);if(!Number.isFinite(totals.total)||totals.total<0||data.discount>totals.labour+totals.parts)return toast('Check the item amounts and purchase discount.');
   if(paid(data)>totals.total)return toast('Paid amount cannot exceed the purchase total.');
+  if(draft.id&&typeof locationStock==='function'){
+    const proposed=structuredClone(db),index=proposed.purchases.findIndex(p=>p.id===draft.id);
+    if(index<0)return toast('This purchase no longer exists.');
+    const old=proposed.purchases[index];proposed.purchases[index]=data;
+    const affected=new Set([...(old.partLines||[]),...data.partLines].map(line=>line.part).filter(Boolean));
+    for(const partId of affected)for(const location of ['main','godown']){
+      if(locationStock(partId,location,undefined,proposed)<0)return toast('This edit would make '+(location==='main'?'Main':'Godown')+' Stock negative for '+name('parts',partId)+'.');
+    }
+  }
   const before=structuredClone(db),masterCostRefresh=new Map();
   if(!draft.id&&data.status!=='Cancelled'){
     const byPart=new Map();for(const line of data.partLines){const group=byPart.get(line.part)||{qty:0,cost:0};group.qty+=Number(line.qty);group.cost+=Number(line.qty)*Number(line.price);byPart.set(line.part,group)}
