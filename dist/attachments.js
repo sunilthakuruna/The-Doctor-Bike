@@ -25,6 +25,24 @@ const billBeforeAttachments=billForm;
 billForm=function(key,id,initial){billBeforeAttachments(key,id,initial);addFormAttachments(key,id)};
 render();
 
+/* Insurance reminders are stored with each policy and expiry cycle. */
+const basicPageBeforeInsuranceReminders=basicPage;
+basicPage=function(key){
+  let content=basicPageBeforeInsuranceReminders(key);
+  if(key!=='insurance')return content;
+  let rows=(db.insurance||[]).filter(p=>p.expiry).map(p=>{
+    let vehicle=find('bikes',p.bike),customer=find('customers',vehicle?.customer||p.customer),last=p.insuranceReminderExpiry===p.expiry?p.insuranceReminderSentAt:'';
+    return [esc(customer?.name||'—'),esc(vehicle?.number||'—'),esc(p.expiry),last?esc(new Date(last).toLocaleString()):'—',`<div class="rowactions"><button type="button" class="btn small success" data-insurance-whatsapp="${esc(p.id)}">WhatsApp Reminder</button><button type="button" class="btn small secondary" data-insurance-sent="${esc(p.id)}">Mark Sent</button></div>`];
+  });
+  return content+`<section class="panel"><div class="panelhead"><h2>Insurance Expiry Reminders</h2></div><div class="panelbody"><p>Alerts appear 10 days before expiry and daily afterwards. Send the WhatsApp message, then select Mark Sent.</p>${table(['Customer','Vehicle Number','Expiry Date','Last Reminder Sent','Actions'],rows)}</div></section>`;
+};
+const renderBeforeInsuranceReminders=render;
+render=function(){
+  renderBeforeInsuranceReminders();if(page!=='insurance')return;
+  for(let button of $$('[data-insurance-whatsapp]'))button.onclick=()=>{let policy=find('insurance',button.dataset.insuranceWhatsapp),vehicle=policy&&find('bikes',policy.bike),customer=policy&&find('customers',vehicle?.customer||policy.customer);if(!customer?.mobile){toast('Add a mobile number for this customer first.');return}messagePreview(customer.mobile,`Hello ${customer.name||''}, a reminder that insurance for vehicle ${vehicle?.number||''} expires on ${policy.expiry}. Please arrange renewal. Thank you.`)};
+  for(let button of $$('[data-insurance-sent]'))button.onclick=()=>{let policy=find('insurance',button.dataset.insuranceSent);if(!policy)return;let previous=policy.insuranceReminderSentAt,previousExpiry=policy.insuranceReminderExpiry;policy.insuranceReminderSentAt=new Date().toISOString();policy.insuranceReminderExpiry=policy.expiry;if(save('Insurance reminder marked sent')===false){policy.insuranceReminderSentAt=previous;policy.insuranceReminderExpiry=previousExpiry;return}render()};
+};
+
 /* Insurance uses the same customer-first, filtered vehicle selection as Job Cards. */
 const editRecordBeforeInsuranceCustomerVehicle=editRecord;
 editRecord=function(key,id,initial={}){
