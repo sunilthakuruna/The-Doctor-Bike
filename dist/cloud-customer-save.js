@@ -5,7 +5,10 @@ document.addEventListener('submit', event => {
   if (!title.startsWith('Add New Customer')) return;
   const values = Object.fromEntries(new FormData(event.target));
   setTimeout(async () => {
-    if (!document.querySelector('#modal')?.hidden) return;
+    const modal = document.querySelector('#modal');
+    // closeModal() may remove the modal completely, which is the normal
+    // successful-save path. Only skip while the modal is still visibly open.
+    if (modal && !modal.hidden) return;
     try {
       const response = await fetch('/api/customers', {
         method: 'POST',
