@@ -1,8 +1,10 @@
 // Cloud sync bridge for the first migrated module.
 document.addEventListener('submit', event => {
   if (event.target?.id !== 'recordForm') return;
-  const title = document.querySelector('#modalTitle')?.textContent?.trim() || '';
-  if (!title.includes('Customer') || !title.startsWith('Add')) return;
+  // Identify the customer form by its field, not by the modal title. The
+  // title can vary between Add/Edit/related-record flows and previously
+  // prevented the D1 request from being sent at all.
+  if (!event.target.querySelector('[name="customerName"]')) return;
   const values = Object.fromEntries(new FormData(event.target));
   // The customer form uses customerName, while the D1 API expects name.
   // Normalize it before posting so the API does not reject the save as missing.
