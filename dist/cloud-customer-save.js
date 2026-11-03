@@ -2,13 +2,9 @@
 document.addEventListener('submit', event => {
   if (event.target?.id !== 'recordForm') return;
   const title = document.querySelector('#modalTitle')?.textContent?.trim() || '';
-  if (!title.startsWith('Add New Customer')) return;
+  if (!title.includes('Customer') || !title.startsWith('Add')) return;
   const values = Object.fromEntries(new FormData(event.target));
   setTimeout(async () => {
-    const modal = document.querySelector('#modal');
-    // closeModal() may remove the modal completely, which is the normal
-    // successful-save path. Only skip while the modal is still visibly open.
-    if (modal && !modal.hidden) return;
     try {
       const response = await fetch('/api/customers', {
         method: 'POST',
