@@ -24,7 +24,8 @@ export async function onRequestGet({ request, env }) {
 export async function onRequestPost({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body.' }, 400); }
-  const name = String(body?.name || '').trim();
+  // Accept both the API field name and the legacy form field name.
+  const name = String(body?.name || body?.customerName || '').trim();
   if (!name) return json({ error: 'Customer name is required.' }, 400);
   const record = {
     id: String(body.id || id()),
