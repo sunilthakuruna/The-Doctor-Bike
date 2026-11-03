@@ -9,6 +9,18 @@ function id() {
   return `BD-CUST-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
+export async function onRequestDelete({ request, env }) {
+  const customerId = new URL(request.url).searchParams.get('id');
+  if (!customerId) return json({ error: 'Customer ID is required.' }, 400);
+  const existing = await env.DB.prepare('SELECT id FROM customers WHERE id = ?').bind(customerId).first();
+  if (!existing) return json({ error: 'Customer no longer exists. Refresh the list.' }, 404);
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM customers WHERE id = ?').bind(customerId),
+    env.DB.prepare('INSERT INTO audit_logs (action, detail) VALUES (?, ?)').bind('Delete', `${customerId} deleted`)
+  ]);
+  return json({ data: { id: customerId } });
+}
+
 export async function onRequestPut({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body.' }, 400); }

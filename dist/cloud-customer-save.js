@@ -37,3 +37,27 @@ document.addEventListener('submit', async event => {
       if (button) button.disabled = false;
     }
 }, true);
+
+const deleteRecordBeforeCloudCustomers = deleteRecord;
+deleteRecord = function(key, id) {
+  deleteRecordBeforeCloudCustomers(key, id);
+  if (key !== 'customers') return;
+  const button = document.querySelector('#modalBody [data-action="confirmDelete"]');
+  if (!button) return;
+  button.onclick = async () => {
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/customers?id=' + encodeURIComponent(id), { method: 'DELETE' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      db.customers = db.customers.filter(customer => customer.id !== id);
+      save();
+      closeModal();
+      render();
+      toast('Customer deleted from Cloudflare D1.');
+    } catch (error) {
+      console.warn('Cloud customer deletion failed', error);
+      toast('Customer could not be deleted from the cloud. Please try again.');
+      button.disabled = false;
+    }
+  };
+};
