@@ -1,7 +1,9 @@
 // Cloud sync bridge for the first migrated module.
 document.addEventListener('submit', async event => {
   const form = event.target;
-  if (form?.id !== 'recordForm' || typeof editing === 'undefined' || editing?.key !== 'customers') return;
+  // A form control named "id" shadows form.id with the input element.
+  // Read the HTML attribute so customer ID fields cannot disable cloud saving.
+  if (form?.getAttribute('id') !== 'recordForm' || typeof editing === 'undefined' || editing?.key !== 'customers') return;
   event.preventDefault();
   event.stopImmediatePropagation();
   if (editing.id) {
