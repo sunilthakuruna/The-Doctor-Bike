@@ -6,12 +6,10 @@ document.addEventListener('submit', async event => {
   if (form?.getAttribute('id') !== 'recordForm' || typeof editing === 'undefined' || editing?.key !== 'customers') return;
   event.preventDefault();
   event.stopImmediatePropagation();
-  if (editing.id) {
-    toast('Editing cloud customers is not available yet. No changes were saved.');
-    return;
-  }
+  const editId = editing.id;
   const values = Object.fromEntries(new FormData(form));
-  if (db.customers.some(customer => customer.id === values.id)) {
+  if (editId) values.id = editId;
+  if (!editId && db.customers.some(customer => customer.id === values.id)) {
     toast('This customer ID already exists. Choose a unique ID.');
     return;
   }
@@ -19,13 +17,16 @@ document.addEventListener('submit', async event => {
   if (button) button.disabled = true;
     try {
       const response = await fetch('/api/customers', {
-        method: 'POST',
+        method: editId ? 'PUT' : 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(values)
       });
       const result = await response.json();
       if (!response.ok || !result.data?.id) throw new Error(result.error || `HTTP ${response.status}`);
-      db.customers.push({ ...result.data, alt: result.data.alt_mobile || '' });
+      const customer = { ...result.data, alt: result.data.alt_mobile || '' };
+      const index = db.customers.findIndex(item => item.id === customer.id);
+      if (index >= 0) db.customers[index] = { ...db.customers[index], ...customer };
+      else db.customers.push(customer);
       save();
       closeModal();
       render();
