@@ -4,6 +4,9 @@ document.addEventListener('submit', event => {
   const title = document.querySelector('#modalTitle')?.textContent?.trim() || '';
   if (!title.includes('Customer') || !title.startsWith('Add')) return;
   const values = Object.fromEntries(new FormData(event.target));
+  // The customer form uses customerName, while the D1 API expects name.
+  // Normalize it before posting so the API does not reject the save as missing.
+  if (!values.name && values.customerName) values.name = values.customerName;
   setTimeout(async () => {
     try {
       const response = await fetch('/api/customers', {
