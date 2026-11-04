@@ -160,6 +160,23 @@ connectCloudRecords('service-reminders','Service reminders',['serviceReminderLog
 connectCloudRecords('lists','Dropdown lists',['lists','vehicleModels']);
 connectCloudRecords('stock-counts','Stock counts',['stockCounts']);
 
+const sharedUserFields=['id','username','name','role','status','permissions','actionRestrictions'];
+connectCloudRecords('user-permissions','User profiles and permission rules',['users'],{
+ read(){
+  return {users:db.users.map(user=>Object.fromEntries(sharedUserFields
+   .filter(key=>Object.hasOwn(user,key)).map(key=>[key,user[key]])))};
+ },
+ apply({users}){
+  const existing=new Map(db.users.map(user=>[user.id,user]));
+  db.users=users.map(profile=>{
+   const user=existing.get(profile.id)||{};
+   for(const key of sharedUserFields)delete user[key];
+   return Object.assign(user,profile);
+  });
+  window.BD_RECHECK_LOCAL_USER?.();
+ }
+});
+
 const sharedBusinessFields=[
  'name','phone','address','gst','state','footer','upiId',
  'customerPrefix','vehiclePrefix','jobPrefix',
