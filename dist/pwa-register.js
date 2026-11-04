@@ -4,6 +4,19 @@ if('serviceWorker' in navigator){
  });
 }
 
+const connectionNotice=document.createElement('div');
+connectionNotice.className='notice';
+connectionNotice.setAttribute('role','status');
+connectionNotice.textContent='You are offline. Cloud records may be out of date. Reconnect before saving.';
+document.querySelector('#content')?.before(connectionNotice);
+
+function updateConnectionNotice(){
+ connectionNotice.hidden=navigator.onLine!==false;
+}
+window.addEventListener('online',updateConnectionNotice);
+window.addEventListener('offline',updateConnectionNotice);
+updateConnectionNotice();
+
 let installPrompt;
 const installButton=document.createElement('button');
 installButton.type='button';
