@@ -2,6 +2,7 @@
 (() => {
  let revision=0;
  async function loadServices() {
+  if(window.BD_CLOUD_READY && !await window.BD_CLOUD_READY)return;
   const started=revision;
   try {
    const response=await fetch('/api/services',{cache:'no-store'});
