@@ -20,6 +20,11 @@ export function snapshotHandler(scope,collections,validators={}){
     db.prepare(`CREATE TABLE IF NOT EXISTS ${chunks} (version TEXT NOT NULL, position INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(version,position))`)
    ]);
    if(request.method==='GET'){
+    const known=new URL(request.url).searchParams.get('version');
+    if(known){
+     const current=await db.prepare(`SELECT version FROM ${head} WHERE id=1`).first();
+     if(current?.version===known)return new Response(null,{status:304,headers:{'cache-control':'no-store'}});
+    }
     const {results}=await db.prepare(`SELECT h.version,c.data FROM ${head} h JOIN ${chunks} c ON c.version=h.version ORDER BY c.position`).all();
     return reply(results.length?{version:results[0].version,data:JSON.parse(results.map(row=>row.data).join(''))}:{version:null,data:null});
    }
