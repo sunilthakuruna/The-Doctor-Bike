@@ -8,6 +8,16 @@
     const id=localStorage.getItem('bike-doctor-active-user-v1');
     return !!id&&db.users.some(user=>user.id===id&&user.role==='Admin'&&user.status!=='Inactive');
   };
+  async function checkCloud(panel){
+    const status=panel.querySelector('.cloudProvisionStatus');
+    try{
+      const response=await fetch('/api/cloud-status',{cache:'no-store'});
+      if(response.status===401){status.textContent='Owner sign-in required';return}
+      const result=await response.json();
+      if(!response.ok||result.connected!==true)throw new Error();
+      status.textContent='Database reachable';
+    }catch{status.textContent='Connection could not be verified'}
+  }
   const previousRender=render;
   render=function(){
     if(page===moduleId){
@@ -27,7 +37,9 @@
       const cloudPanel=document.createElement('section');
       cloudPanel.className='panel cloudBackupProvision';
       cloudPanel.dataset.cloudBackupProvision='1';
-      cloudPanel.innerHTML='<div class="panelhead"><h2>Cloud Database &amp; Hosting Information</h2><span class="cloudProvisionBadge">Configuration only</span></div><div class="panelbody"><p class="cloudProvisionIntro">This prototype currently stores records in this browser. The cloud connection is intentionally not active yet and can be configured after the application is deployed.</p><div class="cloudProvisionGrid"><div><small>DATABASE PROVIDER</small><strong>Not configured</strong></div><div><small>FIREBASE PROJECT ID</small><strong>Not configured</strong></div><div><small>REALTIME DATABASE URL</small><strong>Not configured</strong></div><div><small>HOSTING URL</small><strong>Not configured</strong></div><div><small>STORAGE BUCKET</small><strong>Not configured</strong></div><div><small>SYNC STATUS</small><strong class="cloudProvisionStatus">Offline / Local Browser Storage</strong></div></div><p class="cloudProvisionNote">After deployment, connect your own Firebase project, authentication, secure database rules and hosting details before enabling live cloud backup and restore.</p></div>';
+      cloudPanel.innerHTML='<div class="panelhead"><h2>Cloud Database &amp; Hosting Information</h2></div><div class="panelbody"><div class="cloudProvisionGrid"><div><small>DATABASE PROVIDER</small><strong>Cloudflare D1</strong></div><div><small>APP URL</small><strong class="cloudAppUrl"></strong></div><div><small>DATABASE CONNECTION</small><strong class="cloudProvisionStatus" role="status">Checking…</strong></div></div><p class="cloudProvisionNote">This check confirms database access. Browser backup files contain the current workspace and may omit records that have not loaded or synced. Use Cloudflare D1 tools for database backup and recovery.</p></div>';
+      cloudPanel.querySelector('.cloudAppUrl').textContent=location.origin;
+      void checkCloud(cloudPanel);
       content.appendChild(cloudPanel);
       content.classList.add('backupRestorePage');
       $('#pageTitle').textContent=titles[moduleId];$('#crumb').textContent=titles[moduleId];
