@@ -1,3 +1,8 @@
+const cloudRecordRefreshers=[];
+const canRefreshCloudRecords=()=>document.visibilityState==='visible'&&
+ document.querySelector('#modal').hidden&&
+ !document.activeElement?.matches('input,textarea,select,[contenteditable="true"]');
+
 function connectCloudRecords(scope,label,collections,adapter){
  const pendingKey=STORE+'-'+scope+'-pending-v1';
  const snapshot=()=>JSON.stringify(adapter?adapter.read():Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
@@ -26,6 +31,7 @@ function connectCloudRecords(scope,label,collections,adapter){
   banner.hidden=!message;
  };
  let baseline=snapshot(),version=null,ready=false,pending=null,busy=false,conflict=false;
+ let generation=0;
  const saveWorkspace=save;
 
  function showConflict(){
@@ -83,11 +89,26 @@ function connectCloudRecords(scope,label,collections,adapter){
    return false;
   }
   baseline=current;
+  generation++;
   pending=next;
   show(label+' changes are waiting to sync.');
   void sync();
   return true;
  };
+
+ cloudRecordRefreshers.push(async()=>{
+  if(!ready||busy||pending||conflict||snapshot()!==baseline||!canRefreshCloudRecords())return false;
+  const started=generation;
+  const response=await fetch('/api/'+scope+(version?'?version='+encodeURIComponent(version):''),{cache:'no-store'});
+  if(response.status===304||!response.ok)return false;
+  const result=await response.json();
+  if(!result.data||typeof result.version!=='string'||result.version===version||
+     started!==generation||busy||pending||conflict||snapshot()!==baseline||!canRefreshCloudRecords())return false;
+  apply(result.data);
+  version=result.version;
+  baseline=snapshot();
+  return true;
+ });
 
  (async()=>{
   if(!await window.BD_CLOUD_READY)return;
@@ -153,3 +174,17 @@ connectCloudRecords('business-settings','Business settings and invoice templates
   if(Array.isArray(invoiceTemplates))db.invoiceTemplates=invoiceTemplates;
  }
 });
+
+let cloudRefreshRunning=false;
+let cloudRefreshAfter=0;
+async function refreshCloudRecordsOnReturn(){
+ if(cloudRefreshRunning||Date.now()<cloudRefreshAfter||!canRefreshCloudRecords())return;
+ cloudRefreshRunning=true;
+ cloudRefreshAfter=Date.now()+3000;
+ try{
+  const results=await Promise.allSettled(cloudRecordRefreshers.map(refresh=>refresh()));
+  if(results.some(result=>result.status==='fulfilled'&&result.value)&&canRefreshCloudRecords())render();
+ }finally{cloudRefreshRunning=false}
+}
+window.addEventListener('focus',refreshCloudRecordsOnReturn);
+document.addEventListener('visibilitychange',refreshCloudRecordsOnReturn);
