@@ -113,3 +113,4 @@ connectCloudRecords('inventory','Inventory',['parts','purchases','stockMovements
 connectCloudRecords('insurance','Insurance',['insurance']);
 connectCloudRecords('amc','AMC plans and reminders',['amcPlans','amcReminderLogs']);
 connectCloudRecords('service-reminders','Service reminders',['serviceReminderLogs']);
+connectCloudRecords('lists','Dropdown lists',['lists','vehicleModels']);

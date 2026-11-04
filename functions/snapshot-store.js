@@ -1,6 +1,6 @@
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 
-export function snapshotHandler(scope,collections){
+export function snapshotHandler(scope,collections,validators={}){
  const head=scope+"_head", chunks=scope+"_chunks";
  return async function onRequest({request,env}){
   const db=env.DB;
@@ -18,7 +18,7 @@ export function snapshotHandler(scope,collections){
    try{body=await request.json()}catch{return reply({error:'Invalid JSON.'},400)}
    const {version,data}=body||{};
    if((version!==null&&(typeof version!=='string'||version.length>40))||!data||
-      collections.some(key=>!Array.isArray(data[key])))return reply({error:'Invalid records.'},400);
+      collections.some(key=>!(validators[key]||Array.isArray)(data[key])))return reply({error:'Invalid records.'},400);
    const snapshot=JSON.stringify(Object.fromEntries(collections.map(key=>[key,data[key]])));
    if(new TextEncoder().encode(snapshot).length>12000000)return reply({error:'The saved records are too large to sync.'},413);
    const next=crypto.randomUUID();
