@@ -4,6 +4,10 @@ function connectCloudRecords(scope,label,collections,adapter){
  const apply=data=>{
   if(adapter)return adapter.apply(data);
   for(const key of collections)db[key]=data[key];
+  if(scope==='inventory'&&typeof stockSheet!=='undefined'&&stockSheet&&
+     !stockSheet.lines.some(line=>line.note||[line.physical,line.mainPhysical,line.godownPhysical].some(value=>value!=null))){
+   stockSheet=null;
+  }
  };
  const banner=document.createElement('div');
  banner.className='notice';
@@ -117,6 +121,7 @@ connectCloudRecords('insurance','Insurance',['insurance']);
 connectCloudRecords('amc','AMC plans and reminders',['amcPlans','amcReminderLogs']);
 connectCloudRecords('service-reminders','Service reminders',['serviceReminderLogs']);
 connectCloudRecords('lists','Dropdown lists',['lists','vehicleModels']);
+connectCloudRecords('stock-counts','Stock counts',['stockCounts']);
 
 const sharedBusinessFields=[
  'name','phone','address','gst','state','footer','upiId',
