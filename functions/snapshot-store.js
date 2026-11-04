@@ -1,5 +1,15 @@
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 
+const auditLabels={
+ inventory:'Inventory and transactions',
+ insurance:'Insurance policies',
+ amc:'AMC plans and reminders',
+ service_reminders:'Service reminder history',
+ lists:'Managed dropdown lists',
+ business_settings:'Business settings',
+ stock_counts:'Stock verification sheets'
+};
+
 export function snapshotHandler(scope,collections,validators={}){
  const head=scope+"_head", chunks=scope+"_chunks";
  return async function onRequest({request,env}){
@@ -34,6 +44,9 @@ export function snapshotHandler(scope,collections,validators={}){
     offset=end;
    }
    batch.push(db.prepare(`DELETE FROM ${chunks} WHERE version<>? AND EXISTS (SELECT 1 FROM ${head} WHERE version=?)`).bind(next,next));
+   batch.push(db.prepare(`INSERT INTO audit_logs(action,detail,actor)
+    SELECT ?,?,'Owner' WHERE EXISTS (SELECT 1 FROM ${head} WHERE version=?)`)
+    .bind(version===null?'Initialize':'Update',(auditLabels[scope]||scope)+' saved to D1',next));
    const [result]=await db.batch(batch);
    if(!result.meta.changes)return reply({error:'Records changed in another browser.'},409);
    return reply({version:next});
