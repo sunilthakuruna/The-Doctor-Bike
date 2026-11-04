@@ -7,7 +7,8 @@ const auditLabels={
  service_reminders:'Service reminder history',
  lists:'Managed dropdown lists',
  business_settings:'Business settings and invoice templates',
- stock_counts:'Stock verification sheets'
+ stock_counts:'Stock verification sheets',
+ user_permissions:'User profiles and permission rules'
 };
 
 export function snapshotHandler(scope,collections,validators={}){

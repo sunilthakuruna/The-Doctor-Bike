@@ -108,6 +108,15 @@
   }
   const savedId=localStorage.getItem(sessionKey),savedUser=(db.users||[]).find(user=>user.id===savedId&&user.status!=='Inactive');
   activeUser=savedUser||null;
+  window.BD_RECHECK_LOCAL_USER=()=>{
+    if(!activeUser)return;
+    const updated=db.users.find(user=>user.id===activeUser.id&&user.status!=='Inactive');
+    if(updated){activeUser=updated;updateHeader();return}
+    localStorage.removeItem(sessionKey);
+    activeUser=null;
+    updateHeader();
+    showGate('This browser profile is no longer active.');
+  };
   updateHeader();
   const renderBeforeSessionAccess=render;
   render=function(){
