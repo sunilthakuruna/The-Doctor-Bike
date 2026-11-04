@@ -16,8 +16,9 @@
    if(!response.ok||!Array.isArray(result.data))throw new Error();
    db.expenses=result.data;
    loaded=true;
+   window.payrollCloudSources.expenses='ready';
    if(document.querySelector('#modal').hidden)render();
-  }catch{toast('Cloud expenses could not be loaded. Refresh to retry.')}
+  }catch{window.payrollCloudSources.expenses='unavailable';if(page==='payroll'&&document.querySelector('#modal').hidden)render();toast('Cloud expenses could not be loaded. Refresh to retry.')}
  })();
 
  async function writeExpenses(method,body){

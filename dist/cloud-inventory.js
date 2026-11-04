@@ -58,6 +58,7 @@ function connectCloudRecords(scope,label,collections,adapter){
    if(response.status===409){conflict=true;showConflict();return}
    if(!response.ok||!result.version)throw new Error(result.error||label+' sync failed.');
    version=result.version;
+   if(scope==='inventory')window.payrollCloudSources.inventory='ready';
    if(pending===sent){
     sessionStorage.removeItem(pendingKey);
     pending=null;
@@ -112,6 +113,7 @@ function connectCloudRecords(scope,label,collections,adapter){
      started!==generation||busy||pending||conflict||snapshot()!==baseline||!canRefreshCloudRecords())return false;
   apply(result.data);
   version=result.version;
+  if(scope==='inventory')window.payrollCloudSources.inventory='ready';
   baseline=snapshot();
   return true;
  });
@@ -142,9 +144,11 @@ function connectCloudRecords(scope,label,collections,adapter){
    }
    baseline=snapshot();
    ready=true;
+   if(scope==='inventory')window.payrollCloudSources.inventory=result.data?'ready':'uninitialized';
    if(document.querySelector('#modal').hidden)render();
    if(pending&&!conflict)void sync();
   }catch{
+   if(scope==='inventory'){window.payrollCloudSources.inventory='unavailable';if(page==='payroll'&&document.querySelector('#modal').hidden)render()}
    show('Cloud '+label.toLowerCase()+' could not be loaded.',()=>location.reload(),'Reload');
   }
  })();
