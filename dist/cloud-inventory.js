@@ -105,7 +105,13 @@ function connectCloudRecords(scope,label,collections,adapter){
     }else if(pending.version!==version){
      conflict=true;
      showConflict();
-    }else apply(pending.data);
+    }else{
+     apply(pending.data);
+     if(adapter){
+      pending.data=adapter.read();
+      sessionStorage.setItem(pendingKey,JSON.stringify(pending));
+     }
+    }
    }
    baseline=snapshot();
    ready=true;
@@ -132,14 +138,18 @@ const sharedBusinessFields=[
  'logo','logoImage','stampCaption','stampImage','upiQrImage',
  'attendanceGlobalWeeklyOff','attendanceWeeklyOffMode'
 ];
-connectCloudRecords('business-settings','Business settings',['settings'],{
+connectCloudRecords('business-settings','Business settings and invoice templates',['settings','invoiceTemplates'],{
  read(){
-  return {settings:Object.fromEntries(sharedBusinessFields.filter(key=>Object.hasOwn(db.settings,key)).map(key=>[key,db.settings[key]]))};
+  return {
+   settings:Object.fromEntries(sharedBusinessFields.filter(key=>Object.hasOwn(db.settings,key)).map(key=>[key,db.settings[key]])),
+   invoiceTemplates:db.invoiceTemplates||[]
+  };
  },
- apply({settings}){
+ apply({settings,invoiceTemplates}){
   for(const key of sharedBusinessFields){
    if(Object.hasOwn(settings,key))db.settings[key]=settings[key];
    else delete db.settings[key];
   }
+  if(Array.isArray(invoiceTemplates))db.invoiceTemplates=invoiceTemplates;
  }
 });

@@ -6,7 +6,7 @@ const auditLabels={
  amc:'AMC plans and reminders',
  service_reminders:'Service reminder history',
  lists:'Managed dropdown lists',
- business_settings:'Business settings',
+ business_settings:'Business settings and invoice templates',
  stock_counts:'Stock verification sheets'
 };
 
