@@ -11,7 +11,7 @@
    if(started!==revision)return;
    db.bikes=result.data;
    save();
-   if(page==='bikes' && document.querySelector('#modal').hidden)render();
+   if(['bikes','service-reminders','amc-plans'].includes(page) && document.querySelector('#modal').hidden)render();
   }catch(error){console.warn('Vehicle cloud load failed',error);if(page==='bikes')toast('Could not load vehicles from D1. Please refresh and try again.')}
  }
  document.addEventListener('submit',async event=>{
@@ -24,7 +24,7 @@
   if(editId)values.id=editId;
   values.number=String(values.number||'').trim().toUpperCase();
   values.amcScope=values.amcType?'vehicle':'none';
-  try {if(typeof validateCustomerAmc==='function')validateCustomerAmc(values)}catch(error){toast(error.message);return}
+  try {if(typeof validateCustomerAmc==='function')validateCustomerAmc(values);if(typeof validateVehicleService==='function')validateVehicleService(values)}catch(error){toast(error.message);return}
   form.dataset.cloudSaving='true';
   const button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
   revision++;
