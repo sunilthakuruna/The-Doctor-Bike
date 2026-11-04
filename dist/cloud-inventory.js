@@ -1,6 +1,5 @@
-(() => {
- const collections=['parts','purchases','stockMovements','jobs','sales','receipts','appointments','trash'];
- const pendingKey=STORE+'-inventory-pending-v1';
+function connectCloudRecords(scope,label,collections){
+ const pendingKey=STORE+'-'+scope+'-pending-v1';
  const snapshot=()=>JSON.stringify(Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
  const apply=data=>{for(const key of collections)db[key]=data[key]};
  const banner=document.createElement('div');
@@ -23,12 +22,12 @@
  const saveWorkspace=save;
 
  function showConflict(){
-  show('Inventory changed in another browser. Your unsynced changes are still saved in this tab.',()=>{
-   download(JSON.stringify(pending,null,2),'inventory-unsynced.json','application/json');
-   show('Keep the downloaded copy for review. Reload to use the latest cloud inventory.',()=>{
+  show(label+' changed in another browser. Your unsynced changes are still saved in this tab.',()=>{
+   download(JSON.stringify(pending,null,2),scope+'-unsynced.json','application/json');
+   show('Keep the downloaded copy for review. Reload to use the latest cloud records.',()=>{
     sessionStorage.removeItem(pendingKey);
     location.reload();
-   },'Reload cloud inventory');
+   },'Reload cloud records');
   },'Download unsynced changes');
  }
 
@@ -37,16 +36,16 @@
   busy=true;
   const sent=pending;
   try{
-   const response=await fetch('/api/inventory',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({version,data:sent.data})});
+   const response=await fetch('/api/'+scope,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({version,data:sent.data})});
    const result=await response.json();
    if(response.status===409){conflict=true;showConflict();return}
-   if(!response.ok||!result.version)throw new Error(result.error||'Inventory sync failed.');
+   if(!response.ok||!result.version)throw new Error(result.error||label+' sync failed.');
    version=result.version;
    if(pending===sent){
     sessionStorage.removeItem(pendingKey);
     pending=null;
     show('');
-    toast('Inventory saved to Cloudflare D1.');
+    toast(label+' saved to Cloudflare D1.');
    }else{
     pending.version=version;
     sessionStorage.setItem(pendingKey,JSON.stringify(pending));
@@ -62,7 +61,7 @@
   const current=snapshot();
   if(current===baseline)return saveWorkspace(message);
   if(!ready||conflict){
-   toast('Cloud inventory is unavailable. Reload before changing stock records.');
+   toast('Cloud '+label.toLowerCase()+' is unavailable. Reload before changing records.');
    return false;
   }
   const previous=pending;
@@ -73,12 +72,12 @@
   }catch{
    if(previous)sessionStorage.setItem(pendingKey,JSON.stringify(previous));
    else sessionStorage.removeItem(pendingKey);
-   toast('Inventory could not be saved in this tab.');
+   toast(label+' could not be saved in this tab.');
    return false;
   }
   baseline=current;
   pending=next;
-  show('Inventory changes are waiting to sync.');
+  show(label+' changes are waiting to sync.');
   void sync();
   return true;
  };
@@ -86,7 +85,7 @@
  (async()=>{
   if(!await window.BD_CLOUD_READY)return;
   try{
-   const response=await fetch('/api/inventory',{cache:'no-store'});
+   const response=await fetch('/api/'+scope,{cache:'no-store'});
    const result=await response.json();
    if(!response.ok||!Object.hasOwn(result,'version'))throw new Error();
    pending=JSON.parse(sessionStorage.getItem(pendingKey)||'null');
@@ -106,7 +105,9 @@
    if(document.querySelector('#modal').hidden)render();
    if(pending&&!conflict)void sync();
   }catch{
-   show('Cloud inventory could not be loaded.',()=>location.reload(),'Reload');
+   show('Cloud '+label.toLowerCase()+' could not be loaded.',()=>location.reload(),'Reload');
   }
  })();
-})();
+}
+connectCloudRecords('inventory','Inventory',['parts','purchases','stockMovements','jobs','sales','receipts','appointments','trash']);
+connectCloudRecords('insurance','Insurance',['insurance']);
