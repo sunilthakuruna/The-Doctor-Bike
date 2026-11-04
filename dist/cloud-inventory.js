@@ -112,3 +112,4 @@ function connectCloudRecords(scope,label,collections){
 connectCloudRecords('inventory','Inventory',['parts','purchases','stockMovements','jobs','sales','receipts','appointments','trash']);
 connectCloudRecords('insurance','Insurance',['insurance']);
 connectCloudRecords('amc','AMC plans and reminders',['amcPlans','amcReminderLogs']);
+connectCloudRecords('service-reminders','Service reminders',['serviceReminderLogs']);
