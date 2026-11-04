@@ -17,9 +17,10 @@
    if(!response.ok||!Array.isArray(result.data))throw new Error(result.error||'Staff list unavailable');
    if(started!==revision)return;
    db.staff=result.data;
+   window.payrollCloudSources.staff='ready';
    save();
    if(['staff','attendance','payroll','jobs','expenses'].includes(page) && document.querySelector('#modal').hidden)render();
-  }catch(error){console.warn('Staff cloud load failed',error);if(page==='staff')toast('Could not load staff from D1. Please refresh and try again.')}
+  }catch(error){window.payrollCloudSources.staff='unavailable';if(page==='payroll'&&document.querySelector('#modal').hidden)render();console.warn('Staff cloud load failed',error);if(page==='staff')toast('Could not load staff from D1. Please refresh and try again.')}
  }
  document.addEventListener('submit',async event=>{
   const form=event.target;
