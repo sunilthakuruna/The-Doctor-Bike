@@ -11,7 +11,24 @@ editRecord=function(key,id,initial){editBeforeVehicleOnlyAmc(key,id,initial);if(
 const basicBeforeVehicleOnlyAmc=basicPage;
 basicPage=function(key){if(key!=='customers')return basicBeforeVehicleOnlyAmc(key);return toolbar('Add Customer')+table(['Customer ID','Customer Name','Mobile Number','Address','Type','Actions'],db.customers.filter(matches).map(c=>[esc(c.id),`<strong>${esc(c.name)}</strong>`,esc(c.mobile),esc(c.address||'—'),badge(c.type),actions(key,c.id)]))};
 openReminderAmcRecord=function(){openModal('Add / Edit Vehicle AMC',`<div class="formbody"><p>Select the specific vehicle for this AMC plan and expiry date.</p><label class="field"><span>Vehicle</span><select id="vehicleAmcRecord">${opts(db.bikes.map(b=>({value:b.id,label:b.number+' — '+name('customers',b.customer)})))}</select></label></div><div class="formactions">${btn('Cancel','cancel','secondary')}<button type="button" class="btn" id="openVehicleAmcRecord">Open Vehicle AMC</button></div>`);$('#openVehicleAmcRecord').onclick=()=>{let id=$('#vehicleAmcRecord').value;if(!id)return toast('Add a vehicle first.');editRecord('bikes',id)}};
-function assignArchivedAmcToVehicle(archiveId,vehicleId){let legacy=(db.legacyCustomerAmc||[]).find(r=>r.id===archiveId&&!r.assignedVehicle),b=find('bikes',vehicleId);if(!legacy||!b||b.customer!==legacy.customer)throw Error('Select a vehicle belonging to this customer.');if(b.amcType)throw Error('This vehicle already has an AMC. Edit its existing plan instead.');validateCustomerAmc(legacy.fields);let before=structuredClone(db);Object.assign(b,legacy.fields,{amcScope:'vehicle'});legacy.assignedVehicle=b.id;legacy.assignedAt=new Date().toISOString();audit('AMC Assignment',b.number+' assigned preserved AMC plan');if(save('AMC assigned to this vehicle only')===false){db=before;return false}return true}
+async function assignArchivedAmcToVehicle(archiveId,vehicleId){
+ const legacy=(db.legacyCustomerAmc||[]).find(record=>record.id===archiveId&&!record.assignedVehicle);
+ const vehicle=find('bikes',vehicleId);
+ if(!legacy||!vehicle||vehicle.customer!==legacy.customer)throw Error('Select a vehicle belonging to this customer.');
+ if(vehicle.amcType)throw Error('This vehicle already has an AMC. Edit its existing plan instead.');
+ validateCustomerAmc(legacy.fields);
+ const fields=Object.fromEntries(vehicleAmcFields.map(key=>[key,String(legacy.fields[key]||'')]));
+ const response=await fetch('/api/amc-assignments',{method:'POST',headers:{'content-type':'application/json'},
+  body:JSON.stringify({archiveId,customer:legacy.customer,vehicle:vehicleId,fields})});
+ const result=await response.json();
+ if(!response.ok||result.data?.id!==vehicleId)throw Error(result.error||'AMC assignment could not be saved.');
+ db.bikes=db.bikes.map(record=>record.id===vehicleId?result.data:record);
+ legacy.assignedVehicle=vehicleId;
+ legacy.assignedAt=result.assignedAt;
+ save();
+ toast('AMC assignment saved to Cloudflare D1.');
+ return true;
+}
 function pendingVehicleAmcMarkup(){let pending=(db.legacyCustomerAmc||[]).filter(r=>!r.assignedVehicle);if(!pending.length)return '';return `<section class="amcActionPanel"><h3>Previous Customer AMC — Select a Vehicle</h3><p>Previous customer-level AMC information is preserved here. Assign each agreement to the correct vehicle before it appears in active reminders.</p>${pending.map(r=>`<div class="legacyAmcAssignment"><strong>${esc(name('customers',r.customer))} · ${esc(r.fields.amcType)} · ${esc(r.fields.amcExpiry||'No expiry')}</strong><select data-legacy-amc-vehicle="${esc(r.id)}" aria-label="Vehicle for preserved AMC"><option value="">Select this customer's vehicle</option>${opts(db.bikes.filter(b=>b.customer===r.customer).map(b=>({value:b.id,label:b.number})))}</select><button class="btn secondary small" type="button" data-assign-legacy-amc="${esc(r.id)}">Assign to Vehicle</button></div>`).join('')}</section>`}
 const pageBeforeVehicleOnlyAmc=amcRemindersPage;
 amcRemindersPage=function(){return '<div class="notice">AMC and service reminders are vehicle-specific. A customer’s other vehicles are not automatically covered.</div>'+pendingVehicleAmcMarkup()+pageBeforeVehicleOnlyAmc()};
@@ -22,6 +39,17 @@ logAmcContractReminder=function(key,id,note){if(key!=='bikes')throw Error('Choos
 const settingsBeforeVehicleOnlyAmc=settingsPage;
 settingsPage=function(){return settingsBeforeVehicleOnlyAmc().replaceAll('Create plans directly in Customer or Vehicle forms.','Create shared plan types in Vehicle forms; each vehicle has its own contract and validity.').replaceAll('Create plans directly in Customer or Vehicle forms','Create plans directly in Vehicle forms')};
 const renderBeforeVehicleOnlyAmc=render;
-render=function(){renderBeforeVehicleOnlyAmc();if(page==='amc-reminders'||page==='service-reminders'&&reminderView==='amc'){for(let b of $$('[data-assign-legacy-amc]'))b.onclick=()=>{let id=b.dataset.assignLegacyAmc,select=$$('[data-legacy-amc-vehicle]').find(n=>n.dataset.legacyAmcVehicle===id);try{if(assignArchivedAmcToVehicle(id,select.value))render()}catch(err){toast(err.message)}};let selector=$('#amcActionContract');if(selector){let span=selector.closest('.field')?.querySelector('span');if(span)span.textContent='Select Vehicle AMC'}for(let note of $$('#content .amcEmptyNotice'))note.innerHTML='<strong>No vehicle AMC contracts have been added yet.</strong> Use Add AMC to select a vehicle, or assign preserved agreements above.'}};
+render=function(){renderBeforeVehicleOnlyAmc();if(page==='amc-reminders'||page==='service-reminders'&&reminderView==='amc'){let selector=$('#amcActionContract');if(selector){let span=selector.closest('.field')?.querySelector('span');if(span)span.textContent='Select Vehicle AMC'}for(let note of $$('#content .amcEmptyNotice'))note.innerHTML='<strong>No vehicle AMC contracts have been added yet.</strong> Use Add AMC to select a vehicle, or assign preserved agreements above.'}};
 render();
 
+
+document.addEventListener('click',async event=>{
+ const button=event.target.closest('[data-assign-legacy-amc]');
+ if(!button||button.disabled)return;
+ const id=button.dataset.assignLegacyAmc;
+ const select=$$('[data-legacy-amc-vehicle]').find(input=>input.dataset.legacyAmcVehicle===id);
+ button.disabled=true;
+ try{if(await assignArchivedAmcToVehicle(id,select?.value))render()}
+ catch(error){toast(error.message)}
+ finally{button.disabled=false}
+});
