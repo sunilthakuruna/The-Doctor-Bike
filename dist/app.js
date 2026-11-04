@@ -35,7 +35,7 @@ const prefixes={customers:'BD-CUST',bikes:'BD-VEH',services:'BD-SVC',staff:'BD-S
 const find=(key,id)=>db[key]?.find(x=>x.id===id);
 const name=(key,id)=>find(key,id)?.name||'—';
 const number=id=>find('bikes',id)?.number||'—';
-function nextId(key){let prefix=key==='jobs'?db.settings.jobPrefix:key==='customers'?db.settings.customerPrefix:key==='bikes'?db.settings.vehiclePrefix:prefixes[key];let n=Math.max(1000,...db[key].map(x=>Number(x.id.match(/(\d+)$/)?.[1])||1000))+1;return `${prefix||prefixes[key]}-${n}`}
+function nextId(key){let prefix=key==='jobs'?db.settings.jobPrefix:key==='customers'?db.settings.customerPrefix:key==='bikes'?db.settings.vehiclePrefix:prefixes[key];let n=Math.max(1000,...db[key].filter(x=>key!=='staff'||/^BD-STF-[1-9]\d{3,11}$/.test(x.id)).map(x=>Number(x.id.match(/(\d+)$/)?.[1])||1000))+1;return `${prefix||prefixes[key]}-${n}`}
 function save(message){try{localStorage.setItem(STORE,JSON.stringify(db))}catch{toast('Browser storage is full. Export a backup before continuing.');return false}if(message)toast(message);return true}
 function audit(action,detail){db.audit.unshift({id:'EVT-'+Date.now(),date:new Date().toISOString(),user:'admin',module:titles[page]||page,action,detail,status:'Success'})}
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),3500)}

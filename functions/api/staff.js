@@ -23,8 +23,9 @@ export async function onRequest({request, env}) {
    try {body=await request.json()} catch {return reply({error:'Invalid JSON.'},400)}
    if(!body||typeof body!=='object'||Array.isArray(body))return reply({error:'Invalid staff record.'},400);
   }
-  const id=deleting?new URL(request.url).searchParams.get('id'):creating?'BD-STF-'+crypto.randomUUID():body.id;
+  const id=deleting?new URL(request.url).searchParams.get('id'):body.id;
   if(typeof id!=='string'||!id||id.length>100)return reply({error:'Invalid staff ID.'},400);
+  if(creating&&!/^BD-STF-[1-9]\d{3,11}$/.test(id))return reply({error:'Invalid staff ID. Refresh the staff list and try again.'},400);
   if(deleting){
    await db.batch([
     db.prepare('INSERT INTO audit_logs(action,detail,actor) SELECT ?,?,? FROM staff WHERE id=?').bind('Delete','Staff '+id,'Owner',id),
@@ -49,7 +50,14 @@ export async function onRequest({request, env}) {
     db.prepare('DELETE FROM staff_attachments WHERE staff_id=? AND field=?').bind(id,field));
   }
   statements.push(db.prepare('INSERT INTO audit_logs(action,detail,actor) SELECT ?,?,? FROM staff WHERE id=?').bind(creating?'Create':'Update','Staff '+id,'Owner',id));
-  const [result]=await db.batch(statements);
+  let result;
+  try {
+   [result]=await db.batch(statements);
+  } catch(error) {
+   if(creating&&await db.prepare('SELECT id FROM staff WHERE id=?').bind(id).first())
+    return reply({error:'This staff ID is already in use. Refresh Staff Master and reopen the form for the next ID.'},409);
+   throw error;
+  }
   return result.meta.changes?reply({data:record},creating?201:200):reply({error:'Staff record no longer exists.'},404);
  } catch(error){
   console.error('Staff database request failed',error);
