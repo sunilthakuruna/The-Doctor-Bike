@@ -1,7 +1,10 @@
-function connectCloudRecords(scope,label,collections){
+function connectCloudRecords(scope,label,collections,adapter){
  const pendingKey=STORE+'-'+scope+'-pending-v1';
- const snapshot=()=>JSON.stringify(Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
- const apply=data=>{for(const key of collections)db[key]=data[key]};
+ const snapshot=()=>JSON.stringify(adapter?adapter.read():Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
+ const apply=data=>{
+  if(adapter)return adapter.apply(data);
+  for(const key of collections)db[key]=data[key];
+ };
  const banner=document.createElement('div');
  banner.className='notice';
  banner.hidden=true;
@@ -114,3 +117,24 @@ connectCloudRecords('insurance','Insurance',['insurance']);
 connectCloudRecords('amc','AMC plans and reminders',['amcPlans','amcReminderLogs']);
 connectCloudRecords('service-reminders','Service reminders',['serviceReminderLogs']);
 connectCloudRecords('lists','Dropdown lists',['lists','vehicleModels']);
+
+const sharedBusinessFields=[
+ 'name','phone','address','gst','state','footer','upiId',
+ 'customerPrefix','vehiclePrefix','jobPrefix',
+ 'defaultGstRate','defaultPurchaseGstRate','defaultSellingGstRate',
+ 'defaultInvoiceType','defaultInvoiceTemplates','defaultRegularInvoiceLayout',
+ 'invoiceLayouts','invoiceStyle','invoiceAccent','invoicePaperSize',
+ 'logo','logoImage','stampCaption','stampImage','upiQrImage',
+ 'attendanceGlobalWeeklyOff','attendanceWeeklyOffMode'
+];
+connectCloudRecords('business-settings','Business settings',['settings'],{
+ read(){
+  return {settings:Object.fromEntries(sharedBusinessFields.filter(key=>Object.hasOwn(db.settings,key)).map(key=>[key,db.settings[key]]))};
+ },
+ apply({settings}){
+  for(const key of sharedBusinessFields){
+   if(Object.hasOwn(settings,key))db.settings[key]=settings[key];
+   else delete db.settings[key];
+  }
+ }
+});
