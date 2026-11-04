@@ -177,14 +177,38 @@ connectCloudRecords('business-settings','Business settings and invoice templates
 
 let cloudRefreshRunning=false;
 let cloudRefreshAfter=0;
+let cloudRefreshTimer;
+let cloudRefreshNeedsRender=false;
+function scheduleCloudRefresh(delay=3000){
+ clearTimeout(cloudRefreshTimer);
+ cloudRefreshTimer=setTimeout(refreshCloudRecordsOnReturn,delay);
+}
 async function refreshCloudRecordsOnReturn(){
- if(cloudRefreshRunning||Date.now()<cloudRefreshAfter||!canRefreshCloudRecords())return;
+ if(document.visibilityState!=='visible')return;
+ if(cloudRefreshRunning||!canRefreshCloudRecords()){
+  scheduleCloudRefresh();
+  return;
+ }
+ if(Date.now()<cloudRefreshAfter){
+  scheduleCloudRefresh(cloudRefreshAfter-Date.now());
+  return;
+ }
  cloudRefreshRunning=true;
  cloudRefreshAfter=Date.now()+3000;
  try{
   const results=await Promise.allSettled(cloudRecordRefreshers.map(refresh=>refresh()));
-  if(results.some(result=>result.status==='fulfilled'&&result.value)&&canRefreshCloudRecords())render();
- }finally{cloudRefreshRunning=false}
+  cloudRefreshNeedsRender||=results.some(result=>result.status==='fulfilled'&&result.value);
+  if(cloudRefreshNeedsRender&&canRefreshCloudRecords()){
+   cloudRefreshNeedsRender=false;
+   render();
+  }
+ }finally{
+  cloudRefreshRunning=false;
+  scheduleCloudRefresh(15000);
+ }
 }
-window.addEventListener('focus',refreshCloudRecordsOnReturn);
-document.addEventListener('visibilitychange',refreshCloudRecordsOnReturn);
+window.BD_CLOUD_READY.then(ready=>{if(ready){
+ window.addEventListener('focus',refreshCloudRecordsOnReturn);
+ document.addEventListener('visibilitychange',refreshCloudRecordsOnReturn);
+ scheduleCloudRefresh(15000);
+}});
