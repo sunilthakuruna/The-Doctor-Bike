@@ -46,6 +46,10 @@ function connectCloudRecords(scope,label,collections,adapter){
 
  async function sync(){
   if(!ready||busy||conflict||!pending)return;
+  if(navigator.onLine===false){
+   show(label+' changes are waiting for a connection. Keep this tab open until they sync.');
+   return;
+  }
   busy=true;
   const sent=pending;
   try{
@@ -69,6 +73,8 @@ function connectCloudRecords(scope,label,collections,adapter){
   }finally{busy=false}
   if(pending)void sync();
  }
+
+ window.addEventListener('online',()=>{void sync()});
 
  save=function(message){
   const current=snapshot();
@@ -209,6 +215,7 @@ async function refreshCloudRecordsOnReturn(){
 }
 window.BD_CLOUD_READY.then(ready=>{if(ready){
  window.addEventListener('focus',refreshCloudRecordsOnReturn);
+ window.addEventListener('online',refreshCloudRecordsOnReturn);
  document.addEventListener('visibilitychange',refreshCloudRecordsOnReturn);
  scheduleCloudRefresh(15000);
 }});
