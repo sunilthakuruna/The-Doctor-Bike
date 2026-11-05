@@ -21,7 +21,8 @@ export async function onRequest({request,env}){
   if(existing?.id==='primary-admin'&&(body.role!=='Admin'||body.status==='Inactive'))return reply({error:'The primary administrator must remain active.'},400);
   const map=value=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.values(value).every(actions=>actions&&typeof actions==='object'&&!Array.isArray(actions)&&Object.values(actions).every(flag=>typeof flag==='boolean'));
   if(!map(body.permissions||{})||!map(body.actionRestrictions||{}))return reply({error:'Invalid permissions.'},400);
-  if(body.role!=='Admin')body.permissions={...(body.permissions||{}),users:{read:false,write:false,edit:false,delete:false}};
+  const admin=body.role==='Admin';
+  body.permissions={...(body.permissions||{}),users:{read:admin,write:admin,edit:admin,delete:admin}};
   if(existing){
    const duplicate=await env.DB.prepare('SELECT id FROM app_users WHERE username=? COLLATE NOCASE AND id<>?').bind(username,existing.id).first();
    if(duplicate)return reply({error:'Username already exists.'},409);

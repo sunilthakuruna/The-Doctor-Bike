@@ -20,7 +20,7 @@
     const notice=document.querySelector('.userSecuritySettings .notice');
     if(notice)notice.textContent='Only administrators can change passwords here. Enter a new password and use Show to read it before saving. Previously saved passwords cannot be retrieved.';
    }
-   const lockUserPermissions=()=>form?.querySelectorAll('[data-module="users"]').forEach(control=>{control.checked=false;control.disabled=true;control.title='User Management is reserved for administrators.'});
+   const lockUserPermissions=()=>form?.querySelectorAll('[data-module="users"]').forEach(control=>{control.checked=form.elements.role?.value==='Admin';control.disabled=true;control.title=control.checked?'Admin always has User Management access.':'User Management is reserved for administrators.'});
    lockUserPermissions();
    form?.elements.role?.addEventListener('change',lockUserPermissions);
   }
@@ -34,7 +34,8 @@
   const existing=db.users.find(user=>user.id===id);
   const body={...Object.fromEntries(new FormData(form)),id,password:document.querySelector('#newUserPassword')?.value||'',permissions:{},actionRestrictions:existing?.actionRestrictions||{}};
   form.querySelectorAll('[data-module][data-permission]').forEach(input=>{(body.permissions[input.dataset.module]||={})[input.dataset.permission]=input.checked});
-  if(body.role!=='Admin')body.permissions.users={read:false,write:false,edit:false,delete:false};
+  const admin=body.role==='Admin';
+  body.permissions.users={read:admin,write:admin,edit:admin,delete:admin};
   const button=form.querySelector('[type=submit]');if(button)button.disabled=true;
   try{
    const response=await fetch('/api/app-users',{method:id?'PUT':'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
