@@ -35,6 +35,27 @@
     const names={customers:{write:'Add Customer',edit:'Edit Customer',delete:'Delete Customer'},bikes:{write:'Add Vehicle',edit:'Edit Vehicle',delete:'Delete Vehicle'},staff:{write:'Add Staff',edit:'Edit Staff',delete:'Delete Staff'},services:{write:'Add Service',edit:'Edit Service',delete:'Delete Service'},jobs:{write:'Add Job Card',edit:'Edit Job Card',delete:'Delete Job Card'},parts:{write:'Add Spare Part',edit:'Edit Spare Part',delete:'Delete Spare Part'},sales:{write:'Add Sale',edit:'Edit Sale',delete:'Delete Sale'},purchases:{write:'Add Purchase',edit:'Edit Purchase',delete:'Delete Purchase'},expenses:{write:'Add Expense',edit:'Edit Expense',delete:'Delete Expense'},accounts:{write:'Add Account',edit:'Edit Account'},appointments:{write:'Add Appointment',edit:'Edit Appointment',delete:'Delete Appointment'},users:{write:'Add User',edit:'Edit User'},insurance:{write:'Add Policy',edit:'Edit Policy',delete:'Delete Policy'}};
     return names[key]?.[permission]||'';
   }
+  function restrictedOperation(element){
+    if(!activeUser||activeUser.role==='Admin')return false;
+    const module=page.startsWith('report-')?'Reports':permissionModuleLabels[page];
+    const blocked=activeUser.actionRestrictions?.[module]||{};
+    const data=element.dataset||{};
+    const operation=String(data.action||element.id||'').toLowerCase();
+    const label=String(element.getAttribute('aria-label')||element.getAttribute('title')||element.textContent||'').trim().toLowerCase();
+    const rules=[
+      ['Export',operation.includes('export')||label.startsWith('export')],
+      ['Import',operation.includes('import')||label.startsWith('import')],
+      ['Print',operation.includes('print')||label.startsWith('print')],
+      ['Search and Filter',element.matches('input[type="search"],input.search,#search')||operation.includes('filter')],
+      ['Bulk Select',element.matches('[data-select-all],[data-select-row]')],
+      ['Bulk Delete',operation.includes('bulkdelete')],
+      ['Share WhatsApp',operation.includes('whatsapp')||label.includes('whatsapp')],
+      ['Change Job Status',data.status!==undefined]
+    ];
+    return Object.entries(blocked).some(([action,denied])=>denied===true&&(
+      label===action.toLowerCase()||rules.some(([prefix,matches])=>matches&&(action===prefix||action.startsWith(prefix+' ')))
+    ));
+  }
   function canPerform(key,permission,element){
     if(!canOpenModule(key))return false;
     if(activeUser?.role==='Admin')return true;
@@ -60,6 +81,7 @@
   }
   function lockRestrictedActions(){
     applyDashboardRestrictions();
+    $$('#content button,#content a,#content input,#content select').forEach(element=>{if(restrictedOperation(element))element.remove()});
     $$('#content [data-new],#content [data-edit],#content [data-delete],#content [data-receive],#content [data-invoice],#content [data-status],#content [data-action],#content [data-removeline],#content [data-removeoption]').forEach(element=>{
       const target=actionTarget(element);if(!target||canPerform(target.key,target.permission,element))return;
       element.remove();
@@ -143,6 +165,10 @@
   const goBeforeSessionAccess=go;
   go=function(key){if(!canOpenModule(key)){toast(`${titles[key]||'This module'} is restricted for your role.`);return}return goBeforeSessionAccess(key)};
   document.addEventListener('click',event=>{
+    const operationControl=event.target.closest('#content button,#content a,#content input,#content select,#modal button,#modal a');
+    if(operationControl&&restrictedOperation(operationControl)){
+      event.preventDefault();event.stopImmediatePropagation();toast('This action is restricted for your account.');return;
+    }
     if(event.target.closest('#notifications')&&!dashboardActionAllowed('View Notifications')){
       event.preventDefault();event.stopImmediatePropagation();return;
     }
