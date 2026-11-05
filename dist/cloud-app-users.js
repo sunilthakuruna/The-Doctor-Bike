@@ -22,7 +22,7 @@
    }
    const lockUserPermissions=()=>{
     const admin=form?.elements.role?.value==='Admin';
-    form?.querySelectorAll('[data-module="users"]').forEach(control=>{
+    form?.querySelectorAll('[data-module="users"],[data-module="backup-restore"]').forEach(control=>{
      control.checked=admin;
      control.disabled=!admin;
      control.title=admin?'Included automatically with the Admin role.':'Only the Admin role has User Management access.';
