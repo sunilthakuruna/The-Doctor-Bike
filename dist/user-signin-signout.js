@@ -9,6 +9,7 @@
   function setActiveUser(user){activeUser=user;localStorage.setItem(sessionKey,user.id);updateHeader();render()}
   function canOpenModule(key){
     if(!activeUser)return false;
+    if(key==='users')return activeUser.role==='Admin';
     if(key==='backup-restore')return activeUser.role==='Admin';
     if(activeUser.role==='Admin')return true;
     if(key==='dashboard')return true;
