@@ -1,9 +1,13 @@
-import {hex,hashPassword,publicUser} from '../app-identity.js';
+import {hex,hashPassword,publicUser,identity} from '../app-identity.js';
 // During rollout this endpoint is protected by the existing owner middleware.
 // The application-wide login cutover must replace that guard with Admin identity.
 export async function onRequest({request,env}){
  const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
  try{
+  const actor=await identity(request,env.DB);
+  if(!actor)return reply({error:'Sign in to continue.'},401);
+  if(actor.role!=='Admin'||actor.status!=='Active')return reply({error:'Only administrators can manage users and passwords.'},403);
+  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('origin')!==new URL(request.url).origin)return reply({error:'Invalid request origin.'},403);
   if(request.method==='GET'){
    const result=await env.DB.prepare('SELECT * FROM app_users ORDER BY username').all();
    return reply({data:result.results.map(publicUser)});
@@ -17,6 +21,7 @@ export async function onRequest({request,env}){
   if(existing?.id==='primary-admin'&&(body.role!=='Admin'||body.status==='Inactive'))return reply({error:'The primary administrator must remain active.'},400);
   const map=value=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.values(value).every(actions=>actions&&typeof actions==='object'&&!Array.isArray(actions)&&Object.values(actions).every(flag=>typeof flag==='boolean'));
   if(!map(body.permissions||{})||!map(body.actionRestrictions||{}))return reply({error:'Invalid permissions.'},400);
+  if(body.role!=='Admin')body.permissions={...(body.permissions||{}),users:{read:false,write:false,edit:false,delete:false}};
   if(existing){
    const duplicate=await env.DB.prepare('SELECT id FROM app_users WHERE username=? COLLATE NOCASE AND id<>?').bind(username,existing.id).first();
    if(duplicate)return reply({error:'Username already exists.'},409);
