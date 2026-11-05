@@ -5,7 +5,7 @@ const canRefreshCloudRecords=()=>document.visibilityState==='visible'&&
 
 function connectCloudRecords(scope,label,collections,adapter){
  if(scope==='user-permissions')return; // Server user records now own these profiles.
- const pendingKey=STORE+'-'+scope+'-pending-v1';
+ let pendingKey=STORE+'-'+scope+'-pending-v1';
  const snapshot=()=>JSON.stringify(adapter?adapter.read():Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
  const apply=data=>{
   if(adapter)return adapter.apply(data);
@@ -36,10 +36,10 @@ function connectCloudRecords(scope,label,collections,adapter){
  const saveWorkspace=save;
 
  function showConflict(){
-  show(label+' changed in another browser. Your unsynced changes are still saved in this tab.',()=>{
+  show(label+' changed in another browser. Your unsynced changes are still saved on this device.',()=>{
    download(JSON.stringify(pending,null,2),scope+'-unsynced.json','application/json');
    show('Keep the downloaded copy for review. Reload to use the latest cloud records.',()=>{
-    sessionStorage.removeItem(pendingKey);
+    localStorage.removeItem(pendingKey);
     location.reload();
    },'Reload cloud records');
   },'Download unsynced changes');
@@ -48,7 +48,7 @@ function connectCloudRecords(scope,label,collections,adapter){
  async function sync(){
   if(!ready||busy||conflict||!pending)return;
   if(navigator.onLine===false){
-   show(label+' changes are waiting for a connection. Keep this tab open until they sync.');
+   show(label+' changes are waiting for a connection. They will retry when this app reconnects.');
    return;
   }
   busy=true;
@@ -61,22 +61,23 @@ function connectCloudRecords(scope,label,collections,adapter){
    version=result.version;
    if(scope==='inventory')window.payrollCloudSources.inventory='ready';
    if(pending===sent){
-    sessionStorage.removeItem(pendingKey);
+    localStorage.removeItem(pendingKey);
     pending=null;
     show('');
     toast(label+' saved to Cloudflare D1.');
    }else{
     pending.version=version;
-    sessionStorage.setItem(pendingKey,JSON.stringify(pending));
+    localStorage.setItem(pendingKey,JSON.stringify(pending));
    }
   }catch(error){
-   show(error.message+' Your changes are saved in this tab and are waiting to sync.',sync,'Retry sync');
+   show(error.message+' Your changes are saved on this device and are waiting to sync.',sync,'Retry sync');
    return;
   }finally{busy=false}
   if(pending)void sync();
  }
 
  window.addEventListener('online',()=>{void sync()});
+ setInterval(()=>{if(document.visibilityState==='visible')void sync()},15000);
 
  save=function(message){
   const current=snapshot();
@@ -85,15 +86,19 @@ function connectCloudRecords(scope,label,collections,adapter){
    toast('Cloud '+label.toLowerCase()+' is unavailable. Reload before changing records.');
    return false;
   }
+  const stored=localStorage.getItem(pendingKey);
+  if(stored&&stored!==JSON.stringify(pending)){
+   toast('Another tab has pending changes. Sync or review that tab before saving here.');return false;
+  }
   const previous=pending;
   const next={version,data:JSON.parse(current)};
   try{
-   sessionStorage.setItem(pendingKey,JSON.stringify(next));
+   localStorage.setItem(pendingKey,JSON.stringify(next));
    if(saveWorkspace()===false)throw new Error();
   }catch{
-   if(previous)sessionStorage.setItem(pendingKey,JSON.stringify(previous));
-   else sessionStorage.removeItem(pendingKey);
-   toast(label+' could not be saved in this tab.');
+   if(previous)localStorage.setItem(pendingKey,JSON.stringify(previous));
+   else localStorage.removeItem(pendingKey);
+   toast(label+' could not be saved on this device.');
    return false;
   }
   baseline=current;
@@ -121,6 +126,7 @@ function connectCloudRecords(scope,label,collections,adapter){
 
  (async()=>{
   if(!await window.BD_CLOUD_READY)return;
+  pendingKey=STORE+'-'+scope+'-pending-v2-'+encodeURIComponent(localStorage.getItem('bike-doctor-active-user-v1')||'');
   try{
    const response=await fetch('/api/'+scope,{cache:'no-store'});
    if(response.status===403){
@@ -132,12 +138,12 @@ function connectCloudRecords(scope,label,collections,adapter){
    }
    const result=await response.json();
    if(!response.ok||!Object.hasOwn(result,'version'))throw new Error();
-   pending=JSON.parse(sessionStorage.getItem(pendingKey)||'null');
+   pending=JSON.parse(localStorage.getItem(pendingKey)||'null');
    version=result.version;
    if(result.data)apply(result.data);
    if(pending){
     if(JSON.stringify(pending.data)===snapshot()){
-     sessionStorage.removeItem(pendingKey);
+     localStorage.removeItem(pendingKey);
      pending=null;
     }else if(pending.version!==version){
      conflict=true;
@@ -146,7 +152,7 @@ function connectCloudRecords(scope,label,collections,adapter){
      apply(pending.data);
      if(adapter){
       pending.data=adapter.read();
-      sessionStorage.setItem(pendingKey,JSON.stringify(pending));
+      localStorage.setItem(pendingKey,JSON.stringify(pending));
      }
     }
    }
