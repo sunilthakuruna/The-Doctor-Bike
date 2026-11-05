@@ -54,7 +54,11 @@
   try{
    const response=await fetch('/api/app-users',{method:id?'PUT':'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
    const result=await response.json();if(!response.ok)throw new Error(result.error||'User save failed.');
-   await load();closeModal();render();toast('User saved to the server.');
+   await load();
+   const sessionResponse=await fetch('/api/app-auth',{cache:'no-store'});
+   const session=await sessionResponse.json();
+   if(!sessionResponse.ok||!session.authenticated){location.reload();return}
+   closeModal();window.BD_SET_SERVER_USER(session.user);toast('User saved to the server.');
   }catch(error){toast(error.message)}finally{if(button)button.disabled=false}
  },true);
  (async()=>{if(!await window.BD_CLOUD_READY)return;try{await load();if(page==='users')render()}catch(error){if(page==='users')toast(error.message)}})();
