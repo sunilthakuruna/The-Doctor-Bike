@@ -1,11 +1,30 @@
 // One application login, verified by the server.
 (() => {
+ let identitySignature='',checking=false;
+ async function refreshIdentity(){
+  if(checking||document.visibilityState!=='visible')return;
+  checking=true;
+  try{
+   const response=await fetch('/api/app-auth',{cache:'no-store'});
+   if(!response.ok)return;
+   const state=await response.json();
+   if(!state.authenticated){if(identitySignature)location.reload();return}
+   const signature=JSON.stringify(state.user);
+   if(signature!==identitySignature){
+    if(!document.querySelector('#modal')?.hidden)return;
+    identitySignature=signature;window.BD_SET_SERVER_USER(state.user);
+   }
+  }catch{}finally{checking=false}
+ }
+ window.addEventListener('focus',refreshIdentity);
+ document.addEventListener('visibilitychange',refreshIdentity);
+ setInterval(refreshIdentity,15000);
  window.BD_CLOUD_READY=(async()=>{
   try{
    const response=await fetch('/api/app-auth',{cache:'no-store'});
    if(!response.ok)throw new Error('Sign-in service is unavailable.');
    const state=await response.json();
-   if(state.authenticated&&state.user){window.BD_SET_SERVER_USER(state.user);return true}
+   if(state.authenticated&&state.user){identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);return true}
    window.BD_SHOW_SERVER_LOGIN('Sign in with your server username and password.');
   }catch(error){window.BD_SHOW_SERVER_LOGIN(error.message)}
   return false;
