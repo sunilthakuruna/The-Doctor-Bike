@@ -28,7 +28,7 @@ export async function onRequest({request,env}){
    if(duplicate)return reply({error:'Username already exists.'},409);
    const salt=password?hex(crypto.getRandomValues(new Uint8Array(32))):existing.salt;
    const hash=password?await hashPassword(password,salt):existing.password_hash;
-   await env.DB.prepare('UPDATE app_users SET username=?,name=?,role=?,status=?,permissions=?,action_restrictions=?,salt=?,password_hash=?,credential_version=credential_version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(username,name,body.role,body.status==='Inactive'?'Inactive':'Active',JSON.stringify(body.permissions||{}),JSON.stringify(body.actionRestrictions||{}),salt,hash,existing.id).run();
+   await env.DB.prepare('UPDATE app_users SET username=?,name=?,role=?,status=?,permissions=?,action_restrictions=?,salt=?,password_hash=?,credential_version=credential_version+?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(username,name,body.role,body.status==='Inactive'?'Inactive':'Active',JSON.stringify(body.permissions||{}),JSON.stringify(body.actionRestrictions||{}),salt,hash,password?1:0,existing.id).run();
    return reply({data:publicUser(await env.DB.prepare('SELECT * FROM app_users WHERE id=?').bind(existing.id).first())});
   }
   const salt=hex(crypto.getRandomValues(new Uint8Array(32))),id=crypto.randomUUID();
