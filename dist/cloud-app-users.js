@@ -25,12 +25,13 @@
     form?.querySelectorAll('[data-module="users"],[data-module="backup-restore"]').forEach(control=>{
      control.checked=admin;
      control.disabled=!admin;
-     control.title=admin?'Included automatically with the Admin role.':'Only the Admin role has User Management access.';
+     const moduleName=control.dataset.module==='backup-restore'?'Backup & Restore':'Users';
+     control.title=admin?'Included automatically with the Admin role.':moduleName+' is reserved for the Admin role.';
      control.onchange=()=>{control.checked=form.elements.role?.value==='Admin'};
      const row=control.closest('tr');
      if(row){
       const label=row.querySelector('td');
-      if(label){label.textContent=admin?'Users — Admin has full access':'Users — Admin only';}
+      if(label){label.textContent=moduleName+(admin?' — Admin has full access':' — Admin only');}
      }
     });
    };
