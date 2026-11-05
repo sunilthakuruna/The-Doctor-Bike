@@ -12,3 +12,6 @@ assert.equal(permitted({...user,status:'Inactive',role:'Admin'},'/api/customers'
 assert.equal(permitted({...user,role:'Admin'},'/api/app-users','GET'),true);
 assert.equal(permitted({...user,action_restrictions:'{"Customer Master":{"Add Customer":true}}'},'/api/customers','POST'),false);
 console.log('Permission checks passed');
+assert.equal(permitted({...user,action_restrictions:'{"Dashboard":{"View Notifications":true}}'},'/api/customers','POST'),true);
+assert.equal(permitted({...user,action_restrictions:'{"Customer Master":{"Edit Customer":true}}'},'/api/customers','POST'),true);
+assert.equal(permitted({...user,permissions:JSON.stringify({customers:{read:true,edit:true}}),action_restrictions:'{"Customer Master":{"Edit Customer":true}}'},'/api/customers','PUT'),false);
