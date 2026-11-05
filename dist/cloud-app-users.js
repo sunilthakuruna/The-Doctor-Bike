@@ -20,7 +20,20 @@
     const notice=document.querySelector('.userSecuritySettings .notice');
     if(notice)notice.textContent='Only administrators can change passwords here. Enter a new password and use Show to read it before saving. Previously saved passwords cannot be retrieved.';
    }
-   const lockUserPermissions=()=>form?.querySelectorAll('[data-module="users"]').forEach(control=>{control.checked=form.elements.role?.value==='Admin';control.disabled=true;control.title=control.checked?'Admin always has User Management access.':'User Management is reserved for administrators.'});
+   const lockUserPermissions=()=>{
+    const admin=form?.elements.role?.value==='Admin';
+    form?.querySelectorAll('[data-module="users"]').forEach(control=>{
+     control.checked=admin;
+     control.disabled=!admin;
+     control.title=admin?'Included automatically with the Admin role.':'Only the Admin role has User Management access.';
+     control.onchange=()=>{control.checked=form.elements.role?.value==='Admin'};
+     const row=control.closest('tr');
+     if(row){
+      const label=row.querySelector('td');
+      if(label){label.textContent=admin?'Users — Admin has full access':'Users — Admin only';}
+     }
+    });
+   };
    lockUserPermissions();
    form?.elements.role?.addEventListener('change',lockUserPermissions);
   }
