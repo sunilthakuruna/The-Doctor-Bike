@@ -15,7 +15,7 @@
    const form=document.querySelector('#recordForm');
    if(form)form.dataset.serverUserId=id||'';
    const input=document.querySelector('#newUserPassword');
-   if(input){input.minLength=12;input.placeholder='At least 12 characters';}
+   if(input){input.minLength=4;input.placeholder='At least 4 characters';}
   }
   return result;
  };
