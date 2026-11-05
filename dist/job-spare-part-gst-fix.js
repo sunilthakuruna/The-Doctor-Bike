@@ -6,14 +6,16 @@
     const partsBase=(b.partLines||[]).reduce((s,l)=>s+Math.max(0,Number(l.qty||0)*Number(l.price||0)-(typeof itemDiscount==='function'?itemDiscount(l,'part'):0)),0);
     const d=typeof splitDiscounts==='function'?splitDiscounts(b):{service:0,part:0};
     const labourAfter=Math.max(0,labourBase-Number(d.service||0)),partsAfter=Math.max(0,partsBase-Number(d.part||0));
-    const labour=labourAfter+partsAfter?round(net*labourAfter/(labourAfter+partsAfter)):0;
-    return {labour,parts:round(net-labour),total:net};
+    const miscellaneous=typeof miscellaneousTotal==='function'?miscellaneousTotal(b):0;
+    const baseNet=round(net-miscellaneous);
+    const labour=labourAfter+partsAfter?round(baseNet*labourAfter/(labourAfter+partsAfter)):0;
+    return {labour,parts:round(baseNet-labour),miscellaneous,total:net};
   }
   function addTodaySalesTile(){
     const cards=document.querySelector('#content .cards');
     if(!cards||cards.querySelector('[data-today-sales-tile]'))return;
-    const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date===today()),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),total=round(parts+labour);
-    const tile=document.createElement('article');tile.className='stat teal';tile.dataset.todaySalesTile='1';tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}TODAY'S NET SALES</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile);
+    const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date===today()),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),miscellaneous=bills.reduce((s,b)=>s+netSalesBreakdown(b).miscellaneous,0),total=round(parts+labour+miscellaneous);
+    const tile=document.createElement('article');tile.className='stat teal';tile.dataset.todaySalesTile='1';tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}TODAY'S NET SALES</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · Miscellaneous: ${money(miscellaneous)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile);
   }
   addTodaySalesTile();
   function addPeriodSalesTiles(){
@@ -21,13 +23,13 @@
     if(!cards)return;
     const end=today(),now=new Date(end+'T12:00:00Z'),startWeekDate=new Date(now);startWeekDate.setUTCDate(now.getUTCDate()-((now.getUTCDay()+6)%7));
     const startWeek=startWeekDate.toISOString().slice(0,10),startMonth=end.slice(0,7)+'-01';const periods=[['week','THIS WEEK\'S NET SALES',startWeek,'#1d4ed8','#3b82f6'],['month','THIS MONTH\'S NET SALES',startMonth,'#7c2d12','#f97316']];
-    periods.forEach(([key,label,start,color,accent])=>{if(cards.querySelector(`[data-period-sales="${key}"]`))return;const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date>=start&&b.date<=end),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),total=round(parts+labour),tile=document.createElement('article');tile.className='stat';tile.dataset.periodSales=key;tile.style.background=`linear-gradient(135deg,${color},${accent})`;tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}${label}</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile)});
+    periods.forEach(([key,label,start,color,accent])=>{if(cards.querySelector(`[data-period-sales="${key}"]`))return;const bills=[...db.jobs,...db.sales].filter(b=>b.status!=='Cancelled'&&b.date>=start&&b.date<=end),parts=bills.reduce((s,b)=>s+netSalesBreakdown(b).parts,0),labour=bills.reduce((s,b)=>s+netSalesBreakdown(b).labour,0),miscellaneous=bills.reduce((s,b)=>s+netSalesBreakdown(b).miscellaneous,0),total=round(parts+labour+miscellaneous),tile=document.createElement('article');tile.className='stat';tile.dataset.periodSales=key;tile.style.background=`linear-gradient(135deg,${color},${accent})`;tile.innerHTML=`<div class="statmain"><div class="statlabel">${icon('wallet')}${label}</div><div class="statvalue">${money(total)}</div><div class="statdesc">Parts: ${money(parts)} · Labour: ${money(labour)} · Miscellaneous: ${money(miscellaneous)} · excl. GST</div></div><div class="watermark">${icon('wallet')}</div><button class="statmore" data-page="report-sales">View details <span>➜</span></button>`;cards.appendChild(tile)});
   }
   addPeriodSalesTiles();
   function addDashboardHints(){
     const content=document.querySelector('#content'),cards=content?.querySelector('.cards');
     if(!content||!cards||content.querySelector('[data-dashboard-hints]'))return;
-    const hints=document.createElement('section');hints.dataset.dashboardHints='1';hints.className='dashboardHints';hints.innerHTML='<h3>Dashboard Hints</h3><p>Today, weekly, and monthly sales tiles show total sales split into Spare Parts and Labour / Service. Job Status shows the number of jobs in each stage. Monthly Revenue shows billed totals over the last six months. Gross Margin shows revenue after estimated spare-part cost. Cancelled records are excluded from sales, stock usage, and chart totals.</p>';content.appendChild(hints);
+    const hints=document.createElement('section');hints.dataset.dashboardHints='1';hints.className='dashboardHints';hints.innerHTML='<h3>Dashboard Hints</h3><p>Today, weekly, and monthly sales tiles show total sales split into Spare Parts, Labour / Service and Miscellaneous Items. Job Status shows the number of jobs in each stage. Monthly Revenue shows billed totals over the last six months. Gross Margin shows revenue after estimated spare-part cost. Cancelled records are excluded from sales, stock usage, and chart totals.</p>';content.appendChild(hints);
   }
   addDashboardHints();
   new MutationObserver(()=>{addTodaySalesTile();addPeriodSalesTiles();addDashboardHints()}).observe(document.querySelector('#content')||document.body,{childList:true,subtree:true});

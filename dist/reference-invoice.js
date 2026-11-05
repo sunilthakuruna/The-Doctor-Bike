@@ -48,7 +48,7 @@ function referenceInvoiceScene(m,options={}){
   function tableRow(values,rowHeight=22,header=false){rect(margin,y,w,rowHeight);for(let i=1;i<xs.length-1;i++)line(xs[i],y,xs[i],y+rowHeight);values.forEach((value,i)=>{const align=i===1?'left':i<4?'center':'right',x=i===1?xs[i]+6:align==='right'?xs[i+1]-6:(xs[i]+xs[i+1])/2;const available=xs[i+1]-xs[i]-9;const size=Math.max(6.5,Math.min(header?8:8.6,available/(Math.max(1,String(value).length)*.53)));text(value,x,y+14,size,header||i===6,align);});y+=rowHeight;}
   function group(title){text('-- '+title+' --',margin+6,y+12,7.5,false,'left','#173b8a');y+=18;}
   page();
-  for(const [title,rows] of [['SPARE PARTS & MATERIALS',m.parts],['LABOUR & SERVICE CHARGES',m.services]]){
+  for(const [title,rows] of [['SPARE PARTS & MATERIALS',m.parts],['LABOUR & SERVICE CHARGES',m.services],['Miscellaneous Items',m.miscellaneous||[]]]){
     if(!rows.length)continue;if(y+45>height-45){page();}group(title);
     rows.forEach((item,index)=>{const notes=[item.code,item.hsn?'HSN: '+item.hsn:'',item.gst?'GST: '+item.gst+'%':''].filter(Boolean).join(' | '),nameLines=referenceWrap(item.name+(notes?'  '+notes:''),xs[2]-xs[1]-12,8.5),notesLines=[],rowHeight=Math.max(22,7+nameLines.length*11+notesLines.length*9);if(y+rowHeight>height-45){page();group(title+' (CONTINUED)');}const top=y;
       tableRow([index+1,'',item.qty,item.unit,'₹ '+item.rate.toFixed(2),(item.discountType==='percent'?item.discountValue+'% / ':'')+'₹ '+item.discount.toFixed(2),'₹ '+item.amount.toFixed(2)],rowHeight);
