@@ -107,7 +107,9 @@
     }
   }
   const savedId=localStorage.getItem(sessionKey),savedUser=(db.users||[]).find(user=>user.id===savedId&&user.status!=='Inactive');
-  activeUser=savedUser||null;
+  activeUser=null;
+  window.BD_SET_SERVER_USER=user=>{activeUser=user;localStorage.setItem(sessionKey,user.id);updateHeader();const gate=$('#userLoginGate');if(gate)gate.hidden=true;render()};
+  window.BD_SHOW_SERVER_LOGIN=showGate;
   window.BD_RECHECK_LOCAL_USER=()=>{
     if(!activeUser)return;
     const updated=db.users.find(user=>user.id===activeUser.id&&user.status!=='Inactive');
@@ -132,5 +134,5 @@
   },true);
   window.BD_HAS_MODULE_ACCESS=canOpenModule;window.BD_HAS_ACTION_PERMISSION=canPerform;
   addSessionAccessAction();
-  if(!activeUser)showGate(savedId?'Your previous session is no longer active. Please sign in again.':'Sign in to open the BIKE DOCTOR workspace.');
+  if(!activeUser)showGate('Checking your server session…');
 })();
