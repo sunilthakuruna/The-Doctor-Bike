@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const source=await readFile(new URL('./app-permissions.js',import.meta.url),'utf8');
+const {permitted}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const user={status:'Active',role:'Mechanic',permissions:JSON.stringify({customers:{read:true,write:true,edit:false,delete:false}}),action_restrictions:'{}'};
+assert.equal(permitted(user,'/api/customers','GET'),true);
+assert.equal(permitted(user,'/api/customers','POST'),true);
+assert.equal(permitted(user,'/api/customers','DELETE'),false);
+assert.equal(permitted(user,'/api/app-users','GET'),false);
+assert.equal(permitted(user,'/api/inventory','PUT'),false);
+assert.equal(permitted({...user,status:'Inactive',role:'Admin'},'/api/customers','GET'),false);
+assert.equal(permitted({...user,role:'Admin'},'/api/app-users','GET'),true);
+assert.equal(permitted({...user,action_restrictions:'{"Customer Master":{"Add Customer":true}}'},'/api/customers','POST'),false);
+console.log('Permission checks passed');

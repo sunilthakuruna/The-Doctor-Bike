@@ -1,0 +1,22 @@
+import {hex,hashPassword,publicUser} from '../app-identity.js';
+// During rollout this endpoint is protected by the existing owner middleware.
+// The application-wide login cutover must replace that guard with Admin identity.
+export async function onRequest({request,env}){
+ const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
+ try{
+  if(request.method==='GET'){
+   const result=await env.DB.prepare('SELECT * FROM app_users ORDER BY username').all();
+   return reply({data:result.results.map(publicUser)});
+  }
+  if(request.method!=='POST')return reply({error:'Method not allowed.'},405);
+  const body=await request.json();
+  const username=String(body.username||'').trim(),name=String(body.name||'').trim(),password=String(body.password||'');
+  if(!username||username.length>200||!name||name.length>200||password.length<12||password.length>256||!['Admin','Manager','Mechanic','User'].includes(body.role))return reply({error:'Complete user details and choose a password of 12–256 characters.'},400);
+  const map=value=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.values(value).every(actions=>actions&&typeof actions==='object'&&!Array.isArray(actions)&&Object.values(actions).every(flag=>typeof flag==='boolean'));
+  if(!map(body.permissions||{})||!map(body.actionRestrictions||{}))return reply({error:'Invalid permissions.'},400);
+  const salt=hex(crypto.getRandomValues(new Uint8Array(32))),id=crypto.randomUUID();
+  const inserted=await env.DB.prepare('INSERT OR IGNORE INTO app_users(id,username,name,role,salt,password_hash,permissions,action_restrictions) VALUES (?,?,?,?,?,?,?,?)').bind(id,username,name,body.role,salt,await hashPassword(password,salt),JSON.stringify(body.permissions||{}),JSON.stringify(body.actionRestrictions||{})).run();
+  if(!inserted.meta.changes)return reply({error:'Username already exists.'},409);
+  return reply({data:publicUser(await env.DB.prepare('SELECT * FROM app_users WHERE id=?').bind(id).first())},201);
+ }catch{return reply({error:'User management is not ready.'},503)}
+}
