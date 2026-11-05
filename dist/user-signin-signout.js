@@ -115,16 +115,12 @@
   }
   const savedId=localStorage.getItem(sessionKey),savedUser=(db.users||[]).find(user=>user.id===savedId&&user.status!=='Inactive');
   activeUser=null;
-  window.BD_SET_SERVER_USER=user=>{activeUser=user;localStorage.setItem(sessionKey,user.id);updateHeader();const gate=$('#userLoginGate');if(gate)gate.hidden=true;render()};
+  window.BD_SET_SERVER_USER=user=>{activeUser=structuredClone(user);localStorage.setItem(sessionKey,user.id);updateHeader();const gate=$('#userLoginGate');if(gate)gate.hidden=true;render()};
   window.BD_SHOW_SERVER_LOGIN=showGate;
   window.BD_RECHECK_LOCAL_USER=()=>{
-    if(!activeUser)return;
-    const updated=db.users.find(user=>user.id===activeUser.id&&user.status!=='Inactive');
-    if(updated){activeUser=updated;updateHeader();return}
-    localStorage.removeItem(sessionKey);
-    activeUser=null;
+    // Edited user records must never become the authenticated identity.
+    // Session identity is supplied only by /api/app-auth.
     updateHeader();
-    showGate('This browser profile is no longer active.');
   };
   updateHeader();
   const renderBeforeSessionAccess=render;
