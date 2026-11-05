@@ -123,6 +123,13 @@ function connectCloudRecords(scope,label,collections,adapter){
   if(!await window.BD_CLOUD_READY)return;
   try{
    const response=await fetch('/api/'+scope,{cache:'no-store'});
+   if(response.status===403){
+    show('');
+    if(!adapter)for(const key of collections)db[key]=[];
+    if(scope==='inventory')window.payrollCloudSources.inventory='unavailable';
+    baseline=snapshot();
+    return;
+   }
    const result=await response.json();
    if(!response.ok||!Object.hasOwn(result,'version'))throw new Error();
    pending=JSON.parse(sessionStorage.getItem(pendingKey)||'null');
