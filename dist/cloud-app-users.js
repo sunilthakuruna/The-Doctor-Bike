@@ -48,6 +48,11 @@
   const existing=db.users.find(user=>user.id===id);
   const body={...Object.fromEntries(new FormData(form)),id,password:document.querySelector('#newUserPassword')?.value||'',permissions:{},actionRestrictions:existing?.actionRestrictions||{}};
   form.querySelectorAll('[data-module][data-permission]').forEach(input=>{(body.permissions[input.dataset.module]||={})[input.dataset.permission]=input.checked});
+  const restrictionInputs=form.querySelectorAll('[data-user-action-module][data-user-action-right]');
+  if(restrictionInputs.length){
+   body.actionRestrictions={};
+   restrictionInputs.forEach(input=>{(body.actionRestrictions[input.dataset.userActionModule]||={})[input.dataset.userActionRight]=input.checked});
+  }
   const admin=body.role==='Admin';
   body.permissions.users={read:admin,write:admin,edit:admin,delete:admin};
   const button=form.querySelector('[type=submit]');if(button)button.disabled=true;
