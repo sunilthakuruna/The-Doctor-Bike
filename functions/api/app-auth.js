@@ -19,7 +19,7 @@ export async function onRequest({request,env}){
   const attempt=await env.DB.prepare('SELECT attempts FROM owner_attempts WHERE key=?').bind(key).first();
   if(attempt.attempts>10)return reply({error:'Try again in 15 minutes.'},429);
   const body=await request.json(),username=String(body.username||'').trim(),password=String(body.password||'');
-  if(!username||username.length>200||password.length<12||password.length>256)return reply({error:'Enter your username and password (at least 12 characters).'},400);
+  if(!username||username.length>200||password.length<4||password.length>256)return reply({error:'Enter your username and password (at least 4 characters).'},400);
   const user=await env.DB.prepare('SELECT * FROM app_users WHERE username=? COLLATE NOCASE').bind(username).first();
   // Use the same expensive calculation even for an unknown account.
   const hash=await hashPassword(password,user?.salt||'unknown-account-placeholder');
