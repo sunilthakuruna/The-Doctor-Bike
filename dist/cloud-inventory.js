@@ -4,6 +4,7 @@ const canRefreshCloudRecords=()=>document.visibilityState==='visible'&&
  !document.activeElement?.matches('input,textarea,select,[contenteditable="true"]');
 
 function connectCloudRecords(scope,label,collections,adapter){
+ if(scope==='user-permissions')return; // Server user records now own these profiles.
  const pendingKey=STORE+'-'+scope+'-pending-v1';
  const snapshot=()=>JSON.stringify(adapter?adapter.read():Object.fromEntries(collections.map(key=>[key,db[key]||[]])));
  const apply=data=>{
