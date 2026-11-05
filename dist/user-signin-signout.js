@@ -13,7 +13,8 @@
     if(key==='backup-restore')return activeUser.role==='Admin';
     if(activeUser.role==='Admin')return true;
     if(key==='dashboard')return true;
-    if(key==='reports')return !!activeUser.permissions?.reports?.read||Object.keys(activeUser.permissions||{}).some(id=>id.startsWith('report-')&&activeUser.permissions[id]?.read);
+    if(key==='reports')return !!activeUser.permissions?.reports?.read;
+    if(key.startsWith('report-'))return !!activeUser.permissions?.reports?.read&&!!activeUser.permissions?.[key]?.read;
     return !!activeUser.permissions?.[key]?.read;
   }
   const permissionModuleLabels={dashboard:'Dashboard',settings:'Business Setting',lists:'List Management',customers:'Customer Master',bikes:'Vehicle Master',insurance:'Insurance',staff:'Staff Master',attendance:'Staff Attendance',payroll:'Per Job Salary',services:'Service Master',accounts:'Account Master',appointments:'Appointment Booking',jobs:'Job Card',parts:'Spare Parts',godown:'Godown Stock',sales:'Spare Parts Sale',purchases:'Purchase','service-reminders':'Vehicle Service Reminders','amc-plans':'AMC Management / Reminder',payments:'Payment Details',reports:'Reports',expenses:'Expenses',users:'Users',audit:'Audit Logs'};
@@ -52,6 +53,8 @@
       element.remove();
     });
   }
+  const navigationBeforePermissions=nav;
+  nav=function(){const result=navigationBeforePermissions();lockRestrictedNavigation();return result};
   function updateHeader(){
     const profile=$('#profile');if(!profile)return;
     const user=activeUser;
