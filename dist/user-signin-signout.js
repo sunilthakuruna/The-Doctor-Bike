@@ -18,6 +18,17 @@
     return !!activeUser.permissions?.[key]?.read;
   }
   const permissionModuleLabels={dashboard:'Dashboard',settings:'Business Setting',lists:'List Management',customers:'Customer Master',bikes:'Vehicle Master',insurance:'Insurance',staff:'Staff Master',attendance:'Staff Attendance',payroll:'Per Job Salary',services:'Service Master',accounts:'Account Master',appointments:'Appointment Booking',jobs:'Job Card',parts:'Spare Parts',godown:'Godown Stock',sales:'Spare Parts Sale',purchases:'Purchase','service-reminders':'Vehicle Service Reminders','amc-plans':'AMC Management / Reminder',payments:'Payment Details',reports:'Reports',expenses:'Expenses',users:'Users',audit:'Audit Logs'};
+  function dashboardActionAllowed(action){
+    return !!activeUser&&(activeUser.role==='Admin'||(canOpenModule('dashboard')&&activeUser.actionRestrictions?.Dashboard?.[action]!==true));
+  }
+  function applyDashboardRestrictions(){
+    const notifications=$('#notifications');
+    if(notifications){notifications.hidden=!dashboardActionAllowed('View Notifications');notifications.style.display=notifications.hidden?'none':'';}
+    if(!dashboardActionAllowed('View Notifications'))$('#headerPanel.notificationPanel')?.remove();
+    if(page==='dashboard'&&!dashboardActionAllowed('Open Quick Actions')){
+      $$('#content .quickactions').forEach(panel=>(panel.closest('section.panel')||panel).remove());
+    }
+  }
   function actionName(key,permission,element){
     const data=element?.dataset||{};
     if(data.invoice)return 'Print Invoice';if(data.receive)return 'Receive Payment';
@@ -48,6 +59,7 @@
     $$('#navigation h3').forEach(heading=>{let next=heading.nextElementSibling,hasLink=false;while(next&&next.tagName!=='H3'){if(next.matches?.('[data-page]')||next.querySelector?.('[data-page]'))hasLink=true;next=next.nextElementSibling}if(!hasLink)heading.remove()});
   }
   function lockRestrictedActions(){
+    applyDashboardRestrictions();
     $$('#content [data-new],#content [data-edit],#content [data-delete],#content [data-receive],#content [data-invoice],#content [data-status],#content [data-action],#content [data-removeline],#content [data-removeoption]').forEach(element=>{
       const target=actionTarget(element);if(!target||canPerform(target.key,target.permission,element))return;
       element.remove();
@@ -131,6 +143,12 @@
   const goBeforeSessionAccess=go;
   go=function(key){if(!canOpenModule(key)){toast(`${titles[key]||'This module'} is restricted for your role.`);return}return goBeforeSessionAccess(key)};
   document.addEventListener('click',event=>{
+    if(event.target.closest('#notifications')&&!dashboardActionAllowed('View Notifications')){
+      event.preventDefault();event.stopImmediatePropagation();return;
+    }
+    if(page==='dashboard'&&event.target.closest('#content .quickactions')&&!dashboardActionAllowed('Open Quick Actions')){
+      event.preventDefault();event.stopImmediatePropagation();return;
+    }
     const action=event.target.closest('#content [data-page],#content [data-new],#content [data-edit],#content [data-delete],#content [data-receive],#content [data-invoice],#content [data-status],#content [data-action],#content [data-removeline],#content [data-removeoption],#modal [data-edit],#modal [data-delete],#modal [data-action]');if(!action)return;
     const target=actionTarget(action);if(!target||canPerform(target.key,target.permission,action))return;
     event.preventDefault();event.stopImmediatePropagation();toast(`${target.permission[0].toUpperCase()+target.permission.slice(1)} permission is not granted for ${titles[target.key]||'this module'}.`)
