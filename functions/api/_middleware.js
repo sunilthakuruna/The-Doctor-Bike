@@ -1,3 +1,5 @@
+import {identity} from '../app-identity.js';
+import {permitted} from '../app-permissions.js';
 export async function onRequest(context) {
  const {request,env}=context;
  const path=new URL(request.url).pathname;
@@ -5,6 +7,13 @@ export async function onRequest(context) {
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('origin')!==new URL(request.url).origin)
   return Response.json({error:'Invalid request origin.'},{status:403});
  try {
+  let user;
+  try{user=await identity(request,env.DB)}catch{user=null}
+  if(user){
+   if(!permitted(user,path,request.method))return Response.json({error:'Access is not granted for your account.'},{status:403});
+   context.data.user=user;
+   return context.next();
+  }
   const token=request.headers.get('cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith('__Host-owner='))?.slice(13);
   if(!token)return Response.json({error:'Owner sign-in required.'},{status:401});
   const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))),b=>b.toString(16).padStart(2,'0')).join('');
