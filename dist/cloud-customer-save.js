@@ -43,7 +43,7 @@ deleteRecord = function(key, id) {
   deleteRecordBeforeCloudCustomers(key, id);
   if (key !== 'customers') return;
   const button = document.querySelector('#modalBody [data-action="confirmDelete"]');
-  if (!button) return;
+  if (!button || document.querySelector('#modalTitle')?.textContent !== 'Delete Sample Record') return;
   button.onclick = async () => {
     button.disabled = true;
     try {
