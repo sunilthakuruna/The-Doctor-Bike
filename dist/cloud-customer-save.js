@@ -30,10 +30,10 @@ document.addEventListener('submit', async event => {
       save();
       closeModal();
       render();
-      toast('Customer saved to Cloudflare D1.');
+      toast(response.headers.get('x-bike-offline')==='1'?'Customer saved on this device. Waiting to sync when online.':'Customer saved to Cloudflare D1.');
     } catch (error) {
       console.warn('Cloud customer save unavailable', error);
-      toast('Customer was not saved to the cloud. Please try again.');
+      toast(error.message||'Customer could not be saved. Keep the form open and try again.');
       if (button) button.disabled = false;
     }
 }, true);

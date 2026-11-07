@@ -4,7 +4,20 @@
  const collections={customers:'customers',vehicles:'bikes',services:'services',staff:'staff',accounts:'accounts',expenses:'expenses',attendance:'attendance'};
  let owner='',running=false,store,transportOffline=false;
  const opened=new Promise((resolve,reject)=>{const request=indexedDB.open('bike-doctor-offline-work',1);request.onupgradeneeded=()=>request.result.createObjectStore('users');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)});
- const lock=fn=>navigator.locks?navigator.locks.request('bike-doctor-offline-outbox',fn):Promise.reject(new Error('Offline saving requires a browser supporting secure tab coordination.'));
+ // Older mobile browsers lack Web Locks. IndexedDB transactions provide a
+ // shared lease instead, so two tabs cannot replay the same outbox together.
+ async function lease(token,release=false){const database=await opened;return new Promise((resolve,reject)=>{
+  const tx=database.transaction('users','readwrite'),table=tx.objectStore('users'),request=table.get('__outbox_lease__');let acquired=false;
+  request.onsuccess=()=>{const current=request.result;if(release){if(current?.token===token)table.put(null,'__outbox_lease__');acquired=true}
+   else if(!current||current.expires<Date.now()||current.token===token){table.put({token,expires:Date.now()+60000},'__outbox_lease__');acquired=true}};
+  tx.oncomplete=()=>resolve(acquired);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+ })}
+ async function lock(fn){if(navigator.locks)return navigator.locks.request('bike-doctor-offline-outbox',fn);
+  const token=crypto.randomUUID(),deadline=Date.now()+10000;
+  while(!await lease(token)){if(Date.now()>deadline)throw new Error('Another tab is saving. Please try again shortly.');await new Promise(resolve=>setTimeout(resolve,100))}
+  const renewal=setInterval(()=>{void lease(token)},10000);
+  try{return await fn()}finally{clearInterval(renewal);await lease(token,true)}
+ }
  async function read(){const database=await opened;return new Promise((resolve,reject)=>{const request=database.transaction('users').objectStore('users').get(owner);request.onsuccess=()=>resolve(request.result||{cache:{},queue:[],versions:{}});request.onerror=()=>reject(request.error)})}
  async function write(data){const database=await opened;await new Promise((resolve,reject)=>{const tx=database.transaction('users','readwrite');tx.objectStore('users').put(data,owner);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)});store=data;draw()}
  const response=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store','x-bike-offline':'1'}});
@@ -61,6 +74,10 @@
   }
   if(!['POST','PUT','DELETE'].includes(method))return network(input,init);
   if(window.BD_OFFLINE_SESSION||!navigator.onLine||transportOffline||store.queue.length){const result=await enqueue(route,method,init.body?JSON.parse(init.body):null,url);void sync();return result}
+  // Check reachability before transmitting the change. navigator.onLine can
+  // remain true while Wi-Fi has no internet connection.
+  try{const session=await network('/api/app-auth',{cache:'no-store'});if(!session.ok)return session;const identity=await session.json();if(!identity.authenticated||identity.user?.id!==owner)return response({error:'Sign in online with the same user before saving.'},401)}
+  catch{transportOffline=true;return enqueue(route,method,init.body?JSON.parse(init.body):null,url)}
   // A network error after transmission is ambiguous: do not blindly replay it.
   return network(input,init);
  };
