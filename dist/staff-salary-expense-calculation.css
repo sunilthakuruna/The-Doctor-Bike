@@ -1,1 +1,9 @@
 .staffSalaryExpenseStrip{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:9px 11px;margin:0 0 9px;background:#f0f7ff;border:1px solid #cfe0f5}.staffSalaryExpenseStrip span{display:flex;gap:6px;align-items:baseline}.staffSalaryExpenseStrip small{font-size:9px;font-weight:800;color:#536982}.staffSalaryExpenseStrip b{font-size:13px;color:#123d5a}.staffSalaryExpenseStrip em{margin-left:auto;color:#64748b;font-size:10px;font-style:normal}.staffSalaryDue{display:inline-block;padding:4px 6px;border-radius:4px;color:#c2410c;background:#fff7ed;font-size:10px;font-weight:700;white-space:nowrap}.staffSalaryDue.settled{color:#047857;background:#ecfdf5}@media(max-width:720px){.staffSalaryExpenseStrip{gap:7px}.staffSalaryExpenseStrip em{width:100%;margin-left:0}}
+/* Base due scrolls with the salary columns; Actions follows it at the end. */
+body[data-view="staff"] #content .tablewrap table th.staffMonthBaseDue,
+body[data-view="staff"] #content .tablewrap table td.staffMonthBaseDue {
+  position: static !important;
+  inset: auto !important;
+  z-index: auto !important;
+  box-shadow: none !important;
+}
