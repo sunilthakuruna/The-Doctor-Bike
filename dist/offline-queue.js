@@ -42,6 +42,11 @@
   data.queue.push({id:crypto.randomUUID(),url:url.pathname+url.search,route,method,body:result.body||body,base:cached,localVersion:result.reply.version,state:'queued',savedAt:Date.now()});
   data.cache[route]=result.cached;await write(data);return response(result.reply);
  })}
+ window.BD_QUEUE_CLOUD_CHANGE=async(scope,body)=>{
+  if(!owner||!snapshots.has(scope))throw new Error('Offline storage is not ready for these settings.');
+  const result=await enqueue(scope,'PUT',body,new URL('/api/'+scope,location.origin));
+  void sync();return result;
+ };
  async function sync(){if(running||!owner||!navigator.onLine||window.BD_OFFLINE_SESSION)return;running=true;
   try{await lock(async()=>{let data=await read();while(data.queue.length){const entry=data.queue[0];if(entry.state!=='queued')break;
    const check=await network('/api/'+entry.route,{cache:'no-store'});if(!check.ok){entry.state='blocked';entry.error='Sign in online or check your permissions.';await write(data);break}const current=await check.json();
@@ -74,6 +79,7 @@
   }
   if(!['POST','PUT','DELETE'].includes(method))return network(input,init);
   if(window.BD_OFFLINE_SESSION||!navigator.onLine||transportOffline||store.queue.length){const result=await enqueue(route,method,init.body?JSON.parse(init.body):null,url);void sync();return result}
+  if(init.body){const body=JSON.parse(init.body);if(body&&store.versions[body.version])init={...init,body:JSON.stringify({...body,version:store.versions[body.version]})}}
   // Check reachability before transmitting the change. navigator.onLine can
   // remain true while Wi-Fi has no internet connection.
   try{const session=await network('/api/app-auth',{cache:'no-store'});if(!session.ok)return session;const identity=await session.json();if(!identity.authenticated||identity.user?.id!==owner)return response({error:'Sign in online with the same user before saving.'},401)}
