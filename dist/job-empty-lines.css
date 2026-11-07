@@ -1,0 +1,14 @@
+/* Keep empty job line sections compact without removing their tables or controls. */
+#billForm #serviceLines tbody > tr:has(> td.empty),
+#billForm #partLines tbody > tr:has(> td.empty) {
+  display: none !important;
+}
+#billForm #serviceLines:has(td.empty) .record-pagination,
+#billForm #partLines:has(td.empty) .record-pagination {
+  display: none !important;
+}
+#billForm #serviceLines .tablewrap:has(td.empty),
+#billForm #partLines .tablewrap:has(td.empty) {
+  min-height: 0 !important;
+  height: auto !important;
+}
