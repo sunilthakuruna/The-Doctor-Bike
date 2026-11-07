@@ -7,7 +7,7 @@ const offlinePage=`<!doctype html>
 <a href="/">Try again</a>
 </main></html>`;
 
-const shellCache='bike-doctor-offline-shell-v2';
+const shellCache='bike-doctor-offline-shell-v3';
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(shellCache);
  const response=await fetch('/index.html',{cache:'reload'});
@@ -35,7 +35,7 @@ self.addEventListener('fetch',event=>{
  if(request.mode!=='navigate'&&!/\.(js|css|png|jpg|svg|ico|woff2?|webmanifest)(\?|$)/i.test(url.pathname))return;
  event.respondWith(fetch(request).then(async response=>{
   if(response.ok){const cache=await caches.open(shellCache);await cache.put(request,response.clone())}return response;
- }).catch(async()=> (await caches.match(request)) || (request.mode==='navigate'&&await caches.match('/')) || new Response(offlinePage,{
+ }).catch(async()=> {const cache=await caches.open(shellCache);return (await cache.match(request)) || (request.mode==='navigate'&&await cache.match('/')) || new Response(offlinePage,{
   status:503,headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}
- })));
+ })}));
 });
