@@ -36,6 +36,15 @@
   }
   values.salary=Number(values.salary);
   values.experience=Number(values.experience);
+  values.paidLeaveDaysPerMonth=Number(values.paidLeaveDaysPerMonth??0);
+  if(!Number.isSafeInteger(values.salary)||values.salary<0||(values.salaryType==='Per Job'&&values.salary>100)){
+   toast('Enter a whole-number salary amount or Per Job percentage (0 to 100). Fractions are not allowed.');
+   return;
+  }
+  if(!Number.isInteger(values.paidLeaveDaysPerMonth)||values.paidLeaveDaysPerMonth<0||values.paidLeaveDaysPerMonth>31){
+   toast('Enter a whole-number paid leave allowance from 0 to 31.');
+   return;
+  }
   form.dataset.cloudSaving='true';
   const button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
   revision++;

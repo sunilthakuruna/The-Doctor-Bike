@@ -41,7 +41,8 @@ export async function onRequest({request, env}) {
   if(!['Use Global','None','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(record.weeklyOffDay)||!Number.isInteger(record.paidLeaveDaysPerMonth)||record.paidLeaveDaysPerMonth<0||record.paidLeaveDaysPerMonth>31)return reply({error:'Choose a weekly off and a whole-number paid leave allowance from 0 to 31.'},400);
   record.salary=Number(record.salary);
   record.experience=Number(record.experience);
-  if(!Number.isFinite(record.experience)||record.experience<0||!Number.isFinite(record.salary)||record.salary<0||(record.salaryType==='Per Job'&&record.salary>100))return reply({error:'Enter valid experience and salary values.'},400);
+  if(!Number.isFinite(record.experience)||record.experience<0)return reply({error:'Enter valid experience.'},400);
+  if(!Number.isSafeInteger(record.salary)||record.salary<0||(record.salaryType==='Per Job'&&record.salary>100))return reply({error:'Enter a whole-number salary amount or Per Job percentage (0 to 100). Fractions are not allowed.'},400);
   const statements=[creating?db.prepare('INSERT INTO staff(id,data) VALUES (?,?)').bind(id,JSON.stringify(record)):db.prepare('UPDATE staff SET data=? WHERE id=?').bind(JSON.stringify(record),id)];
   for(const field of attachments){
    if(!Object.hasOwn(body,field))continue;

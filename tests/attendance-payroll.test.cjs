@@ -43,5 +43,9 @@ test('staff API persists weekly off and allowance and rejects fractional allowan
  const response=await save(body);assert.equal(response.status,201);
  const result=(await response.json()).data;assert.equal(result.weeklyOffDay,'Monday');assert.equal(result.paidLeaveDaysPerMonth,2);
  assert.equal((await save({...body,paidLeaveDaysPerMonth:1.5})).status,400);
+ assert.equal((await save({...body,salary:15000.5})).status,400);
+ assert.equal((await save({...body,salaryType:'Per Job',salary:50.5})).status,400);
+ assert.equal((await save({...body,salaryType:'Per Job',salary:101})).status,400);
+ assert.equal((await save({...body,salaryType:'Per Job',salary:50})).status,201);
  assert.equal((await save({...body,weeklyOffDay:'Invalid'})).status,400);
 });
