@@ -1,3 +1,4 @@
+import {deletionDependencies} from '../deletion-dependencies.js';
 const schema = `CREATE TABLE IF NOT EXISTS vehicles (
  id TEXT PRIMARY KEY, customer TEXT NOT NULL REFERENCES customers(id),
  number TEXT NOT NULL COLLATE NOCASE UNIQUE, data TEXT NOT NULL,
@@ -33,6 +34,8 @@ export async function onRequest({request,env}) {
   if(request.method==='DELETE') {
    const id=new URL(request.url).searchParams.get('id');
    if(!id)return reply({error:'Vehicle ID is required.'},400);
+   const links=await deletionDependencies(env.DB,'bikes',id);
+   if(links.length)return reply({error:'Delete the linked records individually before deleting this vehicle.',links},409);
    await env.DB.batch([
     env.DB.prepare('DELETE FROM vehicles WHERE id=?').bind(id),
     env.DB.prepare('INSERT INTO audit_logs(action,detail) VALUES (?,?)').bind('Delete',`Vehicle ${id} deleted`)
