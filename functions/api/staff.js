@@ -36,6 +36,9 @@ export async function onRequest({request, env}) {
   const record={id};
   for(const field of fields) record[field]=String(body[field]??'').trim();
   if(!record.name||!record.mobile||!record.designation||fields.some(field=>record[field].length>4000))return reply({error:'Check the name, mobile number, designation and field lengths.'},400);
+  record.weeklyOffDay=String(body.weeklyOffDay??'Use Global').trim();
+  record.paidLeaveDaysPerMonth=Number(body.paidLeaveDaysPerMonth??0);
+  if(!['Use Global','None','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(record.weeklyOffDay)||!Number.isInteger(record.paidLeaveDaysPerMonth)||record.paidLeaveDaysPerMonth<0||record.paidLeaveDaysPerMonth>31)return reply({error:'Choose a weekly off and a whole-number paid leave allowance from 0 to 31.'},400);
   record.salary=Number(record.salary);
   record.experience=Number(record.experience);
   if(!Number.isFinite(record.experience)||record.experience<0||!Number.isFinite(record.salary)||record.salary<0||(record.salaryType==='Per Job'&&record.salary>100))return reply({error:'Enter valid experience and salary values.'},400);

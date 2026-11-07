@@ -3,14 +3,7 @@
   const salaryExpense=expense=>['Salary','Staff Salary / Advance'].includes(expense.category)&&expense.staff;
   const sameMonth=(date,month)=>String(date||'').startsWith(month);
   function attendanceSummary(staff,month){
-    const [year,monthNo]=month.split('-').map(Number),days=new Date(year,monthNo,0).getDate();
-    const result={days,present:0,half:0,absent:0,paidLeave:0,weeklyOff:0,payable:0};
-    for(let day=1;day<=days;day++){
-      const date=`${year}-${String(monthNo).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      const status=db.attendance?.[date]?.[staff.id]?.status||'Unmarked';
-      if(status==='Present'){result.present++;result.payable++}else if(status==='Half Day'){result.half++;result.payable+=.5}else if(status==='Absent')result.absent++;else if(status==='Paid Leave'){result.paidLeave++;result.payable++}else if(status==='Weekly Off'){result.weeklyOff++;result.payable++}
-    }
-    return result;
+    return attendanceMonthlySummary(staff,monthDays(month),(date,id)=>db.attendance?.[date]?.[id]);
   }
   function statementData(staff,month){
     const attendance=attendanceSummary(staff,month),type=String(staff.salaryType||'Monthly').toLowerCase().replace(/[\s_-]/g,'');
@@ -33,7 +26,7 @@
   function statementMarkup(staffId,month){
     const staff=find('staff',staffId);if(!staff)return '<p>Staff record not found.</p>';
     const data=statementData(staff,month),attendance=data.attendance;
-    const rows=[['Calculated Salary',month,data.rule,money(data.earned)],...(!data.perJob?[['Attendance',month,`${attendance.present} present · ${attendance.half} half day · ${attendance.absent} absent · ${attendance.paidLeave} paid leave · ${attendance.weeklyOff} weekly off`,`${attendance.payable} payable days`]]:data.jobs.map(job=>['Completed Job Card',displayDate(job.date),`${job.id} · Labour ${money(billTotals(job).labour)} × ${staff.salary}%`,money(round(Number(billTotals(job).labour||0)*Number(staff.salary||0)/100))])),...data.expenses.map(expense=>[expense.salaryPaymentType==='advance'?'Salary Advance':'Salary Payment',displayDate(expense.date),`${expense.id} · ${expense.mode||'—'} · ${name('accounts',expense.account)||'—'}`,`− ${money(expense.amount)}`])];
+    const rows=[['Calculated Salary',month,data.rule,money(data.earned)],...(!data.perJob?[['Attendance',month,`${attendance.present} present · ${attendance.half} half day · ${attendance.absent} absent · ${attendance.paidLeave} paid leave · ${attendance.weeklyOff} weekly off · ${attendance.excessLeave} excess PL (unpaid)`,`${attendance.payable} payable days`]]:data.jobs.map(job=>['Completed Job Card',displayDate(job.date),`${job.id} · Labour ${money(billTotals(job).labour)} × ${staff.salary}%`,money(round(Number(billTotals(job).labour||0)*Number(staff.salary||0)/100))])),...data.expenses.map(expense=>[expense.salaryPaymentType==='advance'?'Salary Advance':'Salary Payment',displayDate(expense.date),`${expense.id} · ${expense.mode||'—'} · ${name('accounts',expense.account)||'—'}`,`− ${money(expense.amount)}`])];
     return `<section class="individualSalaryStatement"><div class="salaryStatementHeader"><div><strong>${esc(staff.name)}</strong><small>${esc(staff.id)} · ${esc(staff.designation||'—')} · ${esc(staff.salaryType||'Monthly')} salary</small></div><label>Salary Month <input id="individualSalaryMonth" type="month" value="${esc(month)}"></label></div>${summary([['SALARY GENERATED',money(data.earned)],['SALARY ADVANCE',money(data.advance)],['SALARY PAID',money(data.paidAmount)],['BALANCE DUE',money(data.due)]])}<p class="notice">Calculation: <strong>${esc(data.rule)}</strong>. This statement includes only the selected month’s attendance, completed jobs, salary advances and salary payments.</p>${table(['Source','Date / Month','Calculation / Reference','Amount'],rows)}</section>`;
   }
   function openStatement(staffId,month=today().slice(0,7)){
