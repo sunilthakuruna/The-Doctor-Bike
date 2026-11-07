@@ -1,0 +1,18 @@
+/* Shared date controls in forms, reports and attendance. */
+.localDateControl { position: relative; box-sizing: border-box; }
+.localDateControl > button.localDateIcon {
+ position: absolute !important; inset: 0 0 0 auto !important;
+ width: 36px !important; min-width: 36px !important; height: 100% !important;
+ padding: 0 !important; margin: 0 !important; border: 0 !important;
+ background: transparent !important; color: #64748b;
+ display: flex; align-items: center; justify-content: center;
+ pointer-events: auto; cursor: pointer; z-index: 1;
+}
+.localDateControl > button.localDateIcon:focus-visible { outline: 2px solid #2563eb; outline-offset: -3px; }
+.localDateControl > button.localDateIcon:disabled { cursor: default; opacity: .45; }
+.localDateControl > input.localDateNative {
+ width: 36px !important; min-width: 0 !important; max-width: 36px !important;
+ margin: 0 !important; left: auto !important; right: 0 !important;
+ pointer-events: none; z-index: 0;
+}
+.localDateControl.nativeCalendarFallback > input.localDateNative { pointer-events: auto; z-index: 2; }
