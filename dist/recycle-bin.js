@@ -2,8 +2,10 @@
 (function(){
  let entries=[],state='idle',error='',busy=false,moduleFilter='';
  titles['recycle-bin']='Recycle Bin';
- const group=groups.find(group=>group[0]==='FINANCE & REPORTS')||groups.at(-1);
- if(!group[1].some(item=>item[0]==='recycle-bin'))group[1].push(['recycle-bin','Recycle Bin','trash']);
+ const group=groups.find(group=>group[1].some(item=>item[0]==='backup-restore'))||groups.find(group=>group[0]==='SYSTEM & ACCESS')||groups.at(-1);
+ for(const section of groups)section[1]=section[1].filter(item=>item[0]!=='recycle-bin');
+ const backupIndex=group[1].findIndex(item=>item[0]==='backup-restore');
+ group[1].splice(backupIndex<0?group[1].length:backupIndex+1,0,['recycle-bin','Recycle Bin','trash']);
  const labels={customers:'Customer Master',bikes:'Vehicle Master',services:'Service Master',staff:'Staff Master',expenses:'Expenses',accounts:'Account Master',parts:'Spare Parts',purchases:'Purchases',jobs:'Job Cards',sales:'Spare Parts Sales',receipts:'Payments',appointments:'Appointments',stockMovements:'Stock Movements',insurance:'Insurance',amcPlans:'AMC Plans',amcReminderLogs:'AMC Reminders',serviceReminderLogs:'Service Reminders',stockCounts:'Stock Verification'};
  async function load(){
   if(state==='loading')return;

@@ -1,6 +1,6 @@
 # Recycle Bin
 
-After deploying the updated Pages Functions and app files, sign in as Admin and open **Recycle Bin** under Finance & Reports. D1 creates its archive tables and delete triggers automatically; do not paste filenames into the D1 SQL console.
+After deploying the updated Pages Functions and app files, sign in as Admin and open **Recycle Bin** directly below **Backup & Restore** in the sidebar. D1 creates its archive tables and delete triggers automatically; do not paste filenames into the D1 SQL console.
 
 Supported deletions: customers, vehicles, services, staff (including identity attachments), expenses, and individual records removed from the inventory, insurance, AMC, service-reminder, and stock-verification snapshots. Existing Job Card/Sale archives are imported into this list.
 
