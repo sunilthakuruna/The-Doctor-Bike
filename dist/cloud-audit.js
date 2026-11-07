@@ -1,5 +1,17 @@
 (() => {
  let rows=[],next=null,loading=false,error='',loaded=false;
+ window.BD_REFRESH_AUDIT=async()=>{
+  if(loading||!canRefreshCloudRecords())return false;
+  const before=JSON.stringify(rows),response=await fetch('/api/audit-logs',{cache:'no-store'});
+  if(!response.ok)return false;
+  const result=await response.json();
+  if(!Array.isArray(result.data)||loading||!canRefreshCloudRecords()||JSON.stringify(rows)!==before)return false;
+  const newest=result.data[0]?.id;
+  if(loaded&&newest===rows[0]?.id)return false;
+  const merged=[...new Map([...result.data,...rows].map(row=>[row.id,row])).values()].sort((a,b)=>b.id-a.id);
+  if(!loaded)next=result.next;
+  rows=merged;loaded=true;error='';return true;
+ };
  const prior=auditPage;
  auditPage=function(){
   const list=table(['Date / Time','Action','Details','Actor'],rows.map(row=>[

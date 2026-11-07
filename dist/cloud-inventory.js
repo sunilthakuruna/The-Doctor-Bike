@@ -1,7 +1,15 @@
 const cloudRecordRefreshers=[];
-const canRefreshCloudRecords=()=>document.visibilityState==='visible'&&
- document.querySelector('#modal').hidden&&
- !document.activeElement?.matches('input,textarea,select,[contenteditable="true"]');
+const dirtyCloudForms=new WeakSet();
+document.addEventListener('input',event=>{const form=event.target.closest?.('#content form');if(form)dirtyCloudForms.add(form)},true);
+document.addEventListener('change',event=>{const form=event.target.closest?.('#content form');if(form)dirtyCloudForms.add(form)},true);
+const canRefreshCloudRecords=()=>{
+ if(document.visibilityState!=='visible'||!document.querySelector('#modal').hidden||
+  document.activeElement?.matches('input,textarea,select,[contenteditable="true"]')||
+  [...document.querySelectorAll('#content form')].some(form=>dirtyCloudForms.has(form)))return false;
+ if(typeof attendanceDailyDrafts!=='undefined'&&Object.entries(attendanceDailyDrafts).some(([day,records])=>JSON.stringify(records)!==JSON.stringify(db.attendance?.[day]||{})))return false;
+ if(page==='report-stock'&&typeof stockSheet!=='undefined'&&stockSheet&&typeof stockSheetView!=='undefined'&&!stockSheetView&&stockSheet.lines.some(line=>line.note||[line.physical,line.mainPhysical,line.godownPhysical].some(value=>value!=null)))return false;
+ return true;
+};
 
 function connectCloudRecords(scope,label,collections,adapter){
  if(scope==='user-permissions')return; // Server user records now own these profiles.
@@ -110,7 +118,7 @@ function connectCloudRecords(scope,label,collections,adapter){
  };
 
  cloudRecordRefreshers.push(async()=>{
-  if(!ready||busy||pending||conflict||snapshot()!==baseline||!canRefreshCloudRecords())return false;
+  if(!ready||busy||pending||conflict||window.BD_OFFLINE_SESSION||navigator.onLine===false||snapshot()!==baseline||!canRefreshCloudRecords())return false;
   const started=generation;
   const response=await fetch('/api/'+scope+(version?'?version='+encodeURIComponent(version):''),{cache:'no-store'});
   if(response.status===304||!response.ok)return false;
@@ -241,7 +249,11 @@ async function refreshCloudRecordsOnReturn(){
   cloudRefreshNeedsRender||=results.some(result=>result.status==='fulfilled'&&result.value);
   if(cloudRefreshNeedsRender&&canRefreshCloudRecords()){
    cloudRefreshNeedsRender=false;
+   const selectors='#content,#workspace,.tablewrap',scrolls=[...document.querySelectorAll(selectors)].map(node=>[node.scrollLeft,node.scrollTop]);
+   const position=[window.scrollX,window.scrollY];
    render();
+   document.querySelectorAll(selectors).forEach((node,index)=>{if(scrolls[index]){node.scrollLeft=scrolls[index][0];node.scrollTop=scrolls[index][1]}});
+   window.scrollTo(...position);
   }
  }finally{
   cloudRefreshRunning=false;
