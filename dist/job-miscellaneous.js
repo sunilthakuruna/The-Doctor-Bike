@@ -59,6 +59,25 @@ document.addEventListener('submit',event=>{
 const modelBeforeMiscellaneous=referenceInvoiceModel;
 referenceInvoiceModel=function(key,id){const model=modelBeforeMiscellaneous(key,id),record=find(key,id);model.miscellaneous=(record.miscellaneousLines||[]).map(line=>({name:line.name,qty:line.qty,unit:'',rate:line.price,discount:0,amount:round(line.qty*line.price),gst:0}));model.gross=round(model.gross+miscellaneousTotal(record));model.adjustment=round(model.adjustment-miscellaneousTotal(record));return model};
 
+// Thermal receipts share receiptRows with their existing service/GST renderers.
+// Append miscellaneous rows last so their amounts remain untaxed.
+if(typeof receiptRows==='function'){
+ const receiptRowsBeforeMiscellaneous=receiptRows;
+ receiptRows=function(record){return [
+  ...receiptRowsBeforeMiscellaneous.apply(this,arguments),
+  ...(record.miscellaneousLines||[]).map(line=>({name:line.name,qty:Number(line.qty),rate:Number(line.price),amount:round(Number(line.qty)*Number(line.price))}))
+ ]};
+}
+if(typeof thermalReceiptMarkup==='function'){
+ const thermalBeforeMiscellaneous=thermalReceiptMarkup;
+ thermalReceiptMarkup=function(key,id,width){
+  const html=thermalBeforeMiscellaneous.apply(this,arguments),record=find(key,id);
+  if(!record||!record.miscellaneousLines?.length||!html)return html;
+  const row='<div class="thermalMiscellaneousTotal"><dt>Miscellaneous Items</dt><dd>'+miscellaneousTotal(record).toFixed(2)+'</dd></div>';
+  return html.replace('<div class="thermalBold"><dt>TOTAL</dt>',row+'<div class="thermalBold"><dt>TOTAL</dt>');
+ };
+}
+
 function miscellaneousReportRows(query='',from='',to=''){
  const text=query.trim().toLowerCase();
  return (db.jobs||[]).flatMap(job=>(job.miscellaneousLines||[]).map(line=>({job,line,customer:name('customers',job.customer),vehicle:number(job.bike)})))
