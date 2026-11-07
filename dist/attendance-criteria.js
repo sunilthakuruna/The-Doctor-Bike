@@ -5,6 +5,24 @@ const attendanceWeeklyOffField=schemas.staff.find(field=>field.key==='weeklyOffD
 if(attendanceWeeklyOffField){attendanceWeeklyOffField.label='Weekly Off Day (Individual)';attendanceWeeklyOffField.options=['Use Global','None',...attendanceCriteriaDays];attendanceWeeklyOffField.default='Use Global'}
 if(!schemas.staff.some(field=>field.key==='paidLeaveDaysPerMonth')){const at=schemas.staff.findIndex(field=>field.key==='weeklyOffDay');schemas.staff.splice(at>=0?at+1:schemas.staff.findIndex(field=>field.key==='salaryType')+1,0,{key:'paidLeaveDaysPerMonth',label:'Paid Leave Allowance / Month',type:'number',default:0})}
 for(const field of schemas.staff)if(['salary','paidLeaveDaysPerMonth'].includes(field.key))field.integer=true;
+function staffSalaryEntryHint(type){
+  if(type==='Monthly')return 'Monthly: Enter the full monthly salary in rupees, not a percentage. Example: 15000 = ₹15,000 per month. Attendance, weekly off and paid leave allowance determine payable salary.';
+  if(type==='Per Job')return 'Per Job: Enter a whole-number percentage from 0 to 100. Example: 50 = 50% of Service / Labour on assigned Completed or Delivered Job Cards. Spare Parts, Miscellaneous items and GST are excluded.';
+  if(type==='Daily')return 'Daily: Enter the salary per payable day in rupees. Example: 500 = ₹500 per payable day.';
+  return 'Choose Salary Type: Monthly = monthly salary in rupees; Daily = rupees per payable day; Per Job = Service / Labour percentage. Enter whole numbers only.';
+}
+if(typeof field==='function'){
+  const staffSalaryFieldBeforeHint=field;
+  field=function(config,record={}){
+    const html=staffSalaryFieldBeforeHint(config,record);
+    return config.key==='salary'&&schemas.staff.includes(config)?html.replace('</label>','<small data-staff-salary-hint>'+staffSalaryEntryHint(record.salaryType)+'</small></label>'):html;
+  };
+}
+if(typeof document!=='undefined')document.addEventListener('change',event=>{
+  if(event.target.name!=='salaryType')return;
+  const hint=event.target.closest('form')?.querySelector('[data-staff-salary-hint]');
+  if(hint)hint.textContent=staffSalaryEntryHint(event.target.value);
+});
 const attendanceNormalizeBeforeLeave=normalizeAttendanceStatus;
 normalizeAttendanceStatus=function(value){const v=String(value||'').trim().toLowerCase();if(['pl','paid leave','paidleave'].includes(v))return 'Paid Leave';if(['weekly off','weeklyoff','wo'].includes(v))return 'Weekly Off';return attendanceNormalizeBeforeLeave(value)};
 const attendanceLabelBeforeLeave=attendanceLabel;
