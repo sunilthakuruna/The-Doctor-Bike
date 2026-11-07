@@ -7,13 +7,17 @@ const offlinePage=`<!doctype html>
 <a href="/">Try again</a>
 </main></html>`;
 
+const shellCache='bike-doctor-offline-shell-v1';
+self.addEventListener('install',event=>event.waitUntil(caches.open(shellCache).then(cache=>cache.addAll(['/','/index.html'])).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{
  const {request}=event;
  const url=new URL(request.url);
- if(request.method!=='GET'||request.mode!=='navigate'||url.origin!==self.location.origin||
-    !['/','/index.html'].includes(url.pathname))return;
- event.respondWith(fetch(request).catch(()=>new Response(offlinePage,{
+ if(request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;
+ if(request.mode!=='navigate'&&!/\.(js|css|png|jpg|svg|ico|woff2?)(\?|$)/i.test(url.pathname))return;
+ event.respondWith(fetch(request).then(async response=>{
+  if(response.ok){const cache=await caches.open(shellCache);await cache.put(request,response.clone())}return response;
+ }).catch(async()=> (await caches.match(request)) || (request.mode==='navigate'&&await caches.match('/')) || new Response(offlinePage,{
   status:503,headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}
  })));
 });
