@@ -41,6 +41,7 @@ function connectCloudRecords(scope,label,collections,adapter){
  };
  let baseline=snapshot(),version=null,ready=false,pending=null,busy=false,conflict=false;
  let generation=0,accessSignature=null;
+ let largeSave=false;
  const saveWorkspace=save;
 
  function showConflict(){
@@ -88,6 +89,7 @@ function connectCloudRecords(scope,label,collections,adapter){
  setInterval(()=>{if(document.visibilityState==='visible')void sync()},15000);
 
  save=function(message){
+  if(largeSave){toast('Please wait while settings are being saved.');return false}
   const current=snapshot();
   if(current===baseline)return saveWorkspace(message);
   if(!ready||conflict){
@@ -100,13 +102,37 @@ function connectCloudRecords(scope,label,collections,adapter){
   }
   const previous=pending;
   const next={version,data:JSON.parse(current)};
+  window.BD_LAST_SAVE_ERROR=null;
   try{
    localStorage.setItem(pendingKey,JSON.stringify(next));
    if(saveWorkspace()===false)throw new Error();
-  }catch{
-   if(previous)localStorage.setItem(pendingKey,JSON.stringify(previous));
-   else localStorage.removeItem(pendingKey);
-   toast(label+' could not be saved on this device.');
+  }catch(error){
+   try{if(previous)localStorage.setItem(pendingKey,JSON.stringify(previous));else localStorage.removeItem(pendingKey)}catch{}
+   const failure=window.BD_LAST_SAVE_ERROR||error;
+   const quota=['QuotaExceededError','NS_ERROR_DOM_QUOTA_REACHED'].includes(failure?.name)||failure?.code===22||failure?.code===1014;
+   if(scope==='business-settings'&&quota&&typeof window.BD_QUEUE_CLOUD_CHANGE==='function'&&!previous&&!busy){
+    largeSave=true;show('Saving settings securely on this device. Please keep this page open.');
+    const content=document.querySelector('#content'),wasInert=content.inert;
+    content.inert=true;
+    const before=baseline,preventClose=event=>{event.preventDefault();event.returnValue=''};
+    window.addEventListener('beforeunload',preventClose);
+    void (async()=>{
+     try{
+      const stored=await window.BD_QUEUE_CLOUD_CHANGE(scope,next),result=await stored.json();
+      version=result.version;
+      baseline=current;generation++;pending=null;
+      show('Settings saved on this device. Cloud delivery is tracked in the sync status above.');
+      toast('Settings saved in device storage; queued for cloud sync.');
+     }catch(storageError){
+      apply(JSON.parse(before));
+      show('Settings were not saved: '+(storageError.message||'device storage is unavailable')+'. Your previous settings were kept.');
+      toast('Settings could not be saved. Previous settings restored.');
+      if(page==='settings')render();
+     }finally{largeSave=false;content.inert=wasInert;window.removeEventListener('beforeunload',preventClose)}
+    })();
+    return true;
+   }
+   toast(label+' was not saved. '+(quota?'Device storage is full.':failure?.message||'Check the earlier save error and try again.'));
    return false;
   }
   baseline=current;

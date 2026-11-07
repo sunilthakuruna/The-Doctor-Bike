@@ -32,6 +32,12 @@ test('snapshot versions are chained during ordered replay',async()=>{
  await app.put('inventory',{version:first.version,data:{jobs:[{id:'job',amount:450}]}});
  await app.sync();assert.deepEqual(app.writes.map(item=>item.body.version),['v0','v1']);assert.equal(app.remote.inventory.data.jobs[0].amount,450);assert.equal(app.shared.get('admin').queue.length,0);
 });
+test('a new online save translates the last offline version after replay',async()=>{
+ const app=setup();await app.open();await app.cache('inventory');await app.offline();
+ const saved=await app.put('inventory',{version:'v0',data:{jobs:[]}});await app.sync();
+ await app.put('inventory',{version:saved.version,data:{jobs:[{id:'new'}]}});
+ assert.equal(app.writes.at(-1).body.version,'v1');assert.equal(app.remote.inventory.data.jobs[0].id,'new');
+});
 test('a conflict pauses the first change and preserves all later changes',async()=>{
  const app=setup();await app.open();await app.cache('inventory');await app.offline();
  const first=await app.put('inventory',{version:'v0',data:{jobs:[]}});await app.put('inventory',{version:first.version,data:{jobs:[]}});app.remote.inventory.version='other-browser';
