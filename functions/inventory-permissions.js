@@ -1,3 +1,4 @@
+import {validatePartBarcodes} from './part-barcodes.js';
 // A shared storage endpoint must enforce rights for each collection and change.
 const routes={parts:['parts','godown'],purchases:['purchases'],stockMovements:['godown','parts'],jobs:['jobs'],sales:['sales'],appointments:['appointments']};
 const labels={parts:'Spare Parts',godown:'Godown Stock',purchases:'Purchase',jobs:'Job Card',sales:'Spare Parts Sale',appointments:'Appointment Booking',payments:'Payment Details'};
@@ -25,7 +26,7 @@ function allowedChange(user,key,action,record,previous,data){
  if(key==='purchases'&&action!=='delete'){const target=String(record.stockLocation||record.stockDestination||record.destination||'main').toLowerCase();if(!grant(user,module,action,['Receive Stock',target.includes('godown')?'Receive to Godown':'Receive to Main Stock']))return false}
  return true;
 }
-export function mergeInventory(user,current,incoming){
+function mergeInventoryRecords(user,current,incoming){
  if(user.role==='Admin')return incoming;
  const merged={...current};
  for(const [key,rows]of Object.entries(incoming)){
@@ -48,5 +49,10 @@ export function mergeInventory(user,current,incoming){
  }
  for(const entry of shown)if(!trash.some(row=>identity(row)===identity(entry)))throw new Error('Restoring or permanently removing archived records requires an administrator.');
  merged.trash=[...hidden,...trash];return merged;
+}
+export function mergeInventory(user,current,incoming){
+ const merged=mergeInventoryRecords(user,current,incoming);
+ validatePartBarcodes(current,merged);
+ return merged;
 }
 export const inventoryPolicy={access:inventoryAccess,project:inventoryProjection,merge:mergeInventory,signature:user=>stable(rules(user))};

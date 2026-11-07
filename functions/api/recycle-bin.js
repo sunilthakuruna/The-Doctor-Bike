@@ -1,4 +1,5 @@
 import {ensureRecycle,readRecycleSnapshot} from '../recycle-store.js';
+import {validatePartBarcodes} from '../part-barcodes.js';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 const scopes={inventory:['parts','purchases','stockMovements','jobs','sales','receipts','appointments'],insurance:['insurance'],amc:['amcPlans','amcReminderLogs'],service_reminders:['serviceReminderLogs'],stock_counts:['stockCounts']};
 const tables={customers:'customers',bikes:'vehicles',services:'services',staff:'staff',accounts:'accounts',expenses:'expenses'};
@@ -122,6 +123,7 @@ export async function onRequest({request,env,data={}}){
    if(next[item.collection].some(r=>r.id===record.id))throw Error('This record ID already exists. Keep the existing entry or remove its duplicate first.');
    next[item.collection].push(record);
    if(item.scope==='inventory'){
+    validatePartBarcodes(current.data,next,{requireHsn:false});
     next.receipts=[...next.receipts||[],...receipts];
     next.trash=(next.trash||[]).filter(r=>!(r.key===item.collection&&r.record?.id===record.id));
     for(const part of next.parts||[])if(mainBalance(next,part.id)<0||mainBalance(next,part.id,'godown')<0)throw Error('Restore would create negative stock. Restore the source purchase first.');

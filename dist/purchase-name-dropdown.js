@@ -8,7 +8,7 @@
   menu.hidden=true;
   const search=document.createElement('input');
   search.type='search';
-  search.placeholder='Search part name, code, brand...';
+  search.placeholder='Search name, barcode, brand, make, model...';
   search.setAttribute('aria-label','Search saved spare parts');
   search.className='purchasePartNameSearch';
   const results=document.createElement('div');
@@ -40,7 +40,7 @@
     const term=query.trim().toLocaleLowerCase();
     const index=activeInput?Number(activeInput.dataset.purchaseLookup.split('|')[0]):-1;
     const record=jobDraft?.record;
-    const matches=(db.parts||[]).filter(part=>[part.name,part.id,part.brand,part.hsn].some(value=>String(value||'').toLocaleLowerCase().includes(term))).slice(0,60);
+    const matches=(db.parts||[]).filter(part=>term.split(/\s+/).filter(Boolean).every(word=>[part.name,part.id,part.barcode,part.brand,part.vehicleMake,part.vehicleModel,part.partType,part.hsn].join(' ').toLocaleLowerCase().includes(word))).slice(0,60);
     results.replaceChildren();
     if(!matches.length){const empty=document.createElement('div');empty.className='purchasePartNameEmpty';empty.textContent='No matching saved parts';results.append(empty)}
     for(const part of matches){
@@ -49,7 +49,7 @@
       const mainStock=typeof locationStock==='function'?locationStock(part.id,'main'):stock(part.id);
       const godownStock=typeof locationStock==='function'?locationStock(part.id,'godown'):0;
       const totalStock=Number(mainStock||0)+Number(godownStock||0);
-      const detail=document.createElement('small');detail.textContent=[part.id,part.partType?'Type: '+part.partType:'',part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN: '+part.hsn:'','Main Stock: '+mainStock+' '+(part.unit||'PCS'),'Godown Stock: '+godownStock+' '+(part.unit||'PCS'),'Total Stock: '+totalStock+' '+(part.unit||'PCS')].filter(Boolean).join(' · ');
+      const detail=document.createElement('small');detail.textContent=[part.id,part.barcode?'Barcode: '+part.barcode:'',part.partType?'Type: '+part.partType:'',part.brand?'Brand: '+part.brand:'',part.vehicleMake?'Make: '+part.vehicleMake:'',part.vehicleModel?'Model: '+part.vehicleModel:'',part.hsn?'HSN: '+part.hsn:'','Main Stock: '+mainStock+' '+(part.unit||'PCS'),'Godown Stock: '+godownStock+' '+(part.unit||'PCS'),'Total Stock: '+totalStock+' '+(part.unit||'PCS')].filter(Boolean).join(' · ');
       option.append(title,detail);
       option.addEventListener('pointerdown',event=>event.preventDefault());
       option.addEventListener('click',()=>choose(part));

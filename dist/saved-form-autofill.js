@@ -16,25 +16,37 @@ const editBeforeVehicleContactAutofill=editRecord;
 editRecord=function(key,id,initial){editBeforeVehicleContactAutofill(key,id,initial);if(key!=='bikes')return;let form=$('#recordForm'),customer=form?.querySelector('[name="customer"]');if(!customer)return;let panel=document.createElement('section');panel.className='savedBillingDetails';customer.closest('.field').after(panel);let sync=()=>panel.innerHTML=savedBillingDetailsMarkup({customer:customer.value});customer.addEventListener('change',sync);sync()};
 function savedPartMatches(query,limit=12){
   let words=String(query||'').trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  return (db.parts||[]).filter(part=>{let text=[part.name,part.id,part.brand,part.vehicleMake,part.vehicleModel].filter(Boolean).join(' ').toLocaleLowerCase();return words.every(word=>text.includes(word))}).sort((a,b)=>{
+  if(!words.length)return [];
+  return (db.parts||[]).filter(part=>{let text=[part.name,part.id,part.barcode,part.vehicleMake,part.vehicleModel,part.brand,part.partType,part.type,part.hsn,part.category,part.rack].filter(value=>value!=null).join(' ').toLocaleLowerCase();return words.every(word=>text.includes(word))}).sort((a,b)=>{
     let exact=part=>String(part.name||'').toLocaleLowerCase()===String(query||'').trim().toLocaleLowerCase()?0:1;
     return exact(a)-exact(b)||String(a.name||'').localeCompare(String(b.name||''))||String(a.id).localeCompare(String(b.id));
   }).slice(0,limit);
 }
 function addPartNameAutofill(){
-  let form=$('#recordForm'),input=form?.querySelector('[name="name"]');if(!input||form.querySelector('.partNameMatches'))return;
-  let datalist=document.createElement('datalist');datalist.id='savedPartNames';datalist.innerHTML=(db.parts||[]).map(part=>`<option value="${esc(part.name||'')}" label="${esc([part.id,part.brand,part.vehicleMake,part.vehicleModel].filter(Boolean).join(' · '))}"></option>`).join('');form.append(datalist);input.setAttribute('list',datalist.id);
-  let box=document.createElement('div');box.className='partNameMatches';box.id='savedPartNameMatches';box.hidden=true;box.setAttribute('role','listbox');box.setAttribute('aria-label','Saved spare parts');input.after(box);
-  let hint=document.createElement('small');hint.className='partNameAutofillHint';hint.textContent='Type a part name to find saved parts. Select a match to load and edit its saved details, or enter a new name to create a part.';box.after(hint);
+  let form=$('#recordForm'),input=form?.querySelector('[name="name"]');if(!input||input.dataset.partNameFloatingBound)return;input.dataset.partNameFloatingBound='true';
+  input.removeAttribute('list');
+  let box=document.createElement('div');box.className='partNameMatches partNameFloatingMenu';box.id='savedPartNameMatches';box.hidden=true;box.setAttribute('role','listbox');box.setAttribute('aria-label','Saved spare parts');document.body.appendChild(box);
+  let hint=document.createElement('small');hint.className='partNameAutofillHint';hint.textContent='Search saved parts by name, code, barcode, brand, vehicle make or model. Select a match to edit its saved details, or enter a new part name.';input.after(hint);
   input.setAttribute('autocomplete','off');input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-controls',box.id);input.setAttribute('aria-expanded','false');
   let matches=[],active=-1;
   function close(){box.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');active=-1}
-  function choose(index){let part=matches[index];if(!part)return;close();editRecord('parts',part.id)}
+  function choose(index){let part=matches[index];if(!part)return;cleanup();editRecord('parts',part.id)}
   function highlight(index){active=index;let buttons=Array.from(box.querySelectorAll('[data-part-match]'));buttons.forEach((button,i)=>button.setAttribute('aria-selected',String(i===active)));if(buttons[active]){input.setAttribute('aria-activedescendant',buttons[active].id);buttons[active].scrollIntoView({block:'nearest'})}}
-  function show(){matches=savedPartMatches(input.value);active=-1;input.removeAttribute('aria-activedescendant');box.innerHTML='<input type="search" class="partNameDropdownSearch" placeholder="Search saved part names…" aria-label="Search saved part names">'+(matches.length?matches.map((part,index)=>`<button type="button" role="option" aria-selected="false" id="savedPartNameMatch${index}" data-part-match="${index}"><strong>${esc(part.name||part.id)}</strong><small>${esc([part.id,part.brand,part.vehicleMake,part.vehicleModel].filter(Boolean).join(' · '))}</small></button>`).join(''):'<small class="partNameNoMatch">No saved part matches. You can enter a new part.</small>');box.hidden=false;input.setAttribute('aria-expanded','true');let searchBox=box.querySelector('.partNameDropdownSearch');searchBox.oninput=()=>{let query=searchBox.value.toLocaleLowerCase().trim();box.querySelectorAll('[data-part-match]').forEach(button=>button.hidden=query&&!button.textContent.toLocaleLowerCase().includes(query))};searchBox.onpointerdown=event=>event.stopPropagation();box.querySelectorAll('[data-part-match]').forEach(button=>{button.onpointerdown=event=>event.preventDefault();button.onclick=event=>{event.preventDefault();choose(Number(button.dataset.partMatch))}})}
-  input.addEventListener('input',show);input.addEventListener('focus',show);input.addEventListener('blur',()=>setTimeout(()=>{if(!box.contains(document.activeElement))close()},150));
+  function position(){
+    if(box.hidden)return;
+    const rect=input.getBoundingClientRect(),gap=5,width=Math.min(rect.width,window.innerWidth-20),below=window.innerHeight-rect.bottom-12,above=rect.top-12;
+    const up=below<160&&above>below,height=Math.max(60,Math.min(260,up?above:below));
+    box.style.cssText='position:fixed;left:'+Math.max(10,Math.min(rect.left,window.innerWidth-width-10))+'px;width:'+width+'px;max-height:'+height+'px;top:'+(up?Math.max(10,rect.top-Math.min(box.scrollHeight,height)-gap):rect.bottom+gap)+'px;z-index:1000001;overflow-y:auto;box-sizing:border-box';
+  }
+  const outside=event=>{if(event.target!==input&&!box.contains(event.target))close()};
+  function cleanup(){box.remove();watcher.disconnect();document.removeEventListener('pointerdown',outside,true);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true)}
+  const watcher=new MutationObserver(()=>{if(!input.isConnected||document.querySelector('#modal')?.hidden)cleanup()});
+  watcher.observe(document.querySelector('#modal'),{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+  document.addEventListener('pointerdown',outside,true);window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
+  function show(){if(!input.value.trim()){matches=[];close();return}matches=savedPartMatches(input.value);active=-1;input.removeAttribute('aria-activedescendant');box.innerHTML='<input type="search" class="partNameDropdownSearch" placeholder="Search name, barcode, brand, make, model…" aria-label="Search saved parts">'+(matches.length?matches.map((part,index)=>`<button type="button" role="option" aria-selected="false" id="savedPartNameMatch${index}" data-part-match="${index}"><strong>${esc(part.name||part.id)}</strong><small>${esc([part.id,part.barcode?'Barcode: '+part.barcode:'',part.brand,part.vehicleMake,part.vehicleModel].filter(Boolean).join(' · '))}</small></button>`).join(''):'<small class="partNameNoMatch">No saved part matches. You can enter a new part.</small>');box.hidden=false;position();input.setAttribute('aria-expanded','true');let searchBox=box.querySelector('.partNameDropdownSearch');searchBox.oninput=()=>{let query=searchBox.value.toLocaleLowerCase().trim();box.querySelectorAll('[data-part-match]').forEach(button=>button.hidden=!!query&&!savedPartMatches(query,Number.MAX_SAFE_INTEGER).some(part=>part.id===matches[Number(button.dataset.partMatch)]?.id))};searchBox.onpointerdown=event=>event.stopPropagation();box.querySelectorAll('[data-part-match]').forEach(button=>{button.onpointerdown=event=>event.preventDefault();button.onclick=event=>{event.preventDefault();choose(Number(button.dataset.partMatch))}})}
+  input.addEventListener('input',show);input.addEventListener('pointerdown',show);input.addEventListener('blur',()=>setTimeout(()=>{if(!box.contains(document.activeElement))close()},150));
   input.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();close()}else if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();if(box.hidden)show();if(matches.length)highlight(active<0?(event.key==='ArrowDown'?0:matches.length-1):(active+(event.key==='ArrowDown'?1:-1)+matches.length)%matches.length)}else if(event.key==='Enter'&&!box.hidden&&active>=0){event.preventDefault();choose(active)}});
-  show();
+  close();
 }
 const editBeforePartNameAutofill=editRecord;
 editRecord=function(key,id,initial){editBeforePartNameAutofill(key,id,initial);if(key==='parts')addPartNameAutofill()};
