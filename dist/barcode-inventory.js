@@ -29,8 +29,17 @@ function barcodeSelectEntryPart(part,draft,root){
    event.preventDefault();event.stopImmediatePropagation();toast('This manufacturer barcode is already assigned to another part.');input.focus();
   }
  },true);
- let scanDialog=null,returnFocus=null,scanContext=null;
+ let scanDialog=null,returnFocus=null,scanContext=null,cameraStream=null,cameraTimer=null,cameraGeneration=0;
+ function stopCamera(){
+  cameraGeneration++;clearTimeout(cameraTimer);cameraTimer=null;
+  cameraStream?.getTracks().forEach(track=>track.stop());cameraStream=null;
+  const video=scanDialog?.querySelector('video');
+  if(video){video.pause();video.srcObject=null;video.hidden=true}
+  const stop=scanDialog?.querySelector('[data-barcode-stop-camera]');if(stop)stop.hidden=true;
+  const start=scanDialog?.querySelector('[data-barcode-camera]');if(start)start.disabled=false;
+ }
  function closeScanner(){
+  stopCamera();
   if(scanDialog?.open)scanDialog.close();
   if(returnFocus?.isConnected)returnFocus.focus();
   scanContext=null;
@@ -42,6 +51,10 @@ function barcodeSelectEntryPart(part,draft,root){
    scanDialog.setAttribute('aria-labelledby','barcodeScanTitle');
    scanDialog.innerHTML='<div class="barcodeScanHead"><h2 id="barcodeScanTitle">Scan Manufacturer Barcode</h2><button type="button" class="barcodeClose" aria-label="Close barcode scanner">×</button></div><div class="barcodeScanBody"><div class="barcodeScanIcon" aria-hidden="true">▥</div><h3>Ready to scan</h3><p>Use your USB or Bluetooth barcode reader, or enter the number below.</p><label for="barcodeScan">Manufacturer barcode</label><input type="text" id="barcodeScan" aria-label="Manufacturer barcode to find" autocomplete="off" placeholder="Scan or enter barcode number"><p id="barcodeScanStatus" role="status" aria-live="polite"></p><small>Scanning selects the part only. Review quantity and price, then save as usual.</small></div><div class="barcodeScanActions"><button type="button" class="btn secondary" data-barcode-cancel>Cancel</button><button type="button" class="btn" data-barcode-find>Find Part</button></div>';
    document.body.appendChild(scanDialog);
+   const cameraControls=document.createElement('div');cameraControls.className='barcodeCameraControls';
+   cameraControls.innerHTML='<button type="button" class="btn" data-barcode-camera>Scan with Camera</button><button type="button" class="btn secondary" data-barcode-stop-camera hidden>Stop Camera</button><video class="barcodeCameraVideo" playsinline muted hidden aria-label="Barcode camera preview"></video>';
+   scanDialog.querySelector('.barcodeScanBody').prepend(cameraControls);
+   scanDialog.addEventListener('close',stopCamera);
    scanDialog.querySelector('.barcodeClose').onclick=closeScanner;
    scanDialog.querySelector('[data-barcode-cancel]').onclick=closeScanner;
    scanDialog.addEventListener('cancel',event=>{event.preventDefault();closeScanner()});
@@ -62,11 +75,46 @@ function barcodeSelectEntryPart(part,draft,root){
     closeScanner();toast(message);
    };
    scanDialog.querySelector('[data-barcode-find]').onclick=lookup;
-   scanDialog.querySelector('input').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();event.stopPropagation();lookup()}});
+   scanDialog.querySelector('input').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key==='Tab'){event.preventDefault();event.stopPropagation();lookup()}});
+   scanDialog.querySelector('[data-barcode-stop-camera]').onclick=stopCamera;
+   scanDialog.querySelector('[data-barcode-camera]').onclick=async()=>{
+    stopCamera();const generation=cameraGeneration;
+    const status=scanDialog.querySelector('#barcodeScanStatus'),start=scanDialog.querySelector('[data-barcode-camera]'),video=scanDialog.querySelector('video');
+    start.disabled=true;
+    try{
+     if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw new Error('Camera needs a secure HTTPS page and camera permission. Use a barcode reader or enter the number instead.');
+     if(!window.BarcodeDetector)throw new Error('Camera barcode scanning is unavailable in this browser. Try Chrome on Android, or use a barcode reader or enter the number.');
+     const formats=await BarcodeDetector.getSupportedFormats();
+     if(generation!==cameraGeneration||!scanDialog.open)return;
+     if(!formats.length)throw new Error('This browser has no supported barcode formats. Use a barcode reader or enter the number.');
+     const detector=new BarcodeDetector({formats});
+     const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+     if(generation!==cameraGeneration||!scanDialog.open){stream.getTracks().forEach(track=>track.stop());return}
+     cameraStream=stream;video.srcObject=stream;video.hidden=false;
+     scanDialog.querySelector('[data-barcode-stop-camera]').hidden=false;
+     await video.play();
+     status.textContent='Point the rear camera at the manufacturer barcode.';
+     const detect=async()=>{
+      if(generation!==cameraGeneration||!scanDialog.open||document.hidden)return;
+      try{
+       const results=await detector.detect(video);
+       if(generation!==cameraGeneration||!scanDialog.open)return;
+       const code=results.find(result=>result.rawValue)?.rawValue;
+       if(code){stopCamera();scanDialog.querySelector('input').value=code;lookup();return}
+      }catch(error){if(generation!==cameraGeneration)return;status.textContent='Keep the barcode steady and fully inside the camera view.'}
+      cameraTimer=setTimeout(detect,180);
+     };
+     detect();
+    }catch(error){
+     if(generation!==cameraGeneration)return;
+     stopCamera();status.textContent=error.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in browser settings, or use a barcode reader.':error.name==='NotFoundError'?'No camera was found. Use a barcode reader or enter the number.':error.message;
+    }
+   };
   }
   scanDialog.querySelector('input').value='';scanDialog.querySelector('#barcodeScanStatus').textContent='';
   scanDialog.showModal();scanDialog.querySelector('input').focus();
  }
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopCamera()});
  function mount(){
   const lines=document.querySelector('#partLines');
   if(lines&&jobDraft&&['jobs','sales','purchases'].includes(jobDraft.key)&&!document.querySelector('#barcodeLookup')){
