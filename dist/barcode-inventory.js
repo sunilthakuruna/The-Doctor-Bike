@@ -19,29 +19,16 @@ function barcodeSelectEntryPart(part,draft,root){
 }
 (()=>{
  const hsnField=schemas.parts.find(field=>field.key==='hsn');
- if(hsnField){hsnField.required=true;hsnField.label='HSN Code'}
+ if(hsnField){hsnField.required=false;hsnField.label='HSN Code'}
  const nameIndex=schemas.parts.findIndex(field=>field.key==='name');
- schemas.parts.splice(nameIndex+1,0,{key:'barcode',label:'Manufacturer Barcode (Optional)'});
+ schemas.parts.splice(nameIndex+1,0,{key:'barcode',label:'Manufacturer Barcode'});
  document.addEventListener('submit',event=>{
   if(event.target.id!=='recordForm'||editing?.key!=='parts')return;
-  const hsn=event.target.querySelector('[name="hsn"]');
-  if(!hsn?.value.trim()){
-   event.preventDefault();event.stopImmediatePropagation();toast('Enter the HSN code for this spare part.');hsn?.focus();return;
-  }
-  hsn.value=hsn.value.trim();
   const input=event.target.querySelector('[name="barcode"]'),code=input?.value.trim();
   if(code&&db.parts.some(part=>part.id!==editing.id&&String(part.barcode||'').trim()===code)){
    event.preventDefault();event.stopImmediatePropagation();toast('This manufacturer barcode is already assigned to another part.');input.focus();
   }
  },true);
- if(typeof commitGodownOpening==='function'){
-  const commitBeforeHsn=commitGodownOpening;
-  commitGodownOpening=function(values,partId){
-   const hsn=String(values.godown_hsn??find('parts',partId)?.hsn??'').trim();
-   if(!hsn)throw Error('Enter the HSN code for this spare part.');
-   return commitBeforeHsn.apply(this,arguments);
-  };
- }
  let scanDialog=null,returnFocus=null,scanContext=null;
  function closeScanner(){
   if(scanDialog?.open)scanDialog.close();
