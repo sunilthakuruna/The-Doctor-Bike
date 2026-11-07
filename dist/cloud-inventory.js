@@ -220,7 +220,7 @@ let cloudRefreshRunning=false;
 let cloudRefreshAfter=0;
 let cloudRefreshTimer;
 let cloudRefreshNeedsRender=false;
-function scheduleCloudRefresh(delay=3000){
+function scheduleCloudRefresh(delay=2000){
  clearTimeout(cloudRefreshTimer);
  cloudRefreshTimer=setTimeout(refreshCloudRecordsOnReturn,delay);
 }
@@ -235,7 +235,7 @@ async function refreshCloudRecordsOnReturn(){
   return;
  }
  cloudRefreshRunning=true;
- cloudRefreshAfter=Date.now()+3000;
+ cloudRefreshAfter=Date.now()+2000;
  try{
   const results=await Promise.allSettled(cloudRecordRefreshers.map(refresh=>refresh()));
   cloudRefreshNeedsRender||=results.some(result=>result.status==='fulfilled'&&result.value);
@@ -245,12 +245,12 @@ async function refreshCloudRecordsOnReturn(){
   }
  }finally{
   cloudRefreshRunning=false;
-  scheduleCloudRefresh(15000);
+  scheduleCloudRefresh(2000);
  }
 }
 window.BD_CLOUD_READY.then(ready=>{if(ready){
  window.addEventListener('focus',refreshCloudRecordsOnReturn);
  window.addEventListener('online',refreshCloudRecordsOnReturn);
  document.addEventListener('visibilitychange',refreshCloudRecordsOnReturn);
- scheduleCloudRefresh(15000);
+ scheduleCloudRefresh(2000);
 }});
