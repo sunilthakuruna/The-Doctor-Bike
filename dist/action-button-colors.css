@@ -1,0 +1,27 @@
+/* Consistent colors for previously plain actions; retain destructive/success colors. */
+body :is(#content,#modalBody) .btn.secondary:not(.danger):not(.success):not(.warning):not(:disabled) {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+  border-color: #1d4ed8 !important;
+}
+body :is(#content,#modalBody) .btn.secondary:not(.danger):not(.success):not(.warning):not(:disabled):hover {
+  background: #1e40af !important;
+  border-color: #1e40af !important;
+}
+body :is(#content,#modalBody) .btn.secondary:not(:disabled):focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+body #content .btn:is([data-godown-purchase-history],[data-godown-history]) {
+  background: #7e22ce !important;
+  border-color: #7e22ce !important;
+  color: #fff !important;
+}
+body #content .btn:is([data-godown-purchase-history],[data-godown-history]):hover {
+  background: #6b21a8 !important;
+  border-color: #6b21a8 !important;
+}
+body :is(#content,#modalBody) .btn:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
