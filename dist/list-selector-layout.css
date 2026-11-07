@@ -1,0 +1,26 @@
+/* Let the scrollable list fill its card instead of leaving an empty lower half. */
+body[data-view="lists"] #content .list-management-grid>.listselector-card{
+ display:flex;flex-direction:column;height:clamp(340px,58dvh,560px);min-height:0;overflow:hidden;
+}
+body[data-view="lists"] #content .listselector-heading{flex:0 0 43px;background:#e8f0fb;color:#244b72}
+body[data-view="lists"] #content .list-management-grid>.listselector-card>.listselector{
+ display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:6px;
+ flex:1 1 auto!important;min-height:0;max-height:none!important;overflow-y:auto;
+ background:#f4f7fc;padding:8px;
+}
+body[data-view="lists"] #content .listselector button{
+ width:100%;min-height:42px;height:auto;flex:0 0 auto;margin:0;border:1px solid #d9e5f3;
+ background:#edf4ff;color:#294a70;
+}
+body[data-view="lists"] #content .listselector button:nth-child(3n+2){background:#edf8f3;border-color:#d4eade;color:#285947}
+body[data-view="lists"] #content .listselector button:nth-child(3n){background:#f4effb;border-color:#e3d9f1;color:#584276}
+body[data-view="lists"] #content .listselector button span{background:transparent;color:inherit;font-size:12px}
+body[data-view="lists"] #content .listselector button b{background:#ffffffb3;color:inherit}
+body[data-view="lists"] #content .listselector button.active{background:#235b83;color:#fff;border-color:#17486c;box-shadow:inset 3px 0 #7dd3fc}
+body[data-view="lists"] #content .listselector button.active b{background:#ffffff26;color:#fff}
+body[data-view="lists"] #content .listselector button:hover{filter:brightness(.96)}
+html[data-theme="dark"] body[data-view="lists"] #content .listselector{background:#111a2d}
+html[data-theme="dark"] body[data-view="lists"] #content .listselector button{background:#20334c;color:#d8e8fa;border-color:#36516b}
+html[data-theme="dark"] body[data-view="lists"] #content .listselector button:nth-child(3n+2){background:#203e36;color:#daf3e7}
+html[data-theme="dark"] body[data-view="lists"] #content .listselector button:nth-child(3n){background:#362c49;color:#e8ddfa}
+html[data-theme="dark"] body[data-view="lists"] #content .listselector button.active{background:#235b83;color:#fff}
