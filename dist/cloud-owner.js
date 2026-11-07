@@ -9,6 +9,14 @@
   try{return await fetch('/api/app-auth',{...options,signal:controller.signal})}finally{clearTimeout(timer)}
  }
  function savedLogin(){try{return JSON.parse(localStorage.getItem(offlineKey)||'null')}catch{return null}}
+ async function acceptServerSession(user){
+  // An authenticated server session is sufficient for online access. Offline
+  // cache readiness must never reopen the login form during a page refresh.
+  const cached=savedLogin();
+  if(cached?.user?.id===user.id){try{cached.user=user;localStorage.setItem(offlineKey,JSON.stringify(cached))}catch{}}
+  try{await window.BD_OPEN_OFFLINE_WORK(user)}catch(error){console.warn('Offline storage unavailable',error)}
+  identitySignature=JSON.stringify(user);window.BD_SET_SERVER_USER(user);unlockCloud(true);
+ }
  async function verifier(password,salt){
   const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
   const bytes=await crypto.subtle.deriveBits({name:'PBKDF2',salt:Uint8Array.from(salt),iterations:150000,hash:'SHA-256'},key,256);
@@ -25,7 +33,7 @@
    const signature=JSON.stringify(state.user);
    if(signature!==identitySignature){
     if(!document.querySelector('#modal')?.hidden)return;
-    identitySignature=signature;window.BD_SET_SERVER_USER(state.user);
+    await acceptServerSession(state.user);
    }
   }catch{}finally{checking=false}
  }
@@ -39,14 +47,7 @@
    if(!response.ok)throw new Error('Sign-in service is unavailable.');
    const state=await response.json();
    if(state.authenticated&&state.user){
-    const cached=savedLogin();
-    if(!cached||cached.user?.id!==state.user.id||cached.expires<=Date.now()){
-     window.BD_SHOW_SERVER_LOGIN('Sign in with your username and password. Offline access is saved automatically on this browser.');
-     const field=document.querySelector('#userLoginForm [name="username"]');if(field)field.value=state.user.username;
-     return;
-    }
-    cached.user=state.user;localStorage.setItem(offlineKey,JSON.stringify(cached));
-    await window.BD_OPEN_OFFLINE_WORK(state.user);identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);unlockCloud(true);return;
+    await acceptServerSession(state.user);return;
    }
    window.BD_SHOW_SERVER_LOGIN('Sign in with your server username and password.');
   }catch(error){window.BD_SHOW_SERVER_LOGIN('Connection unavailable. Use your last online username and password on this device for offline work.')}
