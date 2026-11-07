@@ -123,7 +123,7 @@ export async function onRequest({request,env,data={}}){
    if(next[item.collection].some(r=>r.id===record.id))throw Error('This record ID already exists. Keep the existing entry or remove its duplicate first.');
    next[item.collection].push(record);
    if(item.scope==='inventory'){
-    validatePartBarcodes(current.data,next,{requireHsn:false});
+    validatePartBarcodes(current.data,next);
     next.receipts=[...next.receipts||[],...receipts];
     next.trash=(next.trash||[]).filter(r=>!(r.key===item.collection&&r.record?.id===record.id));
     for(const part of next.parts||[])if(mainBalance(next,part.id)<0||mainBalance(next,part.id,'godown')<0)throw Error('Restore would create negative stock. Restore the source purchase first.');

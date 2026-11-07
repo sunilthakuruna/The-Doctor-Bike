@@ -8,7 +8,7 @@ Unknown and ambiguous codes produce a message and do not create parts or stock. 
 
 Saved-part search matches name, code, manufacturer barcode, brand, vehicle make/model, type and HSN. Its suggestions remain hidden on an empty query and float over other fields. Purchase search also includes these identifying fields.
 
-HSN is required for new parts and changes to identifying master details. Existing legacy parts without HSN remain usable in transactions and can be restored; fill their actual HSN when editing their details. HSN is not a barcode and is not unique.
+HSN is optional; enter it where applicable. Optional fields do not carry an “(Optional)” suffix in their labels. HSN is not a barcode and is not unique.
 
 ## D1 / deployment
 
