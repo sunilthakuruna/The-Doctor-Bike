@@ -1,3 +1,4 @@
+import {inventoryAccess} from './inventory-permissions.js';
 // Unknown routes and combined snapshots fail closed until their collection-level
 // authorization is implemented. Never grant access from a browser-supplied role.
 const modules={customers:'customers',vehicles:'bikes',services:'services',staff:'staff',attendance:'attendance',accounts:'accounts',expenses:'expenses',insurance:'insurance',amc:'amc-plans','amc-renewals':'amc-plans','amc-assignments':'amc-plans','service-reminders':'service-reminders',lists:'lists','business-settings':'settings','stock-counts':'report-stock','audit-logs':'audit'};
@@ -7,6 +8,7 @@ export function permitted(user,pathname,method){
  if(!user||user.status!=='Active')return false;
  if(user.role==='Admin')return true;
  const route=pathname.split('/').filter(Boolean).at(-1),module=modules[route];
+ if(route==='inventory')return inventoryAccess(user,method);
  if(!module)return false;
  let permissions,restrictions;
  try{permissions=JSON.parse(user.permissions);restrictions=JSON.parse(user.action_restrictions)}catch{return false}
