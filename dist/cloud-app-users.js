@@ -32,10 +32,10 @@
    }
    const lockUserPermissions=()=>{
     const admin=form?.elements.role?.value==='Admin';
-    form?.querySelectorAll('[data-module="users"],[data-module="backup-restore"]').forEach(control=>{
+    form?.querySelectorAll('[data-module="users"],[data-module="backup-restore"],[data-module="recycle-bin"]').forEach(control=>{
      control.checked=admin;
      control.disabled=!admin;
-     const moduleName=control.dataset.module==='backup-restore'?'Backup & Restore':'Users';
+     const moduleName=control.dataset.module==='backup-restore'?'Backup & Restore':control.dataset.module==='recycle-bin'?'Recycle Bin':'Users';
      control.title=admin?'Included automatically with the Admin role.':moduleName+' is reserved for the Admin role.';
      control.onchange=()=>{control.checked=form.elements.role?.value==='Admin'};
      const row=control.closest('tr');

@@ -1,3 +1,4 @@
+import {recycleDeleteBatch} from '../recycle-store.js';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 
 function expenseRecord(input){
@@ -19,7 +20,7 @@ function expenseRecord(input){
  return {id,date,amount,...values};
 }
 
-export async function onRequest({request,env}){
+export async function onRequest({request,env,data:contextData={}}){
  const db=env.DB;
  try{
   await db.prepare('CREATE TABLE IF NOT EXISTS expenses (id TEXT PRIMARY KEY, data TEXT NOT NULL)').run();
@@ -30,10 +31,10 @@ export async function onRequest({request,env}){
   if(request.method==='DELETE'){
    const id=new URL(request.url).searchParams.get('id');
    if(!id)return reply({error:'Expense ID is required.'},400);
-   const [,result]=await db.batch([
+   const [,result]=await recycleDeleteBatch(db,[
     db.prepare("INSERT INTO audit_logs(action,detail,actor) SELECT 'Delete',?,'Owner' FROM expenses WHERE id=?").bind('Expense '+id+' removed',id),
     db.prepare('DELETE FROM expenses WHERE id=?').bind(id)
-   ]);
+   ],contextData.user);
    return result.meta.changes?reply({data:{id}}):reply({error:'Expense no longer exists.'},404);
   }
   const creating=request.method==='POST';

@@ -35,8 +35,8 @@ test('full marked month pays full salary and None disables scheduled off',()=>{
  assert.equal(empty.attendanceSalaryEstimate({...s,salaryType:'Per Job'},{},days).estimated,777);
 });
 test('staff API persists weekly off and allowance and rejects fractional allowances',async()=>{
- const source=fs.readFileSync(path.join(__dirname,'../functions/api/staff.js'),'utf8');
- const {onRequest}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+ const {pathToFileURL}=require('node:url');
+ const {onRequest}=await import(pathToFileURL(path.join(__dirname,'../functions/api/staff.js')));
  const db={prepare(sql){return {bind(){return this}}},async batch(){return [{meta:{changes:1}}]}};
  const body={id:'BD-STF-1001',name:'Test',mobile:'9999999999',designation:'Mechanic',salaryType:'Monthly',salary:30000,weeklyOffDay:'Monday',paidLeaveDaysPerMonth:2};
  async function save(value){return onRequest({env:{DB:db},request:new Request('https://example.test/api/staff',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(value)})})}
