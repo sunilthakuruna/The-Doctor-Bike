@@ -34,7 +34,7 @@
  async function writeExpenses(method,body){
   if(!loaded)throw new Error('Cloud expenses are unavailable. Refresh and try again.');
   if(writing)throw new Error('An expense save is already in progress.');
-  writing=true;
+  writing=true;generation++;
   try{
    const response=await fetch('/api/expenses',{method,headers:{'content-type':'application/json'},body:JSON.stringify(body)});
    const result=await response.json();
