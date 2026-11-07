@@ -4,6 +4,11 @@
  let unlockCloud;
  window.BD_CLOUD_READY=new Promise(resolve=>{unlockCloud=resolve});
  const offlineKey='bike-doctor-offline-login-v1';
+ async function authRequest(options={}){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
+  try{return await fetch('/api/app-auth',{...options,signal:controller.signal})}finally{clearTimeout(timer)}
+ }
+ function savedLogin(){try{return JSON.parse(localStorage.getItem(offlineKey)||'null')}catch{return null}}
  async function verifier(password,salt){
   const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
   const bytes=await crypto.subtle.deriveBits({name:'PBKDF2',salt:Uint8Array.from(salt),iterations:150000,hash:'SHA-256'},key,256);
@@ -29,10 +34,20 @@
  setInterval(refreshIdentity,15000);
  (async()=>{
   try{
-   const response=await fetch('/api/app-auth',{cache:'no-store'});
+   if(navigator.onLine===false){window.BD_SHOW_SERVER_LOGIN('You are offline. Sign in with your usual username and password.');return}
+   const response=await authRequest({cache:'no-store'});
    if(!response.ok)throw new Error('Sign-in service is unavailable.');
    const state=await response.json();
-   if(state.authenticated&&state.user){await window.BD_OPEN_OFFLINE_WORK(state.user);identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);unlockCloud(true);return}
+   if(state.authenticated&&state.user){
+    const cached=savedLogin();
+    if(!cached||cached.user?.id!==state.user.id||cached.expires<=Date.now()){
+     window.BD_SHOW_SERVER_LOGIN('Sign in with your username and password. Offline access is saved automatically on this browser.');
+     const field=document.querySelector('#userLoginForm [name="username"]');if(field)field.value=state.user.username;
+     return;
+    }
+    cached.user=state.user;localStorage.setItem(offlineKey,JSON.stringify(cached));
+    await window.BD_OPEN_OFFLINE_WORK(state.user);identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);unlockCloud(true);return;
+   }
    window.BD_SHOW_SERVER_LOGIN('Sign in with your server username and password.');
   }catch(error){window.BD_SHOW_SERVER_LOGIN('Connection unavailable. Use your last online username and password on this device for offline work.')}
  })();
@@ -44,14 +59,17 @@
   try{
    const credentials=Object.fromEntries(new FormData(form));
    async function openOffline(){
-    const cached=JSON.parse(localStorage.getItem(offlineKey)||'null');
-    if(!cached||Date.now()>cached.expires||String(credentials.username).trim().toLowerCase()!==cached.user.username.toLowerCase()||await verifier(credentials.password,cached.salt)!==cached.hash)throw new Error('Offline sign-in is unavailable or the password is incorrect. Sign in online on this device first.');
+    const cached=savedLogin();
+    if(!cached)throw new Error('Sign in once while connected on this browser. Your offline access will be saved automatically.');
+    if(Date.now()>cached.expires)throw new Error('Offline sign-in has expired. Connect and sign in online to renew it.');
+    if(String(credentials.username).trim().toLowerCase()!==cached.user.username.toLowerCase()||await verifier(credentials.password,cached.salt)!==cached.hash)throw new Error('Incorrect offline username or password. Use the account last signed in on this browser.');
     window.BD_OFFLINE_SESSION=true;await window.BD_OPEN_OFFLINE_WORK(cached.user);window.BD_SET_SERVER_USER(cached.user);unlockCloud(true);
     toast('Offline work enabled. Changes will wait on this device.');
    }
    if(navigator.onLine===false){await openOffline();return}
    let response;
-   try{response=await fetch('/api/app-auth',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(credentials)})}catch(error){if(error instanceof TypeError){await openOffline();return}throw error}
+   try{response=await authRequest({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(credentials)})}catch(error){if(error instanceof TypeError||['AbortError','TimeoutError'].includes(error.name)){await openOffline();return}throw error}
+   if(response.status>=500){await openOffline();return}
    const result=await response.json();
    if(!response.ok||!result.authenticated)throw new Error(result.error||'Sign-in failed.');
    const salt=Array.from(crypto.getRandomValues(new Uint8Array(16)));

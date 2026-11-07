@@ -60,9 +60,20 @@ test('offline password unlocks waiting cloud loaders even when navigator reports
  const hash=Buffer.from(bytes).toString('hex'),cached={user:{id:'admin',username:'admin'},salt,hash,expires:Date.now()+60000};
  const handlers={},messages=[];let user=null;
  const context={crypto:webcrypto,TextEncoder,Uint8Array,Date,TypeError,console,navigator:{onLine:true},localStorage:{getItem(){return JSON.stringify(cached)}},document:{visibilityState:'visible',addEventListener(name,handler){handlers[name]=handler}},addEventListener(){},setInterval(){},fetch:async()=>{throw new TypeError('network unavailable')},BD_OPEN_OFFLINE_WORK:async()=>{},BD_SET_SERVER_USER(value){user=value},BD_SHOW_SERVER_LOGIN(message){messages.push(message)},toast(){},FormData:class{*[Symbol.iterator](){yield ['username','admin'];yield ['password',password]}}};
+ context.AbortController=AbortController;context.setTimeout=setTimeout;context.clearTimeout=clearTimeout;
  context.window=context;vm.createContext(context);vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'../dist/cloud-owner.js'),'utf8'),context);
  await new Promise(resolve=>setImmediate(resolve));
  let ready=false;context.BD_CLOUD_READY.then(()=>{ready=true});assert.equal(ready,false);
  await handlers.submit({target:{getAttribute(){return 'userLoginForm'},querySelector(){return null}},preventDefault(){},stopImmediatePropagation(){}});
  assert.equal(await context.BD_CLOUD_READY,true);assert.equal(context.BD_OFFLINE_SESSION,true);assert.equal(user.id,'admin');
+});
+
+test('normal online login automatically prepares the same form for offline login',async()=>{
+ const values=new Map(),user={id:'admin',username:'admin'},handlers={},messages=[];let active=null;
+ const context={crypto:webcrypto,TextEncoder,Uint8Array,Date,TypeError,AbortController,setTimeout,clearTimeout,Response,console,navigator:{onLine:true},localStorage:{getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value)},document:{visibilityState:'visible',querySelector(){return null},addEventListener(name,fn){handlers[name]=fn}},addEventListener(){},setInterval(){},fetch:async()=>Response.json({authenticated:true,user}),location:{reload(){}},BD_OPEN_OFFLINE_WORK:async()=>{},BD_SET_SERVER_USER(value){active=value},BD_SHOW_SERVER_LOGIN(message){messages.push(message)},toast(){},FormData:class{*[Symbol.iterator](){yield ['username','admin'];yield ['password','test-password']}}};
+ context.window=context;const code=fs.readFileSync(require('node:path').join(__dirname,'../dist/cloud-owner.js'),'utf8');vm.createContext(context);vm.runInContext(code,context);
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(active,null);assert.match(messages.at(-1),/automatically/);
+ const event={target:{getAttribute(){return 'userLoginForm'},querySelector(){return null}},preventDefault(){},stopImmediatePropagation(){}};
+ await handlers.submit(event);const cached=JSON.parse(values.get('bike-doctor-offline-login-v1'));assert.equal(cached.user.id,'admin');assert.equal(cached.password,undefined);assert.equal(cached.hash.length,64);
+ context.navigator.onLine=false;vm.runInContext(code,context);await handlers.submit(event);assert.equal(active.id,'admin');assert.equal(await context.BD_CLOUD_READY,true);
 });
