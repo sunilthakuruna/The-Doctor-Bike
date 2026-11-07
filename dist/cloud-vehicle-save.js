@@ -41,12 +41,16 @@
   previousDelete(key,id);
   if(key!=='bikes')return;
   const button=document.querySelector('#modalBody [data-action="confirmDelete"]');
-  if(!button)return;
+  if(!button||document.querySelector('#modalTitle')?.textContent!=='Delete Sample Record')return;
   button.onclick=async()=>{
    button.disabled=true;revision++;
    try {
     const response=await fetch('/api/vehicles?id='+encodeURIComponent(id),{method:'DELETE'});
-    if(!response.ok)throw new Error('Vehicle could not be deleted from D1.');
+    if(!response.ok){
+     const result=await response.json();
+     if(result.links?.length){showDeletionLinkedRecords('bikes',id,result.links);return;}
+     throw new Error(result.error||'Vehicle could not be deleted from D1.');
+    }
     db.bikes=db.bikes.filter(item=>item.id!==id);save();closeModal();render();toast('Vehicle deleted from Cloudflare D1.');
    }catch(error){toast(error.message);button.disabled=false}
   };

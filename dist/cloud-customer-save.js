@@ -48,7 +48,11 @@ deleteRecord = function(key, id) {
     button.disabled = true;
     try {
       const response = await fetch('/api/customers?id=' + encodeURIComponent(id), { method: 'DELETE' });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        const result=await response.json();
+        if(result.links?.length){showDeletionLinkedRecords('customers',id,result.links);return;}
+        throw new Error(result.error||`HTTP ${response.status}`);
+      }
       db.customers = db.customers.filter(customer => customer.id !== id);
       save();
       closeModal();
