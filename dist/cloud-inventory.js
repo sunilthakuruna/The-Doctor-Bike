@@ -47,7 +47,7 @@ function connectCloudRecords(scope,label,collections,adapter){
 
  async function sync(){
   if(!ready||busy||conflict||!pending)return;
-  if(navigator.onLine===false){
+  if(navigator.onLine===false&&!window.BD_OPEN_OFFLINE_WORK){
    show(label+' changes are waiting for a connection. They will retry when this app reconnects.');
    return;
   }
