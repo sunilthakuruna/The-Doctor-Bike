@@ -32,3 +32,12 @@ test('attendance refresh updates record versions and preserves unsaved marks',as
  context.attendanceDailyDrafts['2026-11-07']={staff:{status:'Absent',note:''}};assert.equal(await context.BD_REFRESH_ATTENDANCE(),false);
  await context.saveCloudAttendance('2026-11-07',context.attendanceDailyDrafts['2026-11-07']);assert.equal(sent.version,'v2');
 });
+
+test('all six Operations pages receive changes from the shared inventory refresh',async()=>{
+ const full=fs.readFileSync(path.join(__dirname,'../dist/cloud-inventory.js'),'utf8'),code=full.slice(0,full.indexOf("connectCloudRecords('inventory'"));
+ const keys=['parts','purchases','stockMovements','jobs','sales','receipts','appointments','trash'];let version=0;
+ const memory=new Map(),element=()=>({hidden:true,replaceChildren(){},append(){},before(){}});
+ const context={page:'appointments',STORE:'test',db:Object.fromEntries(keys.map(key=>[key,[]])),document:{visibilityState:'visible',activeElement:null,querySelector:element,querySelectorAll:()=>[],createElement:element,addEventListener(){}},localStorage:{getItem:key=>memory.get(key)||null,setItem:(key,value)=>memory.set(key,value),removeItem:key=>memory.delete(key)},save(){},render(){},toast(){},download(){},navigator:{onLine:true},setInterval(){},addEventListener(){},BD_CLOUD_READY:Promise.resolve(true),payrollCloudSources:{},Response,fetch:async()=>Response.json({version:'v'+version,data:Object.fromEntries(keys.map(key=>[key,[{id:key+'-'+version}]]))})};
+ context.window=context;vm.createContext(context);vm.runInContext(code+"connectCloudRecords('inventory','Inventory',"+JSON.stringify(keys)+');',context);await new Promise(resolve=>setImmediate(resolve));
+ for(const page of ['appointments','jobs','parts','godown','sales','purchases']){context.page=page;version++;assert.equal(await vm.runInContext('cloudRecordRefreshers[0]()',context),true,page);for(const key of keys)assert.equal(context.db[key][0].id,key+'-'+version,page+' '+key)}
+});
