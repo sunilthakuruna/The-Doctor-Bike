@@ -1,25 +1,35 @@
 (() => {
- const localExpenses=db.expenses;
- const saveWorkspace=save;
- save=function(...args){
-  const current=db.expenses;
-  db.expenses=localExpenses;
-  try{return saveWorkspace.apply(this,args)}finally{db.expenses=current}
- };
- let loaded=false;
- let writing=false;
- (async()=>{
-  if(!await window.BD_CLOUD_READY)return;
+ if(!window.BD_CLOUD_READY)return;
+ let loaded=false,writing=false,loading=false,generation=0,state='loading';
+ const ready=()=>loaded&&state==='ready';
+ // Never label a browser's old workspace total as the current D1 total.
+ window.BD_EXPENSE_TOTAL_TEXT=()=>ready()?money(db.expenses.reduce((sum,row)=>sum+Number(row.amount||0),0)):state==='local'?null:state==='unavailable'?'Unavailable':'Loading…';
+ const previousBasic=basicPage,previousReport=reportPage;
+ const status=()=>'<div class="notice" role="status">'+(state==='unavailable'?'Expenses could not be loaded. Reconnect and refresh to retry.':'Loading saved expenses…')+'</div>';
+ basicPage=function(key){return key==='expenses'&&!ready()&&state!=='local'?status():previousBasic(key)};
+ reportPage=function(...args){return page==='report-profit'&&!ready()&&state!=='local'?status():previousReport.apply(this,args)};
+ window.BD_REFRESH_EXPENSES=async function(initial=false){
+  if(loading||writing||(!initial&&(!canRefreshCloudRecords()||navigator.onLine===false||window.BD_OFFLINE_SESSION)))return false;
+  const started=generation,before=JSON.stringify(db.expenses);loading=true;
   try{
-   const response=await fetch('/api/expenses',{cache:'no-store'});
-   const result=await response.json();
-   if(!response.ok||!Array.isArray(result.data))throw new Error();
-   db.expenses=result.data;
-   loaded=true;
-   window.payrollCloudSources.expenses='ready';
-   if(document.querySelector('#modal').hidden)render();
-  }catch{window.payrollCloudSources.expenses='unavailable';if(page==='payroll'&&document.querySelector('#modal').hidden)render();toast('Cloud expenses could not be loaded. Refresh to retry.')}
+   const response=await fetch('/api/expenses',{cache:'no-store'}),result=await response.json();
+   if(!response.ok||!Array.isArray(result.data))throw Error('Expenses could not be loaded.');
+   if(started!==generation||writing||JSON.stringify(db.expenses)!==before||(!initial&&!canRefreshCloudRecords()))return false;
+   const changed=!loaded||state!=='ready'||JSON.stringify(result.data)!==before;
+   db.expenses=result.data;loaded=true;state='ready';window.payrollCloudSources.expenses='ready';
+   // Save the current cloud collection, never the array captured on startup.
+   if(changed)save();return changed;
+  }catch{
+   if(!loaded){state='unavailable';window.payrollCloudSources.expenses='unavailable'}
+   return false;
+  }finally{loading=false}
+ };
+ (async()=>{
+  if(!await window.BD_CLOUD_READY){state='local';if(document.querySelector('#modal').hidden)render();return}
+  await window.BD_REFRESH_EXPENSES(true);
+  if(document.querySelector('#modal').hidden)render();
  })();
+ if(document.querySelector('#modal').hidden)render();
 
  async function writeExpenses(method,body){
   if(!loaded)throw new Error('Cloud expenses are unavailable. Refresh and try again.');
@@ -50,13 +60,14 @@
   button.textContent='Delete Expense';
   button.onclick=async()=>{
    if(!loaded||writing)return toast('Cloud expenses are unavailable or busy.');
-   writing=true;
+   writing=true;generation++;
    button.disabled=true;
    try{
     const response=await fetch('/api/expenses?id='+encodeURIComponent(id),{method:'DELETE'});
     const result=await response.json();
     if(!response.ok)throw new Error(result.error||'Expense could not be deleted.');
     db.expenses=db.expenses.filter(expense=>expense.id!==id);
+    save();
     if(button.isConnected)closeModal();
     render();
     toast('Expense deleted from Cloudflare D1.');
