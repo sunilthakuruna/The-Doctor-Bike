@@ -16,6 +16,13 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
  const assets=[...html.matchAll(/(?:src|href)=["']([^"']+)["']/g)]
   .map(match=>new URL(match[1],self.location.origin))
   .filter(url=>url.origin===self.location.origin&&/\.(?:js|css|png|svg|ico|webmanifest)$/.test(url.pathname));
+ const manifestAsset=assets.find(url=>url.pathname.endsWith('.webmanifest'));
+ if(manifestAsset){
+  const manifestResponse=await fetch(manifestAsset.href,{cache:'reload'});
+  if(!manifestResponse.ok)throw new Error('App manifest unavailable');
+  const manifest=await manifestResponse.json();
+  for(const icon of manifest.icons||[]){const url=new URL(icon.src,manifestAsset);if(url.origin===self.location.origin)assets.push(url)}
+ }
  await cache.addAll([...new Set(assets.map(url=>url.href))]);
  await cache.put('/index.html',response.clone());await cache.put('/',response);
  await self.skipWaiting();
@@ -25,7 +32,7 @@ self.addEventListener('fetch',event=>{
  const {request}=event;
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;
- if(request.mode!=='navigate'&&!/\.(js|css|png|jpg|svg|ico|woff2?)(\?|$)/i.test(url.pathname))return;
+ if(request.mode!=='navigate'&&!/\.(js|css|png|jpg|svg|ico|woff2?|webmanifest)(\?|$)/i.test(url.pathname))return;
  event.respondWith(fetch(request).then(async response=>{
   if(response.ok){const cache=await caches.open(shellCache);await cache.put(request,response.clone())}return response;
  }).catch(async()=> (await caches.match(request)) || (request.mode==='navigate'&&await caches.match('/')) || new Response(offlinePage,{
