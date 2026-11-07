@@ -27,6 +27,12 @@ export async function onRequest({request, env,data:contextData={}}) {
   const id=deleting?new URL(request.url).searchParams.get('id'):body.id;
   if(typeof id!=='string'||!id||id.length>100)return reply({error:'Invalid staff ID.'},400);
   if(creating&&!/^BD-STF-[1-9]\d{3,11}$/.test(id))return reply({error:'Invalid staff ID. Refresh the staff list and try again.'},400);
+  // Historical attendance still belongs to the old identity, even after staff deletion.
+  if(creating){
+   const attendanceTable=await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='attendance_days'").first();
+   if(attendanceTable&&await db.prepare('SELECT day FROM attendance_days WHERE json_type(records, ?) IS NOT NULL LIMIT 1').bind('$."'+id+'"').first())
+    return reply({error:'This staff ID has historical attendance. Refresh attendance and reopen Add Staff for a new ID.'},409);
+  }
   if(deleting){
    await recycleDeleteBatch(db,[
     db.prepare('INSERT INTO audit_logs(action,detail,actor) SELECT ?,?,? FROM staff WHERE id=?').bind('Delete','Staff '+id,'Owner',id),

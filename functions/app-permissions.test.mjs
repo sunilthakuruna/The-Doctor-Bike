@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
-const source=await readFile(new URL('./app-permissions.js',import.meta.url),'utf8');
-const {permitted}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+import {permitted} from './app-permissions.js';
 const user={status:'Active',role:'Mechanic',permissions:JSON.stringify({customers:{read:true,write:true,edit:false,delete:false}}),action_restrictions:'{}'};
 assert.equal(permitted(user,'/api/customers','GET'),true);
 assert.equal(permitted(user,'/api/customers','POST'),true);
