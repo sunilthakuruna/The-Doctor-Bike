@@ -7,8 +7,19 @@ const offlinePage=`<!doctype html>
 <a href="/">Try again</a>
 </main></html>`;
 
-const shellCache='bike-doctor-offline-shell-v1';
-self.addEventListener('install',event=>event.waitUntil(caches.open(shellCache).then(cache=>cache.addAll(['/','/index.html'])).then(()=>self.skipWaiting())));
+const shellCache='bike-doctor-offline-shell-v2';
+self.addEventListener('install',event=>event.waitUntil((async()=>{
+ const cache=await caches.open(shellCache);
+ const response=await fetch('/index.html',{cache:'reload'});
+ if(!response.ok)throw new Error('App shell unavailable');
+ const html=await response.clone().text();
+ const assets=[...html.matchAll(/(?:src|href)=["']([^"']+)["']/g)]
+  .map(match=>new URL(match[1],self.location.origin))
+  .filter(url=>url.origin===self.location.origin&&/\.(?:js|css|png|svg|ico|webmanifest)$/.test(url.pathname));
+ await cache.addAll([...new Set(assets.map(url=>url.href))]);
+ await cache.put('/index.html',response.clone());await cache.put('/',response);
+ await self.skipWaiting();
+})()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{
  const {request}=event;
