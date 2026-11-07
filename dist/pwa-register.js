@@ -7,7 +7,7 @@ if('serviceWorker' in navigator){
 const connectionNotice=document.createElement('div');
 connectionNotice.className='notice';
 connectionNotice.setAttribute('role','status');
-connectionNotice.textContent='You are offline. Cloud records may be out of date. Reconnect before saving.';
+connectionNotice.textContent='You are offline. Supported changes are saved on this device and queued for sync. Keep this browser data until sync completes.';
 document.querySelector('#content')?.before(connectionNotice);
 
 function updateConnectionNotice(){

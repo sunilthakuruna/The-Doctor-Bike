@@ -1,6 +1,8 @@
 // One application login, verified by the server.
 (() => {
  let identitySignature='',checking=false;
+ let unlockCloud;
+ window.BD_CLOUD_READY=new Promise(resolve=>{unlockCloud=resolve});
  const offlineKey='bike-doctor-offline-login-v1';
  async function verifier(password,salt){
   const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
@@ -8,7 +10,7 @@
   return Array.from(new Uint8Array(bytes)).map(value=>value.toString(16).padStart(2,'0')).join('');
  }
  async function refreshIdentity(){
-  if(checking||document.visibilityState!=='visible')return;
+  if(checking||document.visibilityState!=='visible'||window.BD_OFFLINE_SESSION)return;
   checking=true;
   try{
    const response=await fetch('/api/app-auth',{cache:'no-store'});
@@ -25,16 +27,14 @@
  window.addEventListener('focus',refreshIdentity);
  document.addEventListener('visibilitychange',refreshIdentity);
  setInterval(refreshIdentity,15000);
- window.BD_CLOUD_READY=(async()=>{
+ (async()=>{
   try{
    const response=await fetch('/api/app-auth',{cache:'no-store'});
    if(!response.ok)throw new Error('Sign-in service is unavailable.');
    const state=await response.json();
-   if(state.authenticated&&state.user){identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);return true}
-   localStorage.removeItem(offlineKey);
+   if(state.authenticated&&state.user){await window.BD_OPEN_OFFLINE_WORK(state.user);identitySignature=JSON.stringify(state.user);window.BD_SET_SERVER_USER(state.user);unlockCloud(true);return}
    window.BD_SHOW_SERVER_LOGIN('Sign in with your server username and password.');
-  }catch(error){window.BD_SHOW_SERVER_LOGIN(error.message)}
-  return false;
+  }catch(error){window.BD_SHOW_SERVER_LOGIN('Connection unavailable. Use your last online username and password on this device for offline work.')}
  })();
  document.addEventListener('submit',async event=>{
   if(event.target.getAttribute('id')!=='userLoginForm')return;
@@ -43,13 +43,15 @@
   if(button)button.disabled=true;
   try{
    const credentials=Object.fromEntries(new FormData(form));
-   if(navigator.onLine===false){
+   async function openOffline(){
     const cached=JSON.parse(localStorage.getItem(offlineKey)||'null');
     if(!cached||Date.now()>cached.expires||String(credentials.username).trim().toLowerCase()!==cached.user.username.toLowerCase()||await verifier(credentials.password,cached.salt)!==cached.hash)throw new Error('Offline sign-in is unavailable or the password is incorrect. Sign in online on this device first.');
-    window.BD_OFFLINE_SESSION=true;window.BD_SET_SERVER_USER(cached.user);
-    toast('Offline access: cloud operations require a connection.');return;
+    window.BD_OFFLINE_SESSION=true;await window.BD_OPEN_OFFLINE_WORK(cached.user);window.BD_SET_SERVER_USER(cached.user);unlockCloud(true);
+    toast('Offline work enabled. Changes will wait on this device.');
    }
-   const response=await fetch('/api/app-auth',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(credentials)});
+   if(navigator.onLine===false){await openOffline();return}
+   let response;
+   try{response=await fetch('/api/app-auth',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(credentials)})}catch(error){if(error instanceof TypeError){await openOffline();return}throw error}
    const result=await response.json();
    if(!response.ok||!result.authenticated)throw new Error(result.error||'Sign-in failed.');
    const salt=Array.from(crypto.getRandomValues(new Uint8Array(16)));
@@ -61,7 +63,7 @@
  document.addEventListener('click',async event=>{
   if(!event.target.closest('#profileSignOut,#sessionSignOutAction'))return;
   event.preventDefault();event.stopImmediatePropagation();
-  if(window.BD_OFFLINE_SESSION){localStorage.removeItem(offlineKey);localStorage.removeItem('bike-doctor-active-user-v1');location.reload();return}
+  if(window.BD_OFFLINE_SESSION){localStorage.removeItem('bike-doctor-active-user-v1');location.reload();return}
   try{
    const response=await fetch('/api/app-auth',{method:'DELETE'});
    if(!response.ok)throw new Error();
