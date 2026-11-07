@@ -135,6 +135,12 @@
     gate.hidden=false;
     $('#userLoginForm').onsubmit=async event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.target)),user=(db.users||[]).find(item=>String(item.username||'').toLowerCase()===String(data.username||'').trim().toLowerCase());if(!user||user.status==='Inactive')return showGate('Username is not active or does not exist.');if(!user.passwordHash){if(user.role!=='Admin')return showGate('This user does not have a password yet. Ask the administrator to set one in User Management.');if(data.password.length<4)return showGate('Set an owner password with at least 4 characters.');try{const salt=crypto.getRandomValues(new Uint8Array(16)),hash=await passwordHash(data.password,salt);user.passwordSalt=encode(salt);user.passwordHash=encode(hash);user.passwordAlgorithm='PBKDF2-SHA256';user.passwordIterations=150000;save('Initial owner password set')}catch{return showGate('Secure password setup is unavailable in this browser.')}}else if(!(await isCorrectPassword(user,data.password)))return showGate('Incorrect username or password.');audit('Sign In',`${user.username} signed in`);save();setActiveUser(user);gate.hidden=true;toast(`Signed in as ${user.name||user.username}`)};
   }
+  function showSessionLoading(){
+    let gate=$('#userLoginGate');
+    if(!gate){gate=document.createElement('section');gate.id='userLoginGate';document.body.appendChild(gate)}
+    gate.innerHTML='<div class="userLoginCard" role="status" aria-live="polite" aria-busy="true"><h2>Opening Bike Doctor…</h2><p>Checking your session. Please wait.</p></div>';
+    gate.hidden=false;
+  }
   function signOut(){closeModal();if(activeUser){audit('Sign Out',`${activeUser.username} signed out`);save()}localStorage.removeItem(sessionKey);activeUser=null;updateHeader();showGate('You have been signed out. Sign in to continue.');}
   function addSessionAccessAction(){
     const nav=$('#navigation'),auditLink=nav?.querySelector('a[data-page="audit"]');
@@ -181,5 +187,5 @@
   },true);
   window.BD_HAS_MODULE_ACCESS=canOpenModule;window.BD_HAS_ACTION_PERMISSION=canPerform;
   addSessionAccessAction();
-  if(!activeUser)showGate('Checking your server session…');
+  if(!activeUser)showSessionLoading();
 })();
