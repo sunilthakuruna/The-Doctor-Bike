@@ -40,7 +40,7 @@ function connectCloudRecords(scope,label,collections,adapter){
   banner.hidden=!message;
  };
  let baseline=snapshot(),version=null,ready=false,pending=null,busy=false,conflict=false;
- let generation=0;
+ let generation=0,accessSignature=null;
  const saveWorkspace=save;
 
  function showConflict(){
@@ -123,9 +123,10 @@ function connectCloudRecords(scope,label,collections,adapter){
   const response=await fetch('/api/'+scope+(version?'?version='+encodeURIComponent(version):''),{cache:'no-store'});
   if(response.status===304||!response.ok)return false;
   const result=await response.json();
-  if(!result.data||typeof result.version!=='string'||result.version===version||
+  if(!result.data||typeof result.version!=='string'||(result.version===version&&(result.access??null)===accessSignature)||
      started!==generation||busy||pending||conflict||snapshot()!==baseline||!canRefreshCloudRecords())return false;
   apply(result.data);
+  accessSignature=result.access??null;
   version=result.version;
   if(scope==='inventory')window.payrollCloudSources.inventory='ready';
   baseline=snapshot();
@@ -146,6 +147,7 @@ function connectCloudRecords(scope,label,collections,adapter){
    }
    const result=await response.json();
    if(!response.ok||!Object.hasOwn(result,'version'))throw new Error();
+   accessSignature=result.access??null;
    pending=JSON.parse(localStorage.getItem(pendingKey)||'null');
    version=result.version;
    if(result.data)apply(result.data);

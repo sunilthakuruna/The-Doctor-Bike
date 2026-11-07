@@ -19,6 +19,7 @@ export async function onRequest(context) {
   const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))),b=>b.toString(16).padStart(2,'0')).join('');
   const session=await env.DB.prepare('SELECT expires FROM owner_sessions WHERE token_hash=? AND expires>?').bind(hash,Date.now()).first();
   if(!session)return Response.json({error:'Please sign in again.'},{status:401});
+  context.data.user={id:'legacy-owner',role:'Admin',status:'Active'};
   return context.next();
  }catch{return Response.json({error:'Owner login is not configured.'},{status:503})}
 }

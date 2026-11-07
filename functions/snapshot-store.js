@@ -11,10 +11,12 @@ const auditLabels={
  user_permissions:'User profiles and permission rules'
 };
 
-export function snapshotHandler(scope,collections,validators={}){
+export function snapshotHandler(scope,collections,validators={},policy=null){
  const head=scope+"_head", chunks=scope+"_chunks";
- return async function onRequest({request,env}){
+ return async function onRequest({request,env,data:contextData={}}){
   const db=env.DB;
+  const user=contextData.user;
+  if(policy&&!policy.access(user,request.method))return reply({error:'Access is not granted for your account.'},403);
   try{
    await db.batch([
     db.prepare(`CREATE TABLE IF NOT EXISTS ${head} (id INTEGER PRIMARY KEY CHECK(id=1), version TEXT NOT NULL)`),
@@ -22,19 +24,26 @@ export function snapshotHandler(scope,collections,validators={}){
    ]);
    if(request.method==='GET'){
     const known=new URL(request.url).searchParams.get('version');
-    if(known){
+    if(known&&(!policy||user.role==='Admin')){
      const current=await db.prepare(`SELECT version FROM ${head} WHERE id=1`).first();
      if(current?.version===known)return new Response(null,{status:304,headers:{'cache-control':'no-store'}});
     }
     const {results}=await db.prepare(`SELECT h.version,c.data FROM ${head} h JOIN ${chunks} c ON c.version=h.version ORDER BY c.position`).all();
-    return reply(results.length?{version:results[0].version,data:JSON.parse(results.map(row=>row.data).join(''))}:{version:null,data:null});
+    const payload=results.length?JSON.parse(results.map(row=>row.data).join('')):null;
+    return reply({version:results[0]?.version??null,data:payload?(policy?policy.project(user,payload):payload):null,...(policy?{access:policy.signature(user)}:{})});
    }
    if(request.method!=='PUT')return reply({error:'Method not allowed.'},405);
    let body;
    try{body=await request.json()}catch{return reply({error:'Invalid JSON.'},400)}
-   const {version,data}=body||{};
+   const {version}=body||{};let data=body?.data;
    if((version!==null&&(typeof version!=='string'||version.length>40))||!data||
       collections.some(key=>!(validators[key]||Array.isArray)(data[key])))return reply({error:'Invalid records.'},400);
+   if(policy){
+    const {results}=await db.prepare(`SELECT h.version,c.data FROM ${head} h JOIN ${chunks} c ON c.version=h.version ORDER BY c.position`).all();
+    if((results[0]?.version??null)!==version)return reply({error:'Records changed in another browser.'},409);
+    const current=results.length?JSON.parse(results.map(row=>row.data).join('')):Object.fromEntries(collections.map(key=>[key,[]]));
+    try{data=policy.merge(user,current,data)}catch(error){return reply({error:error.message},403)}
+   }
    const snapshot=JSON.stringify(Object.fromEntries(collections.map(key=>[key,data[key]])));
    if(new TextEncoder().encode(snapshot).length>12000000)return reply({error:'The saved records are too large to sync.'},413);
    const next=crypto.randomUUID();
