@@ -4,6 +4,7 @@ const attendanceCriteriaDays=['Sunday','Monday','Tuesday','Wednesday','Thursday'
 const attendanceWeeklyOffField=schemas.staff.find(field=>field.key==='weeklyOffDay');
 if(attendanceWeeklyOffField){attendanceWeeklyOffField.label='Weekly Off Day (Individual)';attendanceWeeklyOffField.options=['Use Global','None',...attendanceCriteriaDays];attendanceWeeklyOffField.default='Use Global'}
 if(!schemas.staff.some(field=>field.key==='paidLeaveDaysPerMonth')){const at=schemas.staff.findIndex(field=>field.key==='weeklyOffDay');schemas.staff.splice(at>=0?at+1:schemas.staff.findIndex(field=>field.key==='salaryType')+1,0,{key:'paidLeaveDaysPerMonth',label:'Paid Leave Allowance / Month',type:'number',default:0})}
+for(const field of schemas.staff)if(['salary','paidLeaveDaysPerMonth'].includes(field.key))field.integer=true;
 const attendanceNormalizeBeforeLeave=normalizeAttendanceStatus;
 normalizeAttendanceStatus=function(value){const v=String(value||'').trim().toLowerCase();if(['pl','paid leave','paidleave'].includes(v))return 'Paid Leave';if(['weekly off','weeklyoff','wo'].includes(v))return 'Weekly Off';return attendanceNormalizeBeforeLeave(value)};
 const attendanceLabelBeforeLeave=attendanceLabel;
