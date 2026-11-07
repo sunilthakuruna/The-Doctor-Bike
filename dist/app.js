@@ -122,11 +122,32 @@ function receive(key,id){let bill=find(key,id);openModal('Collect Customer Payme
 function invoice(key,id){let b=find(key,id),t=billTotals(b),c=find('customers',b.customer),lines=[...(b.serviceLines||[]).map(l=>({name:name('services',l.service),qty:1,rate:l.charge,tax:Number(b.tax||0)})),...(b.partLines||[]).map(l=>({name:name('parts',l.part),qty:l.qty,rate:l.price,tax:l.gst||0}))];openModal('Invoice / Account Statement',`<div class="invoice"><div class="invoicebrand"><div><h2>${esc(db.settings.name)}</h2><strong>GARAGE MANAGEMENT SYSTEM</strong><p>${esc(db.settings.address||'Sample garage · demonstration invoice')}<br>${esc(db.settings.phone)}</p></div><div style="text-align:right"><span class="badge info">SAMPLE INVOICE</span><h3>${esc(id)}</h3><p>Date: ${esc(b.date)}</p></div></div><div class="invoiceinfo"><div><small>BILL TO</small><br><strong>${esc(c?.name||b.walkin||'Walk-in Customer')}</strong><br>${esc(c?.mobile||'')}<br>${esc(c?.address||'')}</div><div><small>VEHICLE</small><br><strong>${esc(number(b.bike))}</strong><br>${esc(b.work||'Counter Sale')}<br>${esc(b.status||'Completed')}</div></div>${table(['Description','Qty','Rate','GST','Amount'],lines.map(l=>[esc(l.name),l.qty,money(l.rate),Number(l.tax)+'%',money(l.qty*l.rate*(1+Number(l.tax)/100))]))}<div class="invoicetotal"><p><span>Subtotal</span><b>${money(t.labour+t.parts)}</b></p><p><span>Discount</span><b>− ${money(b.discount)}</b></p><p><span>GST</span><b>${money(t.tax)}</b></p><p class="grand"><span>Total</span><span>${money(t.total)}</span></p><p><span>Paid</span><b>${money(paid(b))}</b></p><p><span>Outstanding Due</span><b>${money(due(b))}</b></p></div><p style="border-top:1px solid #e2e8f0;padding-top:20px;color:#64748b;font-size:11px">${esc(db.settings.footer)}<br>This is a prototype sample, not a finalized tax invoice.</p></div><div class="formactions">${btn('Close','cancel','secondary')}${btn('Print / Save PDF','print','','print')}</div>`)}
 function ledger(id){let entries=[];for(let r of allReceipts())if(r.account===id)entries.push([esc(r.date),'Receipt',esc(r.bill),money(r.amount),'—']);for(let p of db.purchases)if(p.account===id&&p.advance)entries.push([esc(p.date),'Purchase',esc(p.id),'—',money(p.advance)]);for(let e of db.expenses)if(e.account===id)entries.push([esc(e.date),'Expense',esc(e.id),'—',money(e.amount)]);openModal('Account Statement — '+name('accounts',id),`<div class="formbody">${summary([['OPENING',money(find('accounts',id).opening)],['CURRENT BALANCE',money(accountBalance(id))]])}${table(['Date','Type','Reference','Money In','Money Out'],entries)}</div><div class="formactions">${btn('Close','cancel','secondary')}</div>`)}
 function accountReferenceCount(id){return db.jobs.concat(db.sales,db.receipts,db.purchases,db.expenses).filter(r=>r.account===id).length}
+function deletionLinkedRecords(key,id){
+  const links=[];
+  const add=(module,match,label)=>{for(const record of db[module]||[])if(match(record))links.push({module,id:record.id,label,detail:record.number||record.name||record.description||''})};
+  if(key==='customers'){add('bikes',r=>r.customer===id,'Vehicle');add('jobs',r=>r.customer===id,'Job Card');add('sales',r=>r.customer===id,'Spare Parts Sale');add('insurance',r=>r.customer===id,'Insurance')}
+  if(key==='bikes'){add('jobs',r=>r.bike===id,'Job Card');add('insurance',r=>r.bike===id,'Insurance')}
+  if(key==='parts')for(const module of ['jobs','sales','purchases'])add(module,r=>r.partLines?.some(line=>line.part===id),{jobs:'Job Card',sales:'Spare Parts Sale',purchases:'Purchase'}[module]);
+  if(key==='services')add('jobs',r=>r.serviceLines?.some(line=>line.service===id),'Job Card');
+  if(key==='staff')add('jobs',r=>r.mechanic===id,'Job Card');
+  if(key==='appointments')add('jobs',r=>r.id===find('appointments',id)?.job,'Job Card');
+  if(key==='jobs'){add('receipts',r=>r.bill===id,'Payment Receipt');add('appointments',r=>r.job===id,'Appointment')}
+  return links;
+}
+function showDeletionLinkedRecords(key,id,links){
+  const record=find(key,id);
+  openModal('Linked Records — Delete These First',`<div class="formbody"><p><strong>${esc(record?.name||record?.number||id)}</strong> is linked to ${links.length} record(s). Open and review each entry, then delete it individually using its normal Delete action.</p><div class="tablewrap"><table><thead><tr><th>Module</th><th>Record ID</th><th>Details</th><th>Action</th></tr></thead><tbody>${links.map((link,index)=>`<tr><td>${esc(link.label)}</td><td>${esc(link.id)}</td><td>${esc(link.detail)}</td><td><button type="button" class="btn secondary small" data-open-deletion-link="${index}">Open Record</button></td></tr>`).join('')}</tbody></table></div><p>Return to this record and try Delete again after removing its links. Records with payment history may require payment reversal first. Nothing is deleted automatically.</p></div><div class="formactions">${btn('Close','cancel','secondary')}</div>`);
+  for(const button of document.querySelectorAll('[data-open-deletion-link]'))button.onclick=event=>{
+    event.preventDefault();event.stopPropagation();
+    const link=links[Number(button.dataset.openDeletionLink)];
+    if(!link)return;
+    closeModal();go(link.module==='receipts'?'payments':link.module);search=link.id;render();
+  };
+}
 function deleteRecord(key,id){
-  if(key==='jobs'){
-    const job=find('jobs',id),hasReceipts=(db.receipts||[]).some(r=>r.bill===id),hasLinkedAppointment=(db.appointments||[]).some(a=>a.job===id);
-    if(Number(job?.advance||0)>0||hasReceipts||hasLinkedAppointment)return toast('This Job Card has payment or appointment history and cannot be deleted. Keep it to preserve the linked records.');
-  }
+  const linked=deletionLinkedRecords(key,id);
+  if(linked.length){showDeletionLinkedRecords(key,id,linked);return;}
+  if(key==='jobs'&&Number(find('jobs',id)?.advance||0)>0)return toast('This Job Card has an advance payment. Reverse the payment through the normal payment workflow before deleting it.');
   const account=find('accounts',id);
   const accountReferences=key==='accounts'?accountReferenceCount(id):0;
   if(key==='accounts'&&accountReferences>0){
