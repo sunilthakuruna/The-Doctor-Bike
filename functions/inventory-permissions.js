@@ -32,6 +32,8 @@ export function mergeInventory(user,current,incoming){
   if(key==='trash')continue;
   const existing=current[key]||[],shown=existing.filter(row=>visible(user,key,row,current)),hidden=existing.filter(row=>!visible(user,key,row,current));
   const ids=new Set();for(const row of rows){if(!row||typeof row.id!=='string'||ids.has(row.id))throw new Error('Invalid or duplicate record ID.');ids.add(row.id)}
+  const deleted=shown.filter(row=>!ids.has(row.id));
+  if(deleted.length>1&&(rules(user).restrictions[labels[routes[key]?.[0]]]?.['Bulk Delete']===true))throw new Error('Bulk Delete is restricted.');
   for(const row of rows){const prior=existing.find(item=>item.id===row.id);if(prior&&!shown.includes(prior))throw new Error('A restricted record cannot be changed.');if(!prior||stable(prior)!==stable(row)){if(!allowedChange(user,key,prior?'edit':'write',row,prior,{...current,...incoming}))throw new Error('Permission is not granted for this change.')}}
   for(const row of shown)if(!ids.has(row.id)&&!allowedChange(user,key,'delete',row,row,current))throw new Error('Delete permission is not granted.');
   merged[key]=[...hidden,...rows];
