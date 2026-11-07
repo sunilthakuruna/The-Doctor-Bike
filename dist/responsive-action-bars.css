@@ -1,0 +1,55 @@
+/* Shared main actions: shrink spacing first, scroll only when labels cannot fit.
+   Table-row actions, permission controls and dashboard tiles retain their layouts. */
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar,.expensesDemoActions,.amcPlanHeaderActions,.backupScopeActions,.list-management-top-actions,.manualSyncToolbar,.reminderActionToolbar,.attachmentUploadActions,.receiptSendActions),
+body :is(#content,#modalBody) .formactions,
+body #modalBody :is(.attachmentUploadActions,.receiptSendActions){
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:center;
+ gap:clamp(4px,.65vw,10px)!important;
+ min-width:0;
+ max-width:100%;
+ overflow-x:auto;
+ overscroll-behavior-x:contain;
+ scrollbar-width:thin;
+}
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar,.expensesDemoActions,.amcPlanHeaderActions,.backupScopeActions,.list-management-top-actions,.manualSyncToolbar,.reminderActionToolbar,.attachmentUploadActions,.receiptSendActions)>.btn,
+body :is(#content,#modalBody) .formactions>.btn,
+body #modalBody :is(.attachmentUploadActions,.receiptSendActions)>.btn{
+ flex:0 1 auto!important;
+ width:auto!important;
+ max-width:none!important;
+ min-width:max-content!important;
+ min-height:34px;
+ padding:clamp(6px,.65vw,10px) clamp(7px,.9vw,14px)!important;
+ font-size:clamp(11px,.95vw,13px)!important;
+ line-height:1.25;
+ white-space:nowrap!important;
+ gap:clamp(4px,.5vw,8px);
+}
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar)>.search,
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar)>input,
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar)>select{
+ flex:1 1 160px!important;
+ width:auto!important;
+ min-width:110px!important;
+ max-width:320px;
+}
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar)>label{
+ flex:0 1 auto;
+ min-width:max-content;
+ white-space:nowrap;
+}
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar) .spacer{flex:1 1 0;min-width:0}
+body #content :is(.toolbar,.paymentToolbar,.payrollToolbar,.expensesDemoActions,.amcPlanHeaderActions,.backupScopeActions,.list-management-top-actions,.manualSyncToolbar,.reminderActionToolbar)>.btn svg,
+body :is(#content,#modalBody) .formactions>.btn svg{
+ flex:0 0 auto;
+ width:clamp(14px,1.3vw,18px);
+ height:clamp(14px,1.3vw,18px);
+}
+@media(max-width:600px){
+ body #content :is(.toolbar,.paymentToolbar,.payrollToolbar,.expensesDemoActions,.backupScopeActions){padding-left:8px;padding-right:8px}
+ body :is(#content,#modalBody) .formactions{justify-content:flex-start}
+ body :is(#content,#modalBody) .formactions>.btn{min-height:38px}
+}
