@@ -1,0 +1,10 @@
+.compactModuleHints{clear:both;margin:8px 0 0;padding:5px 0;border-top:1px solid #e2e8f0;color:#64748b;grid-column:1/-1}
+body .compactModuleHints :is(p,small,div,article,section,h2,h3,strong,span){font-size:11px!important;line-height:1.35!important;font-weight:400!important;letter-spacing:normal!important;text-transform:none!important}
+body .compactModuleHints :is(.notice,.panel,.panelbody,.panelhead,.partsStockFormula,.partsStockGuideGrid article,.stockFlowGuideGrid article){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;min-height:0!important;margin:3px 0!important}
+body .compactModuleHints :is(.partsStockGuideGrid,.stockFlowGuideGrid){display:block!important}
+body .compactModuleHints :is(h2,h3,p){margin:2px 0!important;padding:0!important}
+body .compactModuleHints article :is(h3,p){display:inline}
+body .compactModuleHints article h3::after{content:': '}
+body .compactModuleHints :is(.moduleCalculationHint,.reportCalculationHint,.profitOperatingNote,.profitCalculationHint,.gstCalculationHint,.cloudProvisionNote,.settingsHint,.list-edit-hint,.payrollRule){margin:3px 0!important;padding:0!important;border:0!important}
+.compactModuleHints .panelhead svg{display:none}
+@media print{.compactModuleHints{display:none!important}}

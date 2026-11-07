@@ -13,7 +13,7 @@
     attendance:'Hint: Attendance is saved by date and feeds monthly salary calculations according to the staff salary scheme.',
     payroll:'Hint: Per-job earnings use completed or delivered jobs and the staff member’s saved percentage rule.',
     services:'Hint: Service master rates are defaults; job-card line charges and GST can be adjusted for that job only.',
-    jobs:'Hint: Job totals use service and part lines after discounts; GST is applied per saved line and stock is reduced when the job is saved.',
+    jobs:'Hint: Job totals include services, spare parts and miscellaneous items. Line discounts and saved GST rates apply to services/parts; miscellaneous items have no GST. Saved part quantities reduce Main Stock.',
     parts:'Hint: Main Stock is calculated from opening stock, purchases into Main Stock, transfers in and saved sales/used quantities.',
     godown:'Hint: Godown receipts stay in Godown until transfer; a transfer reduces Godown and increases Main Stock by the selected lot quantity.',
     sales:'Hint: Counter sales use Main Stock, apply line discounts and GST per line, and record payment and due amounts.',
