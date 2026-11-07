@@ -1,5 +1,15 @@
 (() => {
  let loaded=false;
+ window.BD_REFRESH_APP_USERS=async()=>{
+  if(!loaded||!canRefreshCloudRecords())return false;
+  const before=JSON.stringify(db.users),response=await fetch('/api/app-users',{cache:'no-store'});
+  if(!response.ok)return false;
+  const result=await response.json();
+  if(!Array.isArray(result.data)||!canRefreshCloudRecords()||JSON.stringify(db.users)!==before)return false;
+  const users=result.data.map(user=>({...user,passwordHash:'server-managed'}));
+  if(JSON.stringify(users)===before)return false;
+  db.users=users;return true;
+ };
  async function load(){
   const response=await fetch('/api/app-users',{cache:'no-store'});
   const result=await response.json();

@@ -9,6 +9,20 @@
  const versions=new Map();
  let saving=false;
  let loaded=false;
+ window.BD_REFRESH_ATTENDANCE=async()=>{
+  if(!loaded||saving||!canRefreshCloudRecords())return false;
+  const before=JSON.stringify(db.attendance);
+  if(Object.entries(attendanceDailyDrafts).some(([day,records])=>JSON.stringify(records)!==JSON.stringify(db.attendance[day]||{})))return false;
+  const response=await fetch('/api/attendance',{cache:'no-store'});
+  if(!response.ok||response.headers.get('x-bike-offline')==='1')return false;
+  const result=await response.json();
+  if(!Array.isArray(result.data)||saving||!canRefreshCloudRecords()||JSON.stringify(db.attendance)!==before||Object.entries(attendanceDailyDrafts).some(([day,records])=>JSON.stringify(records)!==JSON.stringify(db.attendance[day]||{})))return false;
+  const records=Object.fromEntries(result.data.filter(row=>Object.keys(row.records).length).map(row=>[row.day,row.records]));
+  versions.clear();for(const row of result.data)versions.set(row.day,row.version);
+  if(JSON.stringify(records)===before)return false;
+  db.attendance=records;for(const day of Object.keys(attendanceDailyDrafts))delete attendanceDailyDrafts[day];
+  return true;
+ };
  (async()=>{
   if(!await window.BD_CLOUD_READY)return false;
   try{
