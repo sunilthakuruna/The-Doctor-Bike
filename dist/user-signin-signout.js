@@ -10,7 +10,7 @@
   function canOpenModule(key){
     if(!activeUser)return false;
     if(key==='users')return activeUser.role==='Admin';
-    if(key==='backup-restore')return activeUser.role==='Admin';
+    if(key==='backup-restore'||key==='recycle-bin')return activeUser.role==='Admin';
     if(activeUser.role==='Admin')return true;
     if(key==='dashboard')return true;
     if(key==='reports')return !!activeUser.permissions?.reports?.read;
@@ -115,12 +115,12 @@
       ['jobs','Job Card','clipboard'],['parts','Spare Parts','box'],['godown','Godown Stock','box'],['sales','Spare Parts Sale','cart'],
       ['purchases','Purchase','cart'],['service-reminders','Vehicle Service Reminders','bell'],['amc-plans','AMC Management / Reminder','shield'],
       ['payments','Payment Details','wallet'],['reports','Reports','chart'],['expenses','Expenses','wallet'],['users','Users','users'],
-      ['audit','Audit Logs','shield'],['backup-restore','Backup & Restore','shield'],['report-sales','Sales Report','chart'],['report-purchases','Purchase Report','chart'],['report-gst','GST Annual Report','chart'],
+      ['audit','Audit Logs','shield'],['backup-restore','Backup & Restore','shield'],['recycle-bin','Recycle Bin','trash'],['report-sales','Sales Report','chart'],['report-purchases','Purchase Report','chart'],['report-gst','GST Annual Report','chart'],
       ['report-dues','Outstanding Dues Report','chart'],['report-profit','Profit Report','chart'],['report-collection','Collection Report','chart'],
       ['report-stock','Stock Verification Report','chart'],['report-vendor-purchases','Vendor-wise Spare Parts Purchases','chart']
     ].map(([id,label,glyph])=>({id,label,glyph}));
     const isAdmin=user?.role==='Admin';
-    const canAccess=module=>isAdmin||(!['users','backup-restore'].includes(module.id)&&(module.id==='dashboard'||!!user?.permissions?.[module.id]?.read));
+    const canAccess=module=>isAdmin||(!['users','backup-restore','recycle-bin'].includes(module.id)&&(module.id==='dashboard'||!!user?.permissions?.[module.id]?.read));
     const visibleModules=isAdmin?modules:modules.filter(canAccess);
     const rows=visibleModules.map(module=>`<article class="accessRow" data-access-row data-access="${canAccess(module)?'yes':'no'}"><span class="accessIcon">${icon(module.glyph)}</span><strong>${esc(module.label)}</strong><span class="accessBadge ${canAccess(module)?'allowed':'restricted'}">${canAccess(module)?'✓ Full Access':'Restricted'}</span></article>`).join('');
     openModal('User Profile & Access',`<section class="profileAccess"><div class="profileAccessHero" role="banner"><div class="profileHeroTitle"><span class="profileShield">${icon('shield')}</span><p>USER PROFILE & ACCESS</p><button type="button" class="profileClose" id="profileClose" aria-label="Close">×</button></div><div class="profileIdentity"><span class="profileAvatar">${esc((user?.name||user?.username||'?')[0].toUpperCase())}</span><div><h3>${esc(user?.name||user?.username||'User')}</h3><b>${esc(user?.role||'User')}</b><small>${esc(user?.username||'')}</small></div></div></div><div class="profileAccessBody"><h4>MODULE PERMISSIONS</h4><strong class="accessSummary">✓ ${isAdmin?`All ${modules.length} modules accessible (Super Admin)`:'Your accessible modules'}</strong>${isAdmin?'<div class="accessTabs">':'<div class="accessTabs" hidden>'}<button type="button" data-access-filter="all" class="active">All (${modules.length})</button><button type="button" data-access-filter="yes">Accessible (${modules.filter(canAccess).length})</button><button type="button" data-access-filter="no">Restricted (${modules.filter(module=>!canAccess(module)).length})</button></div><label class="accessSearch">⌕ <input id="profileModuleSearch" placeholder="Search modules..."></label><div class="accessRows">${rows}</div></div><footer class="profileAccessFooter"><span>Server session</span><button type="button" class="btn danger" id="profileSignOut">${icon('logout')} Sign Out</button></footer></section>`);

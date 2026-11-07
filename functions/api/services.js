@@ -1,8 +1,9 @@
+import {recycleDeleteBatch} from '../recycle-store.js';
 const schema = `CREATE TABLE IF NOT EXISTS services (id TEXT PRIMARY KEY, name TEXT NOT NULL, data TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`;
 const reply = (body, status=200) => new Response(JSON.stringify(body), {
  status, headers: {'content-type':'application/json; charset=utf-8','cache-control':'no-store'}
 });
-export async function onRequest({request,env}) {
+export async function onRequest({request,env,data:contextData={}}) {
  try {
   // Idempotent bootstrap also supports dashboard deployments without Wrangler migrations.
   await env.DB.prepare(schema).run();
@@ -13,10 +14,10 @@ export async function onRequest({request,env}) {
   if(request.method==='DELETE') {
    const id=new URL(request.url).searchParams.get('id');
    if(!id)return reply({error:'Service ID is required.'},400);
-   await env.DB.batch([
+   await recycleDeleteBatch(env.DB,[
     env.DB.prepare('DELETE FROM services WHERE id=?').bind(id),
     env.DB.prepare('INSERT INTO audit_logs(action,detail) VALUES (?,?)').bind('Delete',`Service ${id} deleted`)
-   ]);
+   ],contextData.user);
    return reply({data:{id}});
   }
   if(!['POST','PUT'].includes(request.method))return reply({error:'Method not allowed.'},405);

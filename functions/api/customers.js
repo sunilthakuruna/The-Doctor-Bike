@@ -1,3 +1,4 @@
+import {recycleDeleteBatch} from '../recycle-store.js';
 import {deletionDependencies} from '../deletion-dependencies.js';
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -10,17 +11,17 @@ function id() {
   return `BD-CUST-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
-export async function onRequestDelete({ request, env }) {
+export async function onRequestDelete({ request, env, data:contextData={} }) {
   const customerId = new URL(request.url).searchParams.get('id');
   if (!customerId) return json({ error: 'Customer ID is required.' }, 400);
   const existing = await env.DB.prepare('SELECT id FROM customers WHERE id = ?').bind(customerId).first();
   if (!existing) return json({ error: 'Customer no longer exists. Refresh the list.' }, 404);
   const links=await deletionDependencies(env.DB,'customers',customerId);
   if(links.length)return json({error:'Delete the linked records individually before deleting this customer.',links},409);
-  await env.DB.batch([
+  await recycleDeleteBatch(env.DB,[
     env.DB.prepare('DELETE FROM customers WHERE id = ?').bind(customerId),
     env.DB.prepare('INSERT INTO audit_logs (action, detail) VALUES (?, ?)').bind('Delete', `${customerId} deleted`)
-  ]);
+  ],contextData.user);
   return json({ data: { id: customerId } });
 }
 

@@ -1,3 +1,4 @@
+import {recycleDeleteBatch} from '../recycle-store.js';
 import {deletionDependencies} from '../deletion-dependencies.js';
 const schema = `CREATE TABLE IF NOT EXISTS vehicles (
  id TEXT PRIMARY KEY, customer TEXT NOT NULL REFERENCES customers(id),
@@ -7,7 +8,7 @@ const schema = `CREATE TABLE IF NOT EXISTS vehicles (
 const reply = (body, status=200) => new Response(JSON.stringify(body), {
  status, headers: {'content-type':'application/json; charset=utf-8','cache-control':'no-store'}
 });
-export async function onRequest({request,env}) {
+export async function onRequest({request,env,data:contextData={}}) {
  try {
   // Idempotent bootstrap also supports dashboard deployments without Wrangler migrations.
   await env.DB.prepare(schema).run();
@@ -36,10 +37,10 @@ export async function onRequest({request,env}) {
    if(!id)return reply({error:'Vehicle ID is required.'},400);
    const links=await deletionDependencies(env.DB,'bikes',id);
    if(links.length)return reply({error:'Delete the linked records individually before deleting this vehicle.',links},409);
-   await env.DB.batch([
+   await recycleDeleteBatch(env.DB,[
     env.DB.prepare('DELETE FROM vehicles WHERE id=?').bind(id),
     env.DB.prepare('INSERT INTO audit_logs(action,detail) VALUES (?,?)').bind('Delete',`Vehicle ${id} deleted`)
-   ]);
+   ],contextData.user);
    return reply({data:{id}});
   }
   if(!['POST','PUT'].includes(request.method))return reply({error:'Method not allowed.'},405);

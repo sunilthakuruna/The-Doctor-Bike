@@ -1,3 +1,4 @@
+import {ensureRecycle,readRecycleSnapshot,archiveSnapshotStatements} from './recycle-store.js';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 
 const auditLabels={
@@ -44,6 +45,9 @@ export function snapshotHandler(scope,collections,validators={},policy=null){
     const current=results.length?JSON.parse(results.map(row=>row.data).join('')):Object.fromEntries(collections.map(key=>[key,[]]));
     try{data=policy.merge(user,current,data)}catch(error){return reply({error:error.message},403)}
    }
+   await ensureRecycle(db);
+   const previousSnapshot=await readRecycleSnapshot(db,scope);
+   if(previousSnapshot.version!==version)return reply({error:'Records changed in another browser.'},409);
    const snapshot=JSON.stringify(Object.fromEntries(collections.map(key=>[key,data[key]])));
    if(new TextEncoder().encode(snapshot).length>12000000)return reply({error:'The saved records are too large to sync.'},413);
    const next=crypto.randomUUID();
@@ -51,6 +55,7 @@ export function snapshotHandler(scope,collections,validators={},policy=null){
     ?db.prepare(`INSERT OR IGNORE INTO ${head}(id,version) VALUES (1,?)`).bind(next)
     :db.prepare(`UPDATE ${head} SET version=? WHERE id=1 AND version=?`).bind(next,version);
    const batch=[update];
+   batch.push(...archiveSnapshotStatements(db,scope,previousSnapshot.data,data,next,user));
    const write=db.prepare(`INSERT INTO ${chunks}(version,position,data) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM ${head} WHERE version=?)`);
    for(let offset=0;offset<snapshot.length;){
     let end=Math.min(offset+200000,snapshot.length);

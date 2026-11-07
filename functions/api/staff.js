@@ -1,8 +1,9 @@
+import {recycleDeleteBatch} from '../recycle-store.js';
 const attachments = ['photo', 'aadhaarDocument', 'drivingLicenseDocument'];
 const fields = ['name','mobile','designation','skills','experience','address','aadhaar','drivingLicense','joining','salaryType','salary','status','emergency','remarks'];
 const reply = (body, status=200) => Response.json(body, {status, headers:{'cache-control':'no-store'}});
 
-export async function onRequest({request, env}) {
+export async function onRequest({request, env,data:contextData={}}) {
  const db=env.DB;
  try {
   await db.batch([
@@ -27,10 +28,10 @@ export async function onRequest({request, env}) {
   if(typeof id!=='string'||!id||id.length>100)return reply({error:'Invalid staff ID.'},400);
   if(creating&&!/^BD-STF-[1-9]\d{3,11}$/.test(id))return reply({error:'Invalid staff ID. Refresh the staff list and try again.'},400);
   if(deleting){
-   await db.batch([
+   await recycleDeleteBatch(db,[
     db.prepare('INSERT INTO audit_logs(action,detail,actor) SELECT ?,?,? FROM staff WHERE id=?').bind('Delete','Staff '+id,'Owner',id),
     db.prepare('DELETE FROM staff WHERE id=?').bind(id)
-   ]);
+   ],contextData.user);
    return reply({data:{id}});
   }
   const record={id};
