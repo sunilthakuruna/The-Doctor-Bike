@@ -5,6 +5,12 @@ test('open forms are not replaced',async()=>{const app=setup();app.block();asser
 test('a local edit during the request is preserved',async()=>{const app=setup();app.context.fetch=async()=>{app.context.db.customers.push({id:'local'});return Response.json({data:[{id:'remote'}]})};assert.equal(await app.refresh(),false);assert.equal(app.context.db.customers[0].id,'local')});
 test('offline and forbidden responses do not clear the list',async()=>{const app=setup();app.context.db.customers=[{id:'existing'}];app.context.fetch=async()=>Response.json({error:'forbidden'},{status:403});assert.equal(await app.refresh(),false);assert.equal(app.context.db.customers[0].id,'existing');app.context.navigator.onLine=false;assert.equal(await app.refresh(),false)});
 
+test('expense polling uses the write-aware dedicated loader',async()=>{
+ const app=setup();app.context.page='dashboard';let count=0;
+ app.context.BD_REFRESH_EXPENSES=async()=>{count++;return true};
+ assert.equal(await app.context.cloudRecordRefreshers[5](),true);assert.equal(count,1);
+});
+
 test('customer dependencies refresh in reminders, AMC, appointments and backups',async()=>{
  for(const page of ['service-reminders','amc-plans','appointments','backup-restore','report-sales','report-profit']){const app=setup();app.context.page=page;assert.equal(await app.refresh(),true,page)}
 });

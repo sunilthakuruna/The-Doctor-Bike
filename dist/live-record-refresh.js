@@ -7,6 +7,7 @@
   const visible=page.startsWith('report-')||page==='reports'||(pages[page]||[]).includes(route);
   if(!visible||window.BD_OFFLINE_SESSION||navigator.onLine===false||!canRefreshCloudRecords())return false;
   if(typeof window.BD_HAS_MODULE_ACCESS==='function'&&!window.BD_HAS_MODULE_ACCESS(key))return false;
+  if(route==='expenses'&&typeof window.BD_REFRESH_EXPENSES==='function')return window.BD_REFRESH_EXPENSES();
   const before=stable(db[key]),currentPage=page;
   const response=await fetch('/api/'+route,{cache:'no-store'});
   if(!response.ok||response.headers.get('x-bike-offline')==='1')return false;
