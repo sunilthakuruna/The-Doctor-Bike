@@ -24,6 +24,11 @@
   if(key==='users'){
    const form=document.querySelector('#recordForm');
    if(form)form.dataset.serverUserId=id||'';
+   if(form&&id==='primary-admin'){
+    const username=form.elements.username;
+    if(username){username.readOnly=true;username.title='The primary administrator user ID cannot be changed.'}
+    if(form.elements.role)form.elements.role.disabled=true;
+   }
    const input=document.querySelector('#newUserPassword');
    if(input){
     input.autocomplete="off";input.setAttribute("data-lpignore","true");input.setAttribute("data-1p-ignore","true");input.spellcheck=false;input.minLength=4;input.placeholder=id?'New password (blank keeps current)':'At least 4 characters';
@@ -57,6 +62,7 @@
   const id=form.dataset.serverUserId;
   const existing=db.users.find(user=>user.id===id);
   const body={...Object.fromEntries(new FormData(form)),id,password:document.querySelector('#newUserPassword')?.value||'',permissions:{},actionRestrictions:existing?.actionRestrictions||{}};
+  if(id==='primary-admin'){body.username=existing.username;body.role='Admin';body.status='Active'}
   form.querySelectorAll('[data-module][data-permission]').forEach(input=>{(body.permissions[input.dataset.module]||={})[input.dataset.permission]=input.checked});
   const restrictionInputs=form.querySelectorAll('[data-user-action-module][data-user-action-right]');
   if(restrictionInputs.length){
