@@ -1,7 +1,8 @@
 'use strict';
 (function(){
   const parseIdentityDocument=value=>{try{const file=typeof value==='string'?JSON.parse(value):value;return safeAttachment(file)?file:null}catch{return null}};
-  const editBeforeIdentityDocs=editRecord;
+    const readStaffIdentityAttachment=async file=>{if(file.size>2*1024*1024)throw Error(file.name+': maximum file size is 2 MB');return readAttachment(file)};
+    const editBeforeIdentityDocs=editRecord;
   editRecord=function(key,id,initial={}){
     editBeforeIdentityDocs(key,id,initial);if(key!=='staff')return;
     const form=$('#recordForm'),grid=form?.querySelector('.formgrid'),record=id?find('staff',id):initial;if(!grid)return;
