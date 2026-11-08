@@ -3,7 +3,7 @@ import {permitted} from '../app-permissions.js';
 export async function onRequest(context) {
  const {request,env}=context;
  const path=new URL(request.url).pathname;
- if(path==='/api/auth'||path==='/api/app-auth')return context.next();
+ if(path==='/api/auth'||path==='/api/app-auth'||path==='/api/admin-recovery')return context.next();
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('origin')!==new URL(request.url).origin)
   return Response.json({error:'Invalid request origin.'},{status:403});
  try {
