@@ -1,11 +1,11 @@
-function isProtectedGarageAdmin(user){return !!user&&(user.id==='primary-admin'||String(user.username||'').trim().toLowerCase()==='admin')}
+function isProtectedGarageAdmin(user){return !!user&&user.id==='primary-admin'}
 (()=>{
  const oldDelete=deleteRecord;
  deleteRecord=function(key,id){if(key==='users'&&isProtectedGarageAdmin(find('users',id)))return toast('This administrator account cannot be deleted.');return oldDelete.apply(this,arguments)};
  const oldActions=actions;
  actions=function(key,id,extra=''){
   let html=oldActions(key,id,extra);
-  if(key==='users'&&isProtectedGarageAdmin(find('users',id)))html=html.replace(/<button\b[^>]*data-delete="users\|[^\"]*"[^>]*>[\s\S]*?<\/button>/g,'');
+  if(key==='users'&&isProtectedGarageAdmin(find('users',id)))html=html.replace(/<button\b(?=[^>]*data-delete="users\|)[^>]*>/g,tag=>tag.replace(/>$/, ' disabled aria-disabled="true" title="The primary administrator cannot be deleted">'));
   return html;
  };
  document.addEventListener('click',event=>{

@@ -25,6 +25,8 @@
    const form=document.querySelector('#recordForm');
    if(form)form.dataset.serverUserId=id||'';
    if(form&&isProtectedGarageAdmin(db.users.find(user=>user.id===id))){
+    const fullName=form.elements.namedItem("name");
+    if(fullName){fullName.readOnly=true;fullName.title="The primary administrator full name cannot be changed."}
     const username=form.elements.username;
     if(username){username.readOnly=true;username.title='The primary administrator user ID cannot be changed.'}
     if(form.elements.role)form.elements.role.disabled=true;
@@ -62,7 +64,7 @@
   const id=form.dataset.serverUserId;
   const existing=db.users.find(user=>user.id===id);
   const body={...Object.fromEntries(new FormData(form)),id,password:document.querySelector('#newUserPassword')?.value||'',permissions:{},actionRestrictions:existing?.actionRestrictions||{}};
-  if(isProtectedGarageAdmin(existing)){body.username=existing.username;body.role='Admin';body.status='Active'}
+  if(isProtectedGarageAdmin(existing)){body.username=existing.username;body.name=existing.name;body.role='Admin';body.status='Active'}
   form.querySelectorAll('[data-module][data-permission]').forEach(input=>{(body.permissions[input.dataset.module]||={})[input.dataset.permission]=input.checked});
   const restrictionInputs=form.querySelectorAll('[data-user-action-module][data-user-action-right]');
   if(restrictionInputs.length){
