@@ -17,6 +17,7 @@ export async function onRequest({request,env}){
   const existing=request.method==='PUT'?await env.DB.prepare('SELECT * FROM app_users WHERE id=?').bind(String(body.id||'')).first():null;
   if(request.method==='PUT'&&!existing)return reply({error:'User does not exist.'},404);
   const username=String(body.username||'').trim(),name=String(body.name||'').trim(),password=String(body.password||'');
+  if(existing?.id==='primary-admin'&&username!==existing.username)return reply({error:'The primary administrator user ID cannot be changed.'},403);
   if(!username||username.length>200||!name||name.length>200||((!existing||password)&&password.length<4)||password.length>256||!['Admin','Manager','Mechanic','User'].includes(body.role))return reply({error:'Complete user details and choose a password of 4–256 characters.'},400);
   if(existing?.id==='primary-admin'&&(body.role!=='Admin'||body.status==='Inactive'))return reply({error:'The primary administrator must remain active.'},400);
   const map=value=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.values(value).every(actions=>actions&&typeof actions==='object'&&!Array.isArray(actions)&&Object.values(actions).every(flag=>typeof flag==='boolean'));
