@@ -15,11 +15,17 @@ test('walk-in invoice fallback keeps the supplied customer and vehicle names',()
 test('job share shortcut opens message review instead of a file-only share menu',()=>{
  const bill={id:'job',customer:'c'},calls=[];const c={db:{settings:{name:'Garage'},jobs:[bill]},find:(key)=>key==='jobs'?bill:{name:'Customer'},number:()=>'',money:String,billTotals:()=>({total:450}),paid:()=>100,due:()=>350,invoiceShareMessage:()=>'',shareSavedRecordBundleNow(){calls.push('old-file-share')},messagePreview:(phone,text,context)=>calls.push({phone,text,context})};vm.createContext(c);vm.runInContext(fs.readFileSync(__dirname+'/../dist/invoice-feedback-message.js','utf8'),c);c.shareSavedRecordBundleNow('jobs','job','9999999999','Approved message');assert.equal(calls.length,1);assert.equal(calls[0].text,'Approved message');assert.equal(calls[0].context.key,'jobs');c.shareSavedRecordBundleNow('sales','sale','9999999999','Sale');assert.equal(calls[1],'old-file-share');
 });
-test('invoice preview builds message and PDF controls even when no image preview exists',()=>{
+test('invoice preview includes generated PDF, approved text and manual attachments in one share',async()=>{
+ let shared;
  const nodes=new Map();
- function element(){return {value:'Invoice amount and feedback',isConnected:false,disabled:false,checked:false,addEventListener(){},removeAttribute(){},setAttribute(){},before(){},after(node){if(node?.id)nodes.set('#'+node.id,node)},closest(){return this},set innerHTML(html){this.html=html;for(const match of html.matchAll(/id="([^"]+)"/g))nodes.set('#'+match[1],element())}}}
- const c={$:selector=>nodes.get(selector),find:()=>({id:'job'}),messagePreview(){nodes.set('#whatsappMessage',element())},document:{createElement:element},esc:String,whatsappNumber:()=> '919999999999',temporaryShareFilesFor:()=>[],navigator:{},toast(){},a4InvoiceCanvas:()=>({}),canvasPng:async()=>new Blob(),invoiceCanvasPdf:async()=>new File(['pdf'],'invoice.pdf'),File,Blob,URL,setTimeout,icon:()=>'',whatsappIcon:()=>''};
+ function element(){return {value:'Invoice amount and feedback',isConnected:false,disabled:false,checked:false,addEventListener(){},removeAttribute(){},setAttribute(){},before(){},append(){},after(node){if(node?.id)nodes.set('#'+node.id,node)},closest(){return this},set innerHTML(html){this.html=html;for(const match of html.matchAll(/id="([^"]+)"/g))nodes.set('#'+match[1],element())}}}
+ const c={$:selector=>nodes.get(selector),find:()=>({id:'job'}),messagePreview(){nodes.set('#whatsappMessage',element())},document:{createElement:element},esc:String,whatsappNumber:()=> '919999999999',temporaryShareFilesFor:()=>[],navigator:{canShare:()=>true,share:async payload=>{shared=payload}},validateInvoiceMedia(){},toast(){},a4InvoiceCanvas:()=>({}),canvasPng:async()=>new Blob(),invoiceCanvasPdf:async()=>new File(['pdf'],'invoice.pdf'),File,Blob,URL,setTimeout,icon:()=>'',whatsappIcon:()=>''};
  vm.createContext(c);const source=fs.readFileSync(__dirname+'/../dist/invoice-media.js','utf8');vm.runInContext(source.slice(source.indexOf('const messageBeforeUnifiedFileShare='),source.indexOf('function addInvoiceMediaButton(')),c);
  c.messagePreview('9999999999','Invoice amount and feedback',{key:'jobs',id:'job'});
  assert.ok(nodes.has('#receiptImagePreview'));assert.ok(nodes.has('#copyInvoiceWhatsAppText'));assert.ok(nodes.has('#shareInvoiceMedia'));assert.ok(nodes.has('#downloadInvoicePdf'));
+ await new Promise(setImmediate);
+ nodes.get('#invoiceMediaFiles').onchange({target:{files:[new File(['extra'],'photo.jpg',{type:'image/jpeg'})]}});
+ await nodes.get('#shareInvoiceMedia').onclick();
+ assert.equal(shared.text,'Invoice amount and feedback');assert.equal(shared.files.length,2);assert.ok(shared.files.some(f=>f.name==='invoice.pdf'));assert.ok(shared.files.some(f=>f.name==='photo.jpg'));
+
 });
