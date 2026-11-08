@@ -24,3 +24,10 @@ const invoiceShareMessageBeforeFeedback=invoiceShareMessage;
 invoiceShareMessage=function(b){
  return (db.jobs||[]).some(job=>job.id===b.id)?jobInvoiceWhatsAppMessage(b):invoiceShareMessageBeforeFeedback(b);
 };
+
+// Keep the message visible before entering a device file-share menu.
+const shareBundleBeforeInvoiceMessage=shareSavedRecordBundleNow;
+shareSavedRecordBundleNow=function(key,id,phone,message){
+ if(key==='jobs'){const record=find(key,id);if(!record)return false;messagePreview(phone,message||jobInvoiceWhatsAppMessage(record),{key,id});return Promise.resolve(false)}
+ return shareBundleBeforeInvoiceMessage.apply(this,arguments);
+};
