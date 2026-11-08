@@ -16,6 +16,9 @@
       },300),false);
     }
   }
-  new MutationObserver(()=>enhance(document)).observe(document.documentElement,{childList:true,subtree:true});
+  document.addEventListener('click',event=>{
+    if(!event.target.closest?.('[data-extra-action="whatsapp"],#openInvoiceWhatsapp,[data-invoice-media]'))return;
+    setTimeout(()=>enhance(document),150);
+  },false);
   enhance(document);
 })();
