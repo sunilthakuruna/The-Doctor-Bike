@@ -26,7 +26,7 @@
    if(form)form.dataset.serverUserId=id||'';
    const input=document.querySelector('#newUserPassword');
    if(input){
-    input.minLength=4;input.placeholder=id?'New password (blank keeps current)':'At least 4 characters';
+    input.autocomplete="off";input.setAttribute("data-lpignore","true");input.setAttribute("data-1p-ignore","true");input.spellcheck=false;input.minLength=4;input.placeholder=id?'New password (blank keeps current)':'At least 4 characters';
     const notice=document.querySelector('.userSecuritySettings .notice');
     if(notice)notice.textContent='Only administrators can change passwords here. Enter a new password and use Show to read it before saving. Previously saved passwords cannot be retrieved.';
    }
